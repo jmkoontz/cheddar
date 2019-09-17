@@ -14,6 +14,8 @@ class Header extends Component {
       tabValue = 1;
     } else if (!History.location.pathname.indexOf("/saving")) {
       tabValue = 2;
+    } else if (!History.location.pathname.indexOf("/investments")) {
+      tabValue = 3;
     }
 
     this.state = {
@@ -29,7 +31,10 @@ class Header extends Component {
       History.push("/budgets");
     } else if (newValue === '2') {
       History.push("/saving");
-    }
+    } else if (newValue === '3') {
+      History.push("/investments");
+    } 
+    
   };
 
   renderTabs = () => {
@@ -39,6 +44,7 @@ class Header extends Component {
           <Nav.Link eventKey={0}>Overview</Nav.Link>
           <Nav.Link eventKey={1}>Budgets</Nav.Link>
           <Nav.Link eventKey={2}>Saving</Nav.Link>
+          <Nav.Link eventKey={3}>Investments</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     );
