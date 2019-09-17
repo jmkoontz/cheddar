@@ -5,6 +5,7 @@ import Overview from './Overview/Overview';
 import Budgets from './Budgets/Budgets';
 import Saving from './Saving/Saving';
 import Investments from './Investments/Investments';
+import Debts from './Debts/Debts';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/budgets" render={() => <Budgets />} />
         <Route path="/saving" render={() => <Saving />} />
         <Route path="/investments" render={() => <Investments />} />
+        <Route path="/debts" render={() => <Debts />} />
         <Route path="/" render={() => <Redirect to="/" />} />
       </Switch>
     </div>
