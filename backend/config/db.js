@@ -13,6 +13,7 @@ const options = {
 // prevent deprecation warnings
 mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
 
 // connection
 mongoose.connect(dbURL, options).then(() => {
