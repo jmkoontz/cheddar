@@ -2,9 +2,10 @@ import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
 import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget,
-    addBudgetCategory} from '../models/budgetDAO';
+    deleteBudget, addBudgetCategory, deleteBudgetCategory} from '../models/budgetDAO';
 
 export default (app) => {
+  // create budget
   app.post('/Cheddar/Budgets/:uid', async (req, res) => {
     let budget = {
       name: req.body.name,
@@ -24,11 +25,41 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // add budget category
-  app.post('/Cheddar/Budgets/Budget/:uid/:name', async (req, res) => {
+  // delete budget
+  app.delete('/Cheddar/Budgets/Budget/:uid/:budgetName', async (req, res) => {
     let data;
     try {
-      data = await addBudgetCategory(req.params.uid, req.params.name, budget);
+      data = await deleteBudget(req.params.uid, req.params.budgetName);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // add budget category
+  app.post('/Cheddar/Budgets/Budget/Categories/:uid/:budgetName', async (req, res) => {
+    let category = {
+      name: req.body.name,
+      amount: req.body.amount,
+      transactions: req.body.transactions
+    };
+
+    let data;
+    try {
+      data = await addBudgetCategory(req.params.uid, req.params.budgetName, category);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // delete budget category
+  app.delete('/Cheddar/Budgets/Budget/Categories/:uid/:budgetName/:categoryName', async (req, res) => {
+    let data;
+    try {
+      data = await deleteBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName);
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -61,10 +92,21 @@ export default (app) => {
   });
 
   // get all budget category names (testing)
-  app.get('/Cheddar/Budgets/Budget/Names/:uid/:name', async (req, res) => {
+  app.get('/Cheddar/Budgets/Budget/Categories/Names/:uid/:budgetName', async (req, res) => {
     let data;
     try {
-      data = await getBudgetCategoryNames(req.params.uid, req.params.name);
+      data = await getBudgetCategoryNames(req.params.uid, req.params.budgetName);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  app.post('/Cheddar/Budgets/Budget/Categories/:uid/:budgetName', async (req, res) => {
+    let data;
+    try {
+      data = await getBudgetCategoryNames(req.params.uid, req.params.budgetName);
     } catch (err) {
       data = {error: parseError(err)};
     }
