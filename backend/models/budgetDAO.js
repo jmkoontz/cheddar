@@ -50,7 +50,7 @@ export function getBudgetCategoryNames(uid, budgetName) {
 
   return userModel.findOne({_id: uid}, returnClause)
     .then((user) => {
-      if (user && user.budgets) {
+      if (user && user.budgets && user.budgets[0].budgetCategories) {
         let namesList = [];
         for (let i in user.budgets[0].budgetCategories)
           namesList.push(user.budgets[0].budgetCategories[i].name);
@@ -101,6 +101,21 @@ export async function createBudget(uid, budget) {
     });
 }
 
+export function deleteBudget(uid, budgetName) {
+  return userModel.findOneAndUpdate(
+    {'_id': uid},
+    {'$pull': {'budgets': {'name': budgetName}}})
+    .then((originalUser) => {
+      if (originalUser == null)
+        return Promise.reject('UserError: User not found');
+
+      return Promise.resolve(originalUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export async function addBudgetCategory(uid, budgetName, category) {
   for (let i in category) {
     if (category.hasOwnProperty(i)) {
@@ -111,7 +126,7 @@ export async function addBudgetCategory(uid, budgetName, category) {
     }
   }
 
-  // get names of budgets
+  // get names of budget categories
   let categoryNames = [];
   try {
     categoryNames = await getBudgetCategoryNames(uid, budgetName);
@@ -119,13 +134,38 @@ export async function addBudgetCategory(uid, budgetName, category) {
     return Promise.reject(error);
   }
 
-  // protect against duplicate budget names
+  // protect against duplicate category names
   if (categoryNames.includes(category.name))
     return Promise.reject('UserError: Budget category with name \"' + category.name + '\" already exists');
 
+  const findClause = {
+    '_id': uid,
+    'budgets.name': budgetName
+  };
+
   return userModel.findOneAndUpdate(
-    {_id: uid},
-    {'$addToSet': {'budgets': budget}})
+    findClause,
+    {'$addToSet': {'budgets.$.budgetCategories': category}})
+    .then((originalUser) => {
+      if (originalUser == null)
+        return Promise.reject('UserError: User not found');
+
+      return Promise.resolve(originalUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function deleteBudgetCategory(uid, budgetName, categoryName) {
+  const findClause = {
+    '_id': uid,
+    'budgets.name': budgetName
+  };
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    {'$pull': {'budgets.$.budgetCategories': {'name': categoryName}}})
     .then((originalUser) => {
       if (originalUser == null)
         return Promise.reject('UserError: User not found');
