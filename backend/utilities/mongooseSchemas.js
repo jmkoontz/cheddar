@@ -21,6 +21,7 @@ export const budgetSchema = new mongoose.Schema({
   type: String,
   income: Number,
   timeFrame: Number,
+  favorite: Boolean,
   budgetCategories: [budgetCategorySchema]
 });
 

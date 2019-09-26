@@ -6,7 +6,7 @@ const Pie = props => {
     const cache = useRef(props.data);
     const createPie = d3
       .pie()
-      .value(d => d.value)
+      .value(d => d.amount)
       .sortValues(function(a, b) { return a - b; });
     const createArc = d3
       .arc()
@@ -58,8 +58,7 @@ const Pie = props => {
           .attr("transform", d => `translate(${createArc.centroid(d)})`)
           .tween("text", (d, i, nodes) => {
             const interpolator = d3.interpolate(prevData[i], d);
-            console.log(d3.select(nodes[i]).text);
-  
+
             return t => d3.select(nodes[i]).text(format(interpolator(t).value));
           });
   
