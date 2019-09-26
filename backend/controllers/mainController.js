@@ -9,7 +9,11 @@ export default (app) => {
       _id: req.body._id,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      email: req.body.email
+      email: req.body.email,
+      type: req.body.type,
+      netWorth: req.body.netWorth,
+      budgets: req.body.budgets,
+      transactions: req.body.transactions
     };
 
     let data;
@@ -22,11 +26,11 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // get a user
-  app.get('/Cheddar/:uid', async (req, res) => {
+  app.get('/Cheddar/test', async (req, res) => {
     let data;
     try {
-      data = await getUser(req.params.uid);
+      console.log('it worked');
+      data = 'Hello there';
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -34,10 +38,11 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  app.get('/Cheddar/test', async (req, res) => {
+  // get a user
+  app.get('/Cheddar/:uid', async (req, res) => {
     let data;
     try {
-      console.log('it worked')
+      data = await getUser(req.params.uid);
     } catch (err) {
       data = {error: parseError(err)};
     }
