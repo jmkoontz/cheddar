@@ -9,7 +9,7 @@ import '../../css/Budgets.css';
 
 function Budgets() {
 
-  const setGraphData = () => {
+  const getGraphData = () => {
     let x = 0;
     let nums = [40, 120, 500, 20, 65, 10];
     let categories = ["Gas", "Utilities", "Food And Groceries", "Other", "Housing", "Savings"];
@@ -26,16 +26,17 @@ function Budgets() {
     return arr;
   };
 
+  // User data
+  const [userID, setUID] = useState("325623");
   // Budget state data
-  const [data, setData] = useState(setGraphData()); // TODO change this to the current budget's data
-
-  // Creating new budget states
+  const [data, setData] = useState(getGraphData()); // TODO change to pieData
+  const [budget, setBudget] = useState({}); // Favorite budget
+  const [budgetList, setBudgetList] = useState([]); // TODO this will contain the list of budgets a user has
+  // Creation modal states
   const [modal, setModal] = useState(false); // Triggers the modal opening and closing
   const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
   const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
   const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
-  const [budgetList, setBudgetList] = useState([data]); // TODO this will contain the list of budgets a user has
-
   const removeCategory = (index) => {
     if (index == 0 && categoryArr.length == 1) {
       setCategoryArr([]);
@@ -60,15 +61,43 @@ function Budgets() {
   }
 
   /**
+   * Makes the axios call to retrieve all budgets
+   */
+  const getBudgets = () => {
+    axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`,
+      {
+        budget: data,
+      }).then(function (response) {
+        // handle success
+        setBudgetList(response.data.budgets);
+        console.log(response.data.budgets);
+      })
+      .catch((error) => {
+        console.log("Didn't get those budgets sir");
+        //TODO: error handling for budgets failing to load
+        // if (error.response && error.response.data) {
+        //   console.log(error.response.data.error);
+        //   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
+        //     //self.createIt();
+        //   }
+        // } else {
+        //   console.log(error);
+        // }
+      });
+  };
+
+  /**
    * Makes the axios call to the backend to generate a new budget
    */
   const createBudget = () => {
-    axios.post(`https://portfolio-408-main.herokuapp.com/Portfol.io/Games`,
+    //let obj = ;
+
+    axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
       {
         budget: data,
       }).then(() => {
         // Show alert telling user they were successful
-      
+
       }).catch((error) => {
         // if (error.response && error.response.data) {
         //   console.log(error.response.data.error);
@@ -83,11 +112,12 @@ function Budgets() {
 
   useEffect(
     () => {
-      setGraphData();
+      getGraphData();
+      getBudgets();
     },
     [categoryArr]
   );
-  
+
 
   return (
     <div className="App">
@@ -135,7 +165,12 @@ function Budgets() {
             </Form>
             <Row>
               <Col sm={4}>
-                <Button onClick={resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
+                {selectedDrop === "Select a Category"
+                  ?
+                  <Button onClick={resetDropDown} className={"addSpace"} color="primary" disabled>Add Category</Button>
+                  :
+                  <Button onClick={resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
+                }
               </Col>
               <Col>
                 <Dropdown isOpen={dropdown} toggle={() => toggleDropDown(!dropdown)}>
