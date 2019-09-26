@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 // URL of our cluster
 const dbURL = 'mongodb+srv://cheddar-server:CheddarCS407@' +
-  'cluster0-wgv5g.mongodb.net/test?retryWrites=true&w=majority';
+  'cluster0-wgv5g.mongodb.net/main?retryWrites=true&w=majority';
 
 const options = {
   reconnectTries: Number.MAX_VALUE,
