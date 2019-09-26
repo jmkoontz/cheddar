@@ -1,62 +1,85 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import axios from 'axios';
 import ReactDOM from "react-dom";
 import * as d3 from "d3";
 import Pie from "./Pie";
 import '../../css/Budgets.css';
 
 function Budgets() {
-  const generateData = (value, length = 5) =>
-    d3.range(length).map((item, index) => ({
-      date: index,
-      value: value === null || value === undefined ? Math.random() * 100 : value
-    }));
 
   const setGraphData = () => {
     let x = 0;
     let nums = [40, 120, 500, 20, 65, 10];
+    let categories = ["Gas", "Utilities", "Food And Groceries", "Other", "Housing", "Savings"];
     let arr = [];
     while (x < 6) {
       let obj = {
-        date: x,
+        date: categories[x],
         value: nums[x],
       };
       arr.push(obj)
       x++;
     }
+    // arr is an array of objects with the value 
     return arr;
   };
 
-  const changeData = () => {
-    setData(generateData());
-  };
+  // Budget state data
+  const [data, setData] = useState(setGraphData()); // TODO change this to the current budget's data
 
-  const [data, setData] = useState(setGraphData());
-  const [modal, setModal] = useState(false);
-  const [category, toggleCategory] = useState(false);
-  const [dropdown, toggleDropDown] = useState(false);
-  const [selectedDrop, setDropDown] = useState("Select a Category");
-  const [categoryArr, setCategoryArr] = useState([]);
+  // Creating new budget states
+  const [modal, setModal] = useState(false); // Triggers the modal opening and closing
+  const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
+  const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
+  const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
+  const [budgetList, setBudgetList] = useState([data]); // TODO this will contain the list of budgets a user has
 
   const removeCategory = (index) => {
     if (index == 0 && categoryArr.length == 1) {
       setCategoryArr([]);
     } else {
-
       let replace = [];
       for (let x = 0; x < categoryArr.length; x++) {
         if (x != index) {
           replace.push(categoryArr[x]);
         }
       }
-      // let tmp = categoryArr;
-      // tmp.splice(index, 1)
-      // console.log(tmp);
+
       setCategoryArr(replace);
-      // console.log(categoryArr);
     }
   }
+
+  /**
+   * Helper method to reset the drop down menu text and add a new expense to the category array
+   */
+  const resetDropDown = () => {
+    setCategoryArr([...categoryArr, selectedDrop]);
+    setDropDown("Select a Category");
+  }
+
+  /**
+   * Makes the axios call to the backend to generate a new budget
+   */
+  const createBudget = () => {
+    axios.post(`https://portfolio-408-main.herokuapp.com/Portfol.io/Games`,
+      {
+        budget: data,
+      }).then(() => {
+        // Show alert telling user they were successful
+      
+      }).catch((error) => {
+        // if (error.response && error.response.data) {
+        //   console.log(error.response.data.error);
+        //   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
+        //     //self.createIt();
+        //   }
+        // } else {
+        //   console.log(error);
+        // }
+      });
+  };
 
   useEffect(
     () => {
@@ -64,6 +87,7 @@ function Budgets() {
     },
     [categoryArr]
   );
+  
 
   return (
     <div className="App">
@@ -72,10 +96,10 @@ function Budgets() {
       <div className="addSpace">
         <Pie
           data={data}
-          width={600}
-          height={600}
-          innerRadius={200}
-          outerRadius={300}
+          width={500}
+          height={500}
+          innerRadius={150}
+          outerRadius={250}
         />
       </div>
       <Button onClick={() => setModal(true)}>Add a Budget+</Button>
@@ -86,34 +110,32 @@ function Budgets() {
             <Form>
               <FormGroup>
                 <Label for="name">Name</Label>
-                <Input type="name" name="name" id="name" placeholder="My Budget" />
+                <Input type="name" name="name" id="name" placeholder="Ex: Monthly Budget" />
               </FormGroup>
               <FormGroup>
                 <Label for="income">Income</Label>
-                <Input type="income" name="income" id="income" placeholder="$1000" />
-              </FormGroup>
-              <FormGroup>
-                <Label for="name">Name</Label>
-                <Input type="name" name="name" id="name" placeholder="My Budget" />
-              </FormGroup>
-              <FormGroup>
-                <Label for="expense">Expense</Label>
-                <Input type="expense" name="expense" id="expense" placeholder="My Budget" />
+                <Input type="income" name="income" id="income" placeholder="Ex: $1000" />
               </FormGroup>
 
               {categoryArr.map((item, index) =>
+
                 <FormGroup key={index}>
                   <Label for="item">{item}</Label>
-                  <Input id='item' placeholder="Amount" />
-                  <Button onClick={() => removeCategory(index)} color="danger">-</Button>
+                  <Row>
+                    <Col sm={10}>
+                      <Input id='item' placeholder="Amount" />
+                    </Col>
+                    <Col sm={2}>
+                      <Button block onClick={() => removeCategory(index)} color="danger">-</Button>
+                    </Col>
+                  </Row>
                 </FormGroup>
               )}
-
 
             </Form>
             <Row>
               <Col sm={4}>
-                <Button onClick={() => setCategoryArr([...categoryArr, selectedDrop])} className={"addSpace"} color="primary">Add Category</Button>
+                <Button onClick={resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
               </Col>
               <Col>
                 <Dropdown isOpen={dropdown} toggle={() => toggleDropDown(!dropdown)}>
