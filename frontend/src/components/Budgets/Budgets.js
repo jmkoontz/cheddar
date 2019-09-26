@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import axios from 'axios';
 import ReactDOM from "react-dom";
 import * as d3 from "d3";
@@ -49,6 +49,8 @@ function Budgets() {
   const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
   const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
   const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
+  // Tab controlls
+  const [tab, setTab] = useState('1'); // Holds active tab
 
   const removeCategory = (index) => {
     if (index == 0 && categoryArr.length == 1) {
@@ -140,33 +142,56 @@ function Budgets() {
   return (
     <div className="App">
       <Row>
-        <Col sm={1}/>
-        <Col sm={5}>
-          <span className="label" id="title">{budget.name}</span>
-          <div className="addSpace">
-            <Pie
-              data={budget.budgetCategories}
-              width={500}
-              height={500}
-              innerRadius={150}
-              outerRadius={250}
-            />
-          </div>
+        <Col sm={3} />
+        <Col sm={6} >
+          <Nav tabs>
+            {/* TODO automate the generation of budget tabs here*/}
+            <NavItem>
+              <NavLink onClick={() => setTab('1')}>
+                Tab1
+            </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink onClick={() => { setTab('2') }}>
+                Moar Tabs
+            </NavLink>
+            </NavItem>
+          </Nav>
         </Col>
-        <Col sm={5}>
-          <span className="label" id="title">{budget.name}</span>
-          <div className="addSpace">
-            <Pie
-              data={budget.budgetCategories}
-              width={500}
-              height={500}
-              innerRadius={150}
-              outerRadius={250}
-            />
-          </div>
-        </Col>
-        <Col sm={1}/>
+        <Col sm={3} />
       </Row>
+      <TabContent activeTab={tab}>
+        <TabPane tabId="1">
+          <Row>
+            <Col sm={1} />
+            <Col sm={5}>
+              <span className="label" id="title">{budget.name}</span>
+              <div className="addSpace">
+                <Pie
+                  data={budget.budgetCategories}
+                  width={500}
+                  height={500}
+                  innerRadius={150}
+                  outerRadius={250}
+                />
+              </div>
+            </Col>
+            <Col sm={5}>
+              <span className="label" id="title">{budget.name}</span>
+              <div className="addSpace">
+                <Pie
+                  data={budget.budgetCategories}
+                  width={500}
+                  height={500}
+                  innerRadius={150}
+                  outerRadius={250}
+                />
+              </div>
+            </Col>
+            <Col sm={1} />
+          </Row>
+        </TabPane>
+      </TabContent>
 
       <Button onClick={() => setModal(true)}>Add a Budget+</Button>
       <div>
