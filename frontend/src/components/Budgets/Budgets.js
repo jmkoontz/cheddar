@@ -29,27 +29,27 @@ function Budgets() {
   const initBudget = () => {
     let obj = {
       "budgetCategories": [],
-    "name": "",
-    "type": "",
-    "income": "",
-    "timeFrame": "100",
-    "favorite": null
+      "name": "",
+      "type": "",
+      "income": "",
+      "timeFrame": "100",
+      "favorite": null
     }
     return obj;
   };
 
   // User data
-  const [userID, setUID] = useState("325623");
+  const [userID, setUID] = useState("773202");
   // Budget state data
-  const [data, setData] = useState(getGraphData()); // TODO change to pieData
   const [budget, setBudget] = useState(initBudget()); // Favorite budget
+  const [data, setData] = useState(budget.budgetCategories); // TODO change to pieData
   const [budgetList, setBudgetList] = useState(null); // TODO this will contain the list of budgets a user has
   // Creation modal states
   const [modal, setModal] = useState(false); // Triggers the modal opening and closing
   const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
   const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
   const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
-  
+
   const removeCategory = (index) => {
     if (index == 0 && categoryArr.length == 1) {
       setCategoryArr([]);
@@ -78,7 +78,7 @@ function Budgets() {
    */
   const getBudgets = () => {
     axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
-    .then(function (response) {
+      .then(function (response) {
         // handle success
         setBudgetList(response.data.budgets);
 
@@ -139,17 +139,35 @@ function Budgets() {
 
   return (
     <div className="App">
+      <Row>
+        <Col sm={1}/>
+        <Col sm={5}>
+          <span className="label" id="title">{budget.name}</span>
+          <div className="addSpace">
+            <Pie
+              data={budget.budgetCategories}
+              width={500}
+              height={500}
+              innerRadius={150}
+              outerRadius={250}
+            />
+          </div>
+        </Col>
+        <Col sm={5}>
+          <span className="label" id="title">{budget.name}</span>
+          <div className="addSpace">
+            <Pie
+              data={budget.budgetCategories}
+              width={500}
+              height={500}
+              innerRadius={150}
+              outerRadius={250}
+            />
+          </div>
+        </Col>
+        <Col sm={1}/>
+      </Row>
 
-      <span className="label" id="title">{budget.name}</span>
-      <div className="addSpace">
-        <Pie
-          data={budget.budgetCategories}
-          width={500}
-          height={500}
-          innerRadius={150}
-          outerRadius={250}
-        />
-      </div>
       <Button onClick={() => setModal(true)}>Add a Budget+</Button>
       <div>
         <Modal isOpen={modal} toggle={() => setModal(false)}>
