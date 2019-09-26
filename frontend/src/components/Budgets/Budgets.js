@@ -26,17 +26,30 @@ function Budgets() {
     return arr;
   };
 
+  const initBudget = () => {
+    let obj = {
+      "budgetCategories": [],
+    "name": "",
+    "type": "",
+    "income": "",
+    "timeFrame": "100",
+    "favorite": null
+    }
+    return obj;
+  };
+
   // User data
   const [userID, setUID] = useState("325623");
   // Budget state data
   const [data, setData] = useState(getGraphData()); // TODO change to pieData
-  const [budget, setBudget] = useState({}); // Favorite budget
-  const [budgetList, setBudgetList] = useState([]); // TODO this will contain the list of budgets a user has
+  const [budget, setBudget] = useState(initBudget()); // Favorite budget
+  const [budgetList, setBudgetList] = useState(null); // TODO this will contain the list of budgets a user has
   // Creation modal states
   const [modal, setModal] = useState(false); // Triggers the modal opening and closing
   const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
   const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
   const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
+  
   const removeCategory = (index) => {
     if (index == 0 && categoryArr.length == 1) {
       setCategoryArr([]);
@@ -56,7 +69,7 @@ function Budgets() {
    * Helper method to reset the drop down menu text and add a new expense to the category array
    */
   const resetDropDown = () => {
-    setCategoryArr([...categoryArr, selectedDrop]);
+    setCategoryArr([...categoryArr, selectedDrop]); // TODO allow users to set a category
     setDropDown("Select a Category");
   }
 
@@ -64,13 +77,18 @@ function Budgets() {
    * Makes the axios call to retrieve all budgets
    */
   const getBudgets = () => {
-    axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`,
-      {
-        budget: data,
-      }).then(function (response) {
+    axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+    .then(function (response) {
         // handle success
         setBudgetList(response.data.budgets);
-        console.log(response.data.budgets);
+
+        for (let x = 0; x < response.data.budgets.length; x++) {
+          console.log(x);
+          if (response.data.budgets[x].favorite === true) {
+            setBudget(response.data.budgets[x]);
+            break;
+          }
+        }
       })
       .catch((error) => {
         console.log("Didn't get those budgets sir");
@@ -115,17 +133,17 @@ function Budgets() {
       getGraphData();
       getBudgets();
     },
-    [categoryArr]
+    [userID]
   );
 
 
   return (
     <div className="App">
 
-      <span className="label" id="title">August Budget</span>
+      <span className="label" id="title">{budget.name}</span>
       <div className="addSpace">
         <Pie
-          data={data}
+          data={budget.budgetCategories}
           width={500}
           height={500}
           innerRadius={150}
