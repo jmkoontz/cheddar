@@ -43,28 +43,35 @@ function Budgets() {
   // Budget state data
   const [budget, setBudget] = useState(initBudget()); // Favorite budget
   const [data, setData] = useState(budget.budgetCategories); // TODO change to pieData
-  const [budgetList, setBudgetList] = useState(null); // TODO this will contain the list of budgets a user has
+  const [budgetList, setBudgetList] = useState([]); // TODO this will contain the list of budgets a user has
   // Creation modal states
   const [modal, setModal] = useState(false); // Triggers the modal opening and closing
   const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
   const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
   const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
   // Tab controlls
-  const [tab, setTab] = useState('1'); // Holds active tab
+  const [tab, setTab] = useState("0"); // Holds active tab
 
   const removeCategory = (index) => {
-    if (index == 0 && categoryArr.length == 1) {
+    if (index === 0 && categoryArr.length === 1) {
       setCategoryArr([]);
     } else {
       let replace = [];
       for (let x = 0; x < categoryArr.length; x++) {
-        if (x != index) {
+        if (x !== index) {
           replace.push(categoryArr[x]);
         }
       }
 
       setCategoryArr(replace);
     }
+  }
+
+  /**
+   * Changes the current budget to a different budget
+   */
+  const changeTab = () => {
+
   }
 
   /**
@@ -75,6 +82,7 @@ function Budgets() {
     setDropDown("Select a Category");
   }
 
+  // Server calls below here
   /**
    * Makes the axios call to retrieve all budgets
    */
@@ -85,9 +93,9 @@ function Budgets() {
         setBudgetList(response.data.budgets);
 
         for (let x = 0; x < response.data.budgets.length; x++) {
-          console.log(x);
           if (response.data.budgets[x].favorite === true) {
             setBudget(response.data.budgets[x]);
+            setTab(x.toString());
             break;
           }
         }
@@ -141,56 +149,64 @@ function Budgets() {
 
   return (
     <div className="App">
+      <Row >
+        <Col sm={3} />
+        <Col sm={6}>
+          <h3 className={"addSpace"}>Select a Budget</h3>
+        </Col>
+        <Col sm={3} />
+      </Row>
       <Row>
         <Col sm={3} />
         <Col sm={6} >
           <Nav tabs>
-            {/* TODO automate the generation of budget tabs here*/}
-            <NavItem>
-              <NavLink onClick={() => setTab('1')}>
-                Tab1
-            </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink onClick={() => { setTab('2') }}>
-                Moar Tabs
-            </NavLink>
-            </NavItem>
+            {budgetList.map((item, index) =>
+              <div key={index}>
+                <NavItem >
+                  <NavLink onClick={() => setTab(index.toString())}>
+                    {item.name}
+                  </NavLink>
+                </NavItem>
+              </div>
+            )}
           </Nav>
         </Col>
         <Col sm={3} />
       </Row>
       <TabContent activeTab={tab}>
-        <TabPane tabId="1">
-          <Row>
-            <Col sm={1} />
-            <Col sm={5}>
-              <span className="label" id="title">{budget.name}</span>
-              <div className="addSpace">
-                <Pie
-                  data={budget.budgetCategories}
-                  width={500}
-                  height={500}
-                  innerRadius={150}
-                  outerRadius={250}
-                />
-              </div>
-            </Col>
-            <Col sm={5}>
-              <span className="label" id="title">{budget.name}</span>
-              <div className="addSpace">
-                <Pie
-                  data={budget.budgetCategories}
-                  width={500}
-                  height={500}
-                  innerRadius={150}
-                  outerRadius={250}
-                />
-              </div>
-            </Col>
-            <Col sm={1} />
-          </Row>
-        </TabPane>
+        {budgetList.map((item, index) =>
+          <TabPane tabId={index.toString()} key={index}>
+            <Row>
+              <Col sm={1} />
+              <Col sm={5}>
+                <span className="label" id="title">{item.name}</span>
+                <div className="addSpace">
+                  <Pie
+                    data={item.budgetCategories}
+                    width={500}
+                    height={500}
+                    innerRadius={150}
+                    outerRadius={250}
+                  />
+                </div>
+              </Col>
+              <Col sm={5}>
+                <span className="label" id="title">Actual Spending</span>
+                <div className="addSpace">
+                  <Pie
+                    data={item.budgetCategories}
+                    width={500}
+                    height={500}
+                    innerRadius={150}
+                    outerRadius={250}
+                  />
+                </div>
+              </Col>
+              <Col sm={1} />
+            </Row>
+          </TabPane>
+        )}
+
       </TabContent>
 
       <Button onClick={() => setModal(true)}>Add a Budget+</Button>
