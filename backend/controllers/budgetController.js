@@ -2,7 +2,8 @@ import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
 import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget,
-    deleteBudget, addBudgetCategory, deleteBudgetCategory} from '../models/budgetDAO';
+    deleteBudget, addBudgetCategory, deleteBudgetCategory, addTransactionToBudget,
+    removeTransactionFromBudget} from '../models/budgetDAO';
 
 export default (app) => {
   // create budget
@@ -104,10 +105,29 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  app.post('/Cheddar/Budgets/Budget/Categories/:uid/:budgetName', async (req, res) => {
+  // add transaction to budget
+  app.post('/Cheddar/Budgets/Budget/Transaction/:uid/:budgetName/:categoryName', async (req, res) => {
+    let transaction = {
+      name: req.body.name,
+      amount: req.body.amount,
+      date: req.body.date,
+    };
+
     let data;
     try {
-      data = await getBudgetCategoryNames(req.params.uid, req.params.budgetName);
+      data = await addTransactionToBudget(req.params.uid, req.params.budgetName, req.params.categoryName, transaction);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // remove transaction from budget
+  app.delete('/Cheddar/Budgets/Budget/Transaction/:uid/:budgetName/:categoryName/:transactionId', async (req, res) => {
+    let data;
+    try {
+      data = await removeTransactionFromBudget(req.params.uid, req.params.budgetName, req.params.categoryName, req.params.transactionId);
     } catch (err) {
       data = {error: parseError(err)};
     }
