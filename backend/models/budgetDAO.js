@@ -1,4 +1,7 @@
-import {userModel, budgetModel} from '../utilities/mongooseModels';
+import mongoose from 'mongoose';
+
+import {userModel} from '../utilities/mongooseModels';
+import {addTransaction} from './transactionDAO';
 
 export function getAllBudgets(uid) {
   const returnClause = {
@@ -89,12 +92,13 @@ export async function createBudget(uid, budget) {
 
   return userModel.findOneAndUpdate(
     {_id: uid},
-    {'$addToSet': {'budgets': budget}})
-    .then((originalUser) => {
-      if (originalUser == null)
+    {'$addToSet': {'budgets': budget}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
         return Promise.reject('UserError: User not found');
 
-      return Promise.resolve(originalUser);
+      return Promise.resolve(updatedUser);
     })
     .catch((err) => {
       return Promise.reject(err);
@@ -104,12 +108,13 @@ export async function createBudget(uid, budget) {
 export function deleteBudget(uid, budgetName) {
   return userModel.findOneAndUpdate(
     {'_id': uid},
-    {'$pull': {'budgets': {'name': budgetName}}})
-    .then((originalUser) => {
-      if (originalUser == null)
+    {'$pull': {'budgets': {'name': budgetName}}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
         return Promise.reject('UserError: User not found');
 
-      return Promise.resolve(originalUser);
+      return Promise.resolve(updatedUser);
     })
     .catch((err) => {
       return Promise.reject(err);
@@ -145,12 +150,13 @@ export async function addBudgetCategory(uid, budgetName, category) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$addToSet': {'budgets.$.budgetCategories': category}})
-    .then((originalUser) => {
-      if (originalUser == null)
+    {'$addToSet': {'budgets.$.budgetCategories': category}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
         return Promise.reject('UserError: User not found');
 
-      return Promise.resolve(originalUser);
+      return Promise.resolve(updatedUser);
     })
     .catch((err) => {
       return Promise.reject(err);
@@ -165,12 +171,72 @@ export function deleteBudgetCategory(uid, budgetName, categoryName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$pull': {'budgets.$.budgetCategories': {'name': categoryName}}})
-    .then((originalUser) => {
-      if (originalUser == null)
+    {'$pull': {'budgets.$.budgetCategories': {'name': categoryName}}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
         return Promise.reject('UserError: User not found');
 
-      return Promise.resolve(originalUser);
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function addTransactionToBudget(uid, budgetName, categoryName, transaction) {
+  for (let i in transaction) {
+    if (transaction.hasOwnProperty(i)) {
+      if (transaction[i] === undefined)
+        return Promise.reject('UserError: One or more fields are missing');
+      else if (transaction[i] === '')
+        return Promise.reject('UserError: Each field must have information');
+    }
+  }
+
+  transaction._id = new mongoose.Types.ObjectId();
+
+  const options = {
+    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'new': true
+  };
+
+  return userModel.findOneAndUpdate(
+    {'_id': uid},
+    {'$push': {'budgets.$[budget].budgetCategories.$[category].transactions': transaction._id}},
+    options)
+    .then(async (updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User not found');
+
+      try {
+        await addTransaction(uid, transaction);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function removeTransactionFromBudget(uid, budgetName, categoryName, transactionId) {
+  const options = {
+    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'new': true
+  };
+
+  return userModel.findOneAndUpdate(
+    {'_id': uid},
+    {'$pull': {'budgets.$[budget].budgetCategories.$[category].transactions': transactionId}},
+    options)
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User not found');
+
+      return Promise.resolve(updatedUser);
     })
     .catch((err) => {
       return Promise.reject(err);
