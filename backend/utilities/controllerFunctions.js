@@ -1,4 +1,6 @@
 export function parseError(err) {
+  console.log(err);
+  
   let error = {
     status: 0,
     message: ''

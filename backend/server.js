@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import db from './config/db';
 import mainController from './controllers/mainController';
 import budgetController from './controllers/budgetController';
+import transactionController from './controllers/transactionController';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.options('/*', (req, res) => {
 // run controllers
 mainController(app);
 budgetController(app);
+transactionController(app);
 
 // listen to port
 let port = process.env.PORT;
