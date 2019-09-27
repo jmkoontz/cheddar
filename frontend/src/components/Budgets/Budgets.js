@@ -95,6 +95,7 @@ function Budgets() {
         for (let x = 0; x < response.data.budgets.length; x++) {
           if (response.data.budgets[x].favorite === true) {
             setBudget(response.data.budgets[x]);
+            setTab(x.toString());
             break;
           }
         }
@@ -148,10 +149,10 @@ function Budgets() {
 
   return (
     <div className="App">
-      <Row>
+      <Row >
         <Col sm={3} />
         <Col sm={6}>
-          <h3>Select a Budget</h3>
+          <h3 className={"addSpace"}>Select a Budget</h3>
         </Col>
         <Col sm={3} />
       </Row>
