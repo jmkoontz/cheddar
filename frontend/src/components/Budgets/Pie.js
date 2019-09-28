@@ -58,8 +58,9 @@ const Pie = props => {
           .attr("transform", d => `translate(${createArc.centroid(d)})`)
           .tween("text", (d, i, nodes) => {
             const interpolator = d3.interpolate(prevData[i], d);
-
+    
             return t => d3.select(nodes[i]).text(format(interpolator(t).value));
+            
           });
   
         cache.current = props.data;
