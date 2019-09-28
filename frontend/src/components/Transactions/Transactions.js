@@ -6,11 +6,11 @@ import '../../css/Budgets.css';
 
 function Transactions() {
 
-    return (
-        <div className="BigDivArea">
-            <h3>Transactions Page</h3>
-        </div>
-    );
+	return (
+		<div >
+			<h3>Transactions Page</h3>
+		</div>
+	);
 
 };
 
