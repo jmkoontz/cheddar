@@ -6,25 +6,9 @@ import ReactDOM from "react-dom";
 import * as d3 from "d3";
 import Pie from "./Pie";
 import '../../css/Budgets.css';
+import BudgetTabs from "./BudgetTabs";
 
 function Budgets() {
-
-  const getGraphData = () => {
-    let x = 0;
-    let nums = [40, 120, 500, 20, 65, 10];
-    let categories = ["Gas", "Utilities", "Food And Groceries", "Other", "Housing", "Savings"];
-    let arr = [];
-    while (x < 6) {
-      let obj = {
-        date: categories[x],
-        value: nums[x],
-      };
-      arr.push(obj)
-      x++;
-    }
-    // arr is an array of objects with the value 
-    return arr;
-  };
 
   const initBudget = () => {
     let obj = {
@@ -42,29 +26,61 @@ function Budgets() {
   const [userID, setUID] = useState("773202");
   // Budget state data
   const [budget, setBudget] = useState(initBudget()); // Favorite budget
-  const [data, setData] = useState(budget.budgetCategories); // TODO change to pieData
+  //const [data, setData] = useState(budget.budgetCategories); // TODO change to pieData
   const [budgetList, setBudgetList] = useState([]); // TODO this will contain the list of budgets a user has
   // Creation modal states
   const [modal, setModal] = useState(false); // Triggers the modal opening and closing
   const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
   const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
-  const [categoryArr, setCategoryArr] = useState([]); // TODO implement preset budget expenses here
+  const [categoryArr, setCategoryArr] = useState([]);
+  // Form states
+  const [income, setIncome] = useState();
+  const [budgetName, setBudgetName] = useState("");
   // Tab controlls
   const [tab, setTab] = useState("0"); // Holds active tab
 
-  const removeCategory = (index) => {
-    if (index === 0 && categoryArr.length === 1) {
-      setCategoryArr([]);
-    } else {
-      let replace = [];
-      for (let x = 0; x < categoryArr.length; x++) {
-        if (x !== index) {
-          replace.push(categoryArr[x]);
-        }
-      }
 
-      setCategoryArr(replace);
+  /**
+   * Helper method to remove a category from the creation modal
+   * @param {int} index : ID of the category to remove
+   */
+  const removeCategory = (index) => {
+    setCategoryArr(categoryArr.filter((s, sidx) => index !== sidx));
+  }
+
+  /**
+   * Handles user input from the modal form and updates the state
+   * @param {*} index 
+   */
+  const handleCategoryChange = (event) => {
+    let newObj = {
+      "name": categoryArr[event.target.id].name,
+      "amount": parseInt(event.target.value),
+      "transactions": []
+    };
+    let arr = categoryArr;
+
+    for (let x = 0; x < arr.length; x++) {
+      if (x === parseInt(event.target.id)) {
+        arr[x] = newObj;
+      }
     }
+    console.log(arr);
+    setCategoryArr(arr);
+  }
+
+  /**
+   * Helper method to handle user changes to name
+   */
+  const handleNameChange = (event) => {
+    setBudgetName(event.target.value);
+  }
+
+  /**
+   * Helper method to handle user changes to income
+   */
+  const handleIncomeChange = (event) => {
+    setIncome(event.target.value);
   }
 
   /**
@@ -78,7 +94,12 @@ function Budgets() {
    * Helper method to reset the drop down menu text and add a new expense to the category array
    */
   const resetDropDown = () => {
-    setCategoryArr([...categoryArr, selectedDrop]); // TODO allow users to set a category
+    let obj = {
+      "name": selectedDrop,
+      "amount": 0,
+      "transactions": []
+    };
+    setCategoryArr([...categoryArr, obj]); // TODO allow users to set a category
     setDropDown("Select a Category");
   }
 
@@ -118,29 +139,31 @@ function Budgets() {
    * Makes the axios call to the backend to generate a new budget
    */
   const createBudget = () => {
-    //let obj = ;
+    let budgetObj = {
+      "name": budgetName,
+      "type": "secondary",
+      "income": income,
+      "timeFrame": 100,
+      "favorite": false,
+      "budgetCategories": categoryArr
+    };
 
-    axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
-      {
-        budget: data,
-      }).then(() => {
-        // Show alert telling user they were successful
+    console.log(budgetObj);
 
-      }).catch((error) => {
-        // if (error.response && error.response.data) {
-        //   console.log(error.response.data.error);
-        //   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
-        //     //self.createIt();
-        //   }
-        // } else {
-        //   console.log(error);
-        // }
-      });
+    // axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
+    //   {
+    //     budget: 0,
+    //   }).then(() => {
+    //     // Show alert telling user they were successful
+
+    //   }).catch((error) => {
+    //     console.log("Creation failed");
+
+    //   });
   };
 
   useEffect(
     () => {
-      getGraphData();
       getBudgets();
     },
     [userID]
@@ -149,132 +172,75 @@ function Budgets() {
 
   return (
     <div className="App">
-      <Row >
-        <Col sm={3} />
-        <Col sm={6}>
-          <h3 className={"addSpace"}>Select a Budget</h3>
-        </Col>
-        <Col sm={3} />
-      </Row>
-      <Row>
-        <Col sm={3} />
-        <Col sm={6} >
-          <Nav tabs>
-            {budgetList.map((item, index) =>
-              <div key={index}>
-                <NavItem >
-                  <NavLink onClick={() => setTab(index.toString())}>
-                    {item.name}
-                  </NavLink>
-                </NavItem>
-              </div>
+      <BudgetTabs budgetList={budgetList} setTab={setTab} tab={tab} setModal={setModal} />
+
+      <Modal isOpen={modal} toggle={() => setModal(false)}>
+        <ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
+        <ModalBody>
+          <Form onSubmit={createBudget}>
+            <FormGroup>
+              <Label for="name">Name</Label>
+              <Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" />
+            </FormGroup>
+            <FormGroup>
+              <Label for="income">Income</Label>
+              <Input onChange={handleIncomeChange} id="income" placeholder="Ex: $1000" />
+            </FormGroup>
+
+            {categoryArr.map((item, index) =>
+              <FormGroup key={index}>
+                <Label for={"" + index}>{item.name}</Label>
+                <Row>
+                  <Col sm={10}>
+                    <Input
+                      onChange={handleCategoryChange}
+                      type="text"
+                      id={index}
+                      placeholder="Amount"
+                    />
+                  </Col>
+                  <Col sm={2}>
+                    <Button block onClick={() => removeCategory(index)} color="danger">-</Button>
+                  </Col>
+                </Row>
+              </FormGroup>
             )}
-          </Nav>
-        </Col>
-        <Col sm={3} />
-      </Row>
-      <TabContent activeTab={tab}>
-        {budgetList.map((item, index) =>
-          <TabPane tabId={index.toString()} key={index}>
-            <Row>
-              <Col sm={1} />
-              <Col sm={5}>
-                <span className="label" id="title">{item.name}</span>
-                <div className="addSpace">
-                  <Pie
-                    data={item.budgetCategories}
-                    width={500}
-                    height={500}
-                    innerRadius={150}
-                    outerRadius={250}
-                  />
-                </div>
-              </Col>
-              <Col sm={5}>
-                <span className="label" id="title">Actual Spending</span>
-                <div className="addSpace">
-                  <Pie
-                    data={item.budgetCategories}
-                    width={500}
-                    height={500}
-                    innerRadius={150}
-                    outerRadius={250}
-                  />
-                </div>
-              </Col>
-              <Col sm={1} />
-            </Row>
-          </TabPane>
-        )}
 
-      </TabContent>
+          </Form>
+          <Row>
+            <Col sm={4}>
+              {selectedDrop === "Select a Category"
+                ?
+                <Button onClick={resetDropDown} className={"addSpace"} color="primary" disabled>Add Category</Button>
+                :
+                <Button onClick={resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
+              }
+            </Col>
+            <Col>
+              <Dropdown isOpen={dropdown} toggle={() => toggleDropDown(!dropdown)}>
+                <DropdownToggle caret>
+                  {selectedDrop}
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem onClick={() => setDropDown("Entertainment")}>Entertainment</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Savings")}>Savings</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Debt")}>Debt</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Housing")}>Housing</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Gas")}>Gas</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Utilies")}>Utilies</DropdownItem>
+                  <DropdownItem onClick={() => setDropDown("Other")}>Other</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </Col>
+          </Row>
+        </ModalBody>
+        <ModalFooter>
+          <Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
+          <Button color="secondary" onClick={() => setModal(false)}>Cancel</Button>
+        </ModalFooter>
+      </Modal>
 
-      <Button onClick={() => setModal(true)}>Add a Budget+</Button>
-      <div>
-        <Modal isOpen={modal} toggle={() => setModal(false)}>
-          <ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
-          <ModalBody>
-            <Form>
-              <FormGroup>
-                <Label for="name">Name</Label>
-                <Input type="name" name="name" id="name" placeholder="Ex: Monthly Budget" />
-              </FormGroup>
-              <FormGroup>
-                <Label for="income">Income</Label>
-                <Input type="income" name="income" id="income" placeholder="Ex: $1000" />
-              </FormGroup>
-
-              {categoryArr.map((item, index) =>
-
-                <FormGroup key={index}>
-                  <Label for="item">{item}</Label>
-                  <Row>
-                    <Col sm={10}>
-                      <Input id='item' placeholder="Amount" />
-                    </Col>
-                    <Col sm={2}>
-                      <Button block onClick={() => removeCategory(index)} color="danger">-</Button>
-                    </Col>
-                  </Row>
-                </FormGroup>
-              )}
-
-            </Form>
-            <Row>
-              <Col sm={4}>
-                {selectedDrop === "Select a Category"
-                  ?
-                  <Button onClick={resetDropDown} className={"addSpace"} color="primary" disabled>Add Category</Button>
-                  :
-                  <Button onClick={resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
-                }
-              </Col>
-              <Col>
-                <Dropdown isOpen={dropdown} toggle={() => toggleDropDown(!dropdown)}>
-                  <DropdownToggle caret>
-                    {selectedDrop}
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem onClick={() => setDropDown("Entertainment")}>Entertainment</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Savings")}>Savings</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Debt")}>Debt</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Housing")}>Housing</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Gas")}>Gas</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Utilies")}>Utilies</DropdownItem>
-                    <DropdownItem onClick={() => setDropDown("Other")}>Other</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </Col>
-            </Row>
-
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={() => setModal(false)}>Submit</Button>
-            <Button color="secondary" onClick={() => setModal(false)}>Cancel</Button>
-          </ModalFooter>
-        </Modal>
-      </div>
     </div>
   );
 }
