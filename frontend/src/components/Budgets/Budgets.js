@@ -1,31 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import axios from 'axios';
-import ReactDOM from "react-dom";
-import * as d3 from "d3";
-import Pie from "./Pie";
 import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 
 function Budgets() {
 
-  const initBudget = () => {
-    let obj = {
-      "budgetCategories": [],
-      "name": "",
-      "type": "",
-      "income": "",
-      "timeFrame": "100",
-      "favorite": null
-    }
-    return obj;
-  };
-
   // User data
   const [userID, setUID] = useState("773202");
-  // Budget state data
-  const [budget, setBudget] = useState(initBudget()); // Favorite budget
   //const [data, setData] = useState(budget.budgetCategories); // TODO change to pieData
   const [budgetList, setBudgetList] = useState([]); // TODO this will contain the list of budgets a user has
   // Creation modal states
@@ -80,14 +63,7 @@ function Budgets() {
    * Helper method to handle user changes to income
    */
   const handleIncomeChange = (event) => {
-    setIncome(event.target.value);
-  }
-
-  /**
-   * Changes the current budget to a different budget
-   */
-  const changeTab = () => {
-
+    setIncome(parseInt(event.target.value));
   }
 
   /**
@@ -115,7 +91,7 @@ function Budgets() {
 
         for (let x = 0; x < response.data.budgets.length; x++) {
           if (response.data.budgets[x].favorite === true) {
-            setBudget(response.data.budgets[x]);
+            //setBudget(response.data.budgets[x]);
             setTab(x.toString());
             break;
           }
@@ -139,27 +115,25 @@ function Budgets() {
    * Makes the axios call to the backend to generate a new budget
    */
   const createBudget = () => {
-    let budgetObj = {
-      "name": budgetName,
-      "type": "secondary",
-      "income": income,
-      "timeFrame": 100,
-      "favorite": false,
-      "budgetCategories": categoryArr
-    };
+    // TODO remove hard coded values here
 
-    console.log(budgetObj);
+    axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
+      {
+        name: budgetName,
+        type: "secondary",
+        income: income,
+        timeFrame: 100,
+        favorite: false,
+        budgetCategories: categoryArr
+      }).then(function (response) {
 
-    // axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
-    //   {
-    //     budget: 0,
-    //   }).then(() => {
-    //     // Show alert telling user they were successful
+        console.log(response);
+        getBudgets();
 
-    //   }).catch((error) => {
-    //     console.log("Creation failed");
+      }).catch(function (error) {
+        console.log(error);
 
-    //   });
+      });
   };
 
   useEffect(

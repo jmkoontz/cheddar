@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
-import axios from 'axios';
-import ReactDOM from "react-dom";
-import * as d3 from "d3";
+import React from "react";
+import { Button} from 'reactstrap';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import Pie from "./Pie";
 import '../../css/Budgets.css';
 
