@@ -4,6 +4,9 @@ import axios from 'axios';
 import keys from '../../config/keys.js';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import Card from 'react-bootstrap/Card';
+import CardDeck from 'react-bootstrap/CardDeck';
+import './Investments.css';
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 class Investments extends React.Component {
@@ -14,47 +17,92 @@ class Investments extends React.Component {
             defaultRate: "Weekly",
             company: "MSFT",
             companyName: "Microsoft",
+            frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
+            key: keys.AlphaVantageAPIKey,
         }
     }
 
 
     componentDidMount(){
         if(this.state.defaultRate == "Daily"){
-            axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.company+"&apikey="+keys.AlphaVantageAPIKey)
-            .then(res => {
-                //var obj = res.data["Weekly Time Series"]["2019-09-25"];
-                var dateKeys = Object.keys(res.data["Time Series (Daily)"]);
-                var points = [];
-                var i = 0;
-                for(i=0;i<31;i++){
-                    points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Time Series (Daily)"][dateKeys[i]]["4. close"])});
-                    //alert(points[i].x + " " + points[i].y);
-                }
-                var dataArr = []
-                dataArr.push({type: "line", dataPoints: points})
-                this.setState({
-                    data: dataArr,
-                });
-            })
+            if(this.state.frequency != "TIME_SERIES_DAILY_ADJUSTED"){
+                this.setState({frequency: "TIME_SERIES_DAILY_ADJUSTED"},
+                    () =>{
+                        this.makeApiRequest();
+                    }
+                );
+            }
+            else{
+                this.makeApiRequest();
+            }            
         }
         else if(this.state.defaultRate == "Weekly") {
-            axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol="+ this.state.company+"&apikey="+keys.AlphaVantageAPIKey)
-            .then(res => {
-                //var obj = res.data["Weekly Time Series"]["2019-09-25"];
-                var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
-                var points = [];
-                var i = 0;
-                for(i=0;i<31;i++){
-                    points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
-                    //alert(points[i].x + " " + points[i].y);
-                }
-                var dataArr = []
-                dataArr.push({type: "line", dataPoints: points})
-                this.setState({
-                    data: dataArr,
-                });
-            })
+            if(this.state.frequency != "TIME_SERIES_WEEKLY_ADJUSTED"){
+                this.setState({frequency: "TIME_SERIES_WEEKLY_ADJUSTED"},
+                    () =>{
+                        this.makeApiRequest();
+                    }
+                );
+            }
+            else{
+                this.makeApiRequest();
+            }       
         }
+    }
+
+    shouldComponentUpdate(nextProps,nextState){
+        if(this.state.key != nextState.key){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    //This function makes an api request to the AlphaVantage API and sets state to contain datapoints for graph
+     makeApiRequest = () => {
+        axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.company+"&apikey="+this.state.key)
+            .then(res => {
+                try{
+                    var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
+                    var points = [];
+                    var i = 0;
+                    for(i=0;i<31;i++){
+                        points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
+                    }
+                    var dataArr = []
+                    dataArr.push({type: "line", dataPoints: points})
+                    this.setState({
+                        data: dataArr,
+                    });
+                    return true;
+                }
+                catch(error){ //catch typeError
+                    try{    
+                        //Check if type error is due to too frequent API calls
+                        if(res.data.Note.includes("API call frequency")){
+                            //change API keys
+                            if(this.state.key == keys.AlphaVantageAPIKey){
+                                this.setState({
+                                    key: keys.AlphaVantageAPIKey2,
+                                });
+                            }
+                            else{
+                                this.setState({
+                                    key: keys.AlphaVantageAPIKey,
+                                });
+                            }
+                            //alert("Changing Keys");
+                        }
+                        
+                        return false;
+                    }
+                    catch(error2){
+                        alert("Sometheing went very wrong API");
+                        return false;
+                    }
+                }
+            });
     }
 
     test = (param) => {
@@ -76,23 +124,9 @@ class Investments extends React.Component {
         this.setState({
             company: param,
             companyName: name,
+        },() => {
+            this.makeApiRequest();
         });
-        axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol="+ this.state.company+"&apikey="+keys.AlphaVantageAPIKey)
-            .then(res => {
-                //var obj = res.data["Weekly Time Series"]["2019-09-25"];
-                var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
-                var points = [];
-                var i = 0;
-                for(i=0;i<31;i++){
-                    points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
-                    //alert(points[i].x + " " + points[i].y);
-                }
-                var dataArr = []
-                dataArr.push({type: "line", dataPoints: points})
-                this.setState({
-                    data: dataArr,
-                });
-            });
         console.log(param);
     }
 
@@ -106,33 +140,24 @@ class Investments extends React.Component {
                 title: "Date",
             },
             data: this.state.data,
-            /*data: [{				
-            type: "column",
-            dataPoints: [
-            { label: "Apple",  y: 10  },
-            { label: "Orange", y: 15  },
-            { label: "Banana", y: 25  },
-            { label: "Mango",  y: 30  },
-            { label: "Grape",  y: 28  }
-            ]
-            }]*/
         }
 
         
         return (
             <div className="BigDivArea">
                 <h3>Investments!</h3>
-                <div>
-                    <CanvasJSChart options = {options}
-                        /* onRef = {ref => this.chart = ref} */
-                    />
+                <div className="cardContainer">
+                    <div className="card">
+                        <CanvasJSChart options = {options}
+                            /* onRef = {ref => this.chart = ref} */
+                        />
+                    </div>
                 </div>
-                <DropdownButton id="dropdown-basic-button" onSelect={this.test} title="Company">
+                <DropdownButton id="dropdown-basic-button" onSelect={this.test} title={this.state.companyName}>
                     <Dropdown.Item eventKey="AMZN">Amazon</Dropdown.Item>
                     <Dropdown.Item eventKey="AAPL">Apple</Dropdown.Item>
                     <Dropdown.Item eventKey="MSFT">Microsoft</Dropdown.Item>
                     <Dropdown.Item eventKey="GOOG">Google</Dropdown.Item>
-                    
                 </DropdownButton>
             </div>
         );
