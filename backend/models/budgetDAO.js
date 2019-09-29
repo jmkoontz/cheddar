@@ -260,7 +260,7 @@ export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
         for (let i in user.budgets[0].budgetCategories) {
           if (user.budgets[0].budgetCategories[i].name === categoryName) {
             for (let j in user.budgets[0].budgetCategories[i].transactions)
-              transactionIdList.push(user.budgets[0].budgetCategories[i].transactions[j]._id);
+              transactionIdList.push(user.budgets[0].budgetCategories[i].transactions[j]);
 
             try {
               transactions = await getTransactions(uid, transactionIdList);
@@ -280,13 +280,91 @@ export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
     });
 }
 
-export async function getTransactionsInDateRangeAndBudgetCategory(uid, budgetName, categoryName, dateRange) {
+export async function getTransactionsInBudgetCategoryAndDateRange(uid, budgetName, categoryName, dateRange) {
   if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
     return Promise.reject('UserError: No start date specified');
 
   let transactions = [];
   try {
     transactions = await getTransactionsInBudgetCategory(uid, budgetName, categoryName);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let currentDate = new Date();
+  if (!dateRange.endYear)
+    dateRange.endYear = currentDate.getFullYear();
+  if (!dateRange.endMonth)
+    dateRange.endMonth = currentDate.getMonth();
+  if (!dateRange.endDay)
+    dateRange.endDay = currentDate.getDate() + 1;
+
+  let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
+  let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
+
+  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+
+  return Promise.resolve(transactions);
+}
+
+export function getTransactionsInBudget(uid, budgetName) {
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'budgets': {'$elemMatch': {'name': budgetName}},
+    'budgets.budgetCategories': 1
+  };
+
+  return userModel.findOne(
+    {'_id': uid},
+    returnClause)
+    .then(async (user) => {
+      if (user && user.budgets && user.budgets[0].budgetCategories) {
+        let transactions = [];
+        let transactionIdList = [];
+        let transactionCategoryList = [];
+        for (let i in user.budgets[0].budgetCategories) {
+          for (let j in user.budgets[0].budgetCategories[i].transactions) {
+            transactionIdList.push(user.budgets[0].budgetCategories[i].transactions[j]);
+            transactionCategoryList.push({
+              'id': user.budgets[0].budgetCategories[i].transactions[j],
+              'category': user.budgets[0].budgetCategories[i].name
+            });
+          }
+
+          try {
+            transactions = await getTransactions(uid, transactionIdList);
+          } catch (error) {
+            return Promise.reject(error);
+          }
+        }
+
+        for (let i in transactionCategoryList) {
+          for (let j in transactions) {
+            if (transactionCategoryList[i].id.toString() === transactions[j]._id.toString()) {
+              transactions[j] = transactions[j].toObject(); // Mongoose objects are not mutable
+              transactions[j].category = transactionCategoryList[i].category;
+              break;
+            }
+          }
+        }
+
+        return Promise.resolve(transactions);
+      } else {
+        return Promise.reject('UserError: User not found');
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateRange) {
+  if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
+    return Promise.reject('UserError: No start date specified');
+
+  let transactions = [];
+  try {
+    transactions = await getTransactionsInBudget(uid, budgetName);
   } catch (error) {
     return Promise.reject(error);
   }
