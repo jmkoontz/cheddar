@@ -279,3 +279,30 @@ export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
       return Promise.reject(err);
     });
 }
+
+export async function getTransactionsInDateRangeAndBudgetCategory(uid, budgetName, categoryName, dateRange) {
+  if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
+    return Promise.reject('UserError: No start date specified');
+
+  let transactions = [];
+  try {
+    transactions = await getTransactionsInBudgetCategory(uid, budgetName, categoryName);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let currentDate = new Date();
+  if (!dateRange.endYear)
+    dateRange.endYear = currentDate.getFullYear();
+  if (!dateRange.endMonth)
+    dateRange.endMonth = currentDate.getMonth();
+  if (!dateRange.endDay)
+    dateRange.endDay = currentDate.getDate() + 1;
+
+  let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
+  let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
+
+  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+
+  return Promise.resolve(transactions);
+}

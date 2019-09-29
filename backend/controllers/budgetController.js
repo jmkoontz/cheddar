@@ -3,7 +3,8 @@ import bodyParser from 'body-parser';
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
 import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget,
     deleteBudget, addBudgetCategory, deleteBudgetCategory, addTransactionToBudget,
-    removeTransactionFromBudget, getTransactionsInBudgetCategory} from '../models/budgetDAO';
+    removeTransactionFromBudget, getTransactionsInBudgetCategory,
+    getTransactionsInDateRangeAndBudgetCategory} from '../models/budgetDAO';
 
 export default (app) => {
   // create budget
@@ -134,7 +135,28 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // get transactions in budget category
+  // get transactions in date range and budget category
+  app.get('/Cheddar/Budgets/Budget/Transactions/ByCategory/DateRange/:uid/:budgetName/:categoryName', async (req, res) => {
+    let dateRange = {
+      startYear: req.query.startYear,
+      startMonth: req.query.startMonth,
+      startDay: req.query.startDay,
+      endYear: req.query.endYear,
+      endMonth: req.query.endMonth,
+      endDay: req.query.endDay
+    };
+
+    let data;
+    try {
+      data = await getTransactionsInDateRangeAndBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName, dateRange);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get all transactions in budget category
   app.get('/Cheddar/Budgets/Budget/Transactions/ByCategory/:uid/:budgetName/:categoryName', async (req, res) => {
     let data;
     try {
