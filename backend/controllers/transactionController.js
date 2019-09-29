@@ -1,7 +1,8 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {addTransaction, editTransaction, deleteTransaction} from '../models/transactionDAO';
+import {addTransaction, editTransaction, deleteTransaction, getAllTransactions,
+    getTransactions} from '../models/transactionDAO';
 
 export default (app) => {
   // add transaction
@@ -45,6 +46,18 @@ export default (app) => {
     let data;
     try {
       data = await deleteTransaction(req.params.uid, req.params.transactionId);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get all transactions
+  app.get('/Cheddar/Transactions/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await getAllTransactions(req.params.uid);
     } catch (err) {
       data = {error: parseError(err)};
     }
