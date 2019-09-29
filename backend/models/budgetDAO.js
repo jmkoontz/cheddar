@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import {userModel} from '../utilities/mongooseModels';
-import {addTransaction} from './transactionDAO';
+import {addTransaction, getTransactions} from './transactionDAO';
 
 export function getAllBudgets(uid) {
   const returnClause = {
@@ -12,7 +12,7 @@ export function getAllBudgets(uid) {
   return userModel.findOne({_id: uid}, returnClause)
     .then((user) => {
       if (user)
-        return Promise.resolve(user);
+        return Promise.resolve(user.budgets);
       else
         return Promise.reject('UserError: User not found');
     })
@@ -237,6 +237,43 @@ export function removeTransactionFromBudget(uid, budgetName, categoryName, trans
         return Promise.reject('UserError: User not found');
 
       return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'budgets': {'$elemMatch': {'name': budgetName, 'budgetCategories.name': categoryName}},
+    'budgets.budgetCategories': 1
+  };
+
+  return userModel.findOne(
+    {'_id': uid},
+    returnClause)
+    .then(async (user) => {
+      if (user && user.budgets && user.budgets[0].budgetCategories) {
+        let transactions = [];
+        let transactionIdList = [];
+        for (let i in user.budgets[0].budgetCategories) {
+          if (user.budgets[0].budgetCategories[i].name === categoryName) {
+            for (let j in user.budgets[0].budgetCategories[i].transactions)
+              transactionIdList.push(user.budgets[0].budgetCategories[i].transactions[j]._id);
+
+            try {
+              transactions = await getTransactions(uid, transactionIdList);
+            } catch (error) {
+              return Promise.reject(error);
+            }
+          }
+        }
+
+        return Promise.resolve(transactions);
+      } else {
+        return Promise.reject('UserError: User not found');
+      }
     })
     .catch((err) => {
       return Promise.reject(err);

@@ -77,3 +77,41 @@ export function deleteTransaction(uid, transactionId) {
       return Promise.reject(err);
     });
 }
+
+export function getAllTransactions(uid) {
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'transactions': 1
+  };
+
+  return userModel.findOne(
+    {'_id': uid},
+    returnClause)
+    .then((user) => {
+      if (user)
+        return Promise.resolve(user.transactions);
+      else
+        return Promise.reject('UserError: User not found');
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function getTransactions(uid, transactionIdList) {
+  let transactions = [];
+  try {
+    transactions = await getAllTransactions(uid);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let matches = [];
+  transactionIdList = JSON.stringify(transactionIdList);
+  for (let i in transactions) {
+    if (transactionIdList.includes(transactions[i]._id))
+      matches.push(transactions[i])
+  }
+
+  return Promise.resolve(matches);
+}
