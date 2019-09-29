@@ -4,7 +4,8 @@ import {parseError, buildResponse} from '../utilities/controllerFunctions';
 import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget,
     deleteBudget, addBudgetCategory, deleteBudgetCategory, addTransactionToBudget,
     removeTransactionFromBudget, getTransactionsInBudgetCategory,
-    getTransactionsInDateRangeAndBudgetCategory} from '../models/budgetDAO';
+    getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
+    getTransactionsInBudgetAndDateRange} from '../models/budgetDAO';
 
 export default (app) => {
   // create budget
@@ -135,7 +136,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // get transactions in date range and budget category
+  // get transactions in budget category and date range
   app.get('/Cheddar/Budgets/Budget/Transactions/ByCategory/DateRange/:uid/:budgetName/:categoryName', async (req, res) => {
     let dateRange = {
       startYear: req.query.startYear,
@@ -148,7 +149,7 @@ export default (app) => {
 
     let data;
     try {
-      data = await getTransactionsInDateRangeAndBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName, dateRange);
+      data = await getTransactionsInBudgetCategoryAndDateRange(req.params.uid, req.params.budgetName, req.params.categoryName, dateRange);
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -161,6 +162,39 @@ export default (app) => {
     let data;
     try {
       data = await getTransactionsInBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get transactions in budget and date range
+  app.get('/Cheddar/Budgets/Budget/Transactions/DateRange/:uid/:budgetName', async (req, res) => {
+    let dateRange = {
+      startYear: req.query.startYear,
+      startMonth: req.query.startMonth,
+      startDay: req.query.startDay,
+      endYear: req.query.endYear,
+      endMonth: req.query.endMonth,
+      endDay: req.query.endDay
+    };
+
+    let data;
+    try {
+      data = await getTransactionsInBudgetAndDateRange(req.params.uid, req.params.budgetName, dateRange);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get all transactions in budget
+  app.get('/Cheddar/Budgets/Budget/Transactions/:uid/:budgetName', async (req, res) => {
+    let data;
+    try {
+      data = await getTransactionsInBudget(req.params.uid, req.params.budgetName);
     } catch (err) {
       data = {error: parseError(err)};
     }
