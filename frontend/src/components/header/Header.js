@@ -44,7 +44,8 @@ class Header extends Component {
   renderTabs = () => {
     return (
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
+        <Nav className="mr-auto nav-container" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
+          <Nav.Link eventKey={0}><span id={"icon-tab"}><img src={"Icon.png"} id={"icon"}/></span></Nav.Link>
           <Nav.Link eventKey={0}>Overview</Nav.Link>
           <Nav.Link eventKey={1}>Budgets</Nav.Link>
           <Nav.Link eventKey={2}>Saving</Nav.Link>
@@ -59,7 +60,6 @@ class Header extends Component {
     return (
       <div id={"header"}>
         <Navbar id={"navbar"}>
-          <Navbar.Brand>Cheddar</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           {this.renderTabs()}
         </Navbar>
