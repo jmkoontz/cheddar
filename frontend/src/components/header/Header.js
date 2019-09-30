@@ -18,6 +18,8 @@ class Header extends Component {
       tabValue = 3;
     } else if (!History.location.pathname.indexOf("/debts")) {
       tabValue = 4;
+    } else if (!History.location.pathname.indexOf("/transactions")) {
+      tabValue = 5;
     }
 
     this.state = {
@@ -37,6 +39,8 @@ class Header extends Component {
       History.push("/investments");
     } else if (newValue === '4') {
       History.push("/debts");
+    } else if (newValue === '5') {
+      History.push("/transactions");
     }
 
   };
@@ -51,6 +55,7 @@ class Header extends Component {
           <Nav.Link eventKey={2}>Saving</Nav.Link>
           <Nav.Link eventKey={3}>Investments</Nav.Link>
           <Nav.Link eventKey={4}>Debts</Nav.Link>
+          <Nav.Link eventKey={5}>Transactions</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     );

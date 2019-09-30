@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getUser, createUser} from '../models/userDAO';
+import {getUser, createUser, editUser} from '../models/userDAO';
 
 export default (app) => {
   app.post('/Cheddar/CreateAccount', async (req, res) => {
@@ -43,6 +43,25 @@ export default (app) => {
     let data;
     try {
       data = await getUser(req.params.uid);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // edit a user
+  app.put('/Cheddar/:uid', async (req, res) => {
+    let changes = {
+      firstName: req.query.firstName,
+      lastName: req.query.lastName,
+      type: req.query.type,
+      netWorth: req.query.netWorth
+    };
+
+    let data;
+    try {
+      data = await editUser(req.params.uid, changes);
     } catch (err) {
       data = {error: parseError(err)};
     }
