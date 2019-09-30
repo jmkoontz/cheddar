@@ -60,7 +60,7 @@ export function getBudgetCategoryNames(uid, budgetName) {
 
         return Promise.resolve(namesList);
       } else {
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
       }
     })
     .catch((err) => {
@@ -105,6 +105,54 @@ export async function createBudget(uid, budget) {
     });
 }
 
+export async function editBudget(uid, budgetName, changes) {
+  let updateClause = {$set: {}};
+
+  if (changes.name) {
+    // get names of budgets
+    let budgetNames = [];
+    try {
+      budgetNames = await getBudgetNames(uid);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    // protect against duplicate budget names
+    if (budgetNames.includes(changes.name))
+      return Promise.reject('UserError: Budget with name \"' + changes.name + '\" already exists');
+
+    updateClause.$set['budgets.$.name'] = changes.name;
+  }
+
+  const findClause = {
+    '_id': uid,
+    'budgets.name': budgetName
+  };
+
+  if (changes.type)
+    updateClause.$set['budgets.$.type'] = changes.type;
+
+  if (changes.income)
+    updateClause.$set['budgets.$.income'] = changes.income;
+
+  if (changes.timeFrame)
+    updateClause.$set['budgets.$.timeFrame'] = changes.timeFrame;
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    updateClause,
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export function deleteBudget(uid, budgetName) {
   return userModel.findOneAndUpdate(
     {'_id': uid},
@@ -112,7 +160,7 @@ export function deleteBudget(uid, budgetName) {
     {'new': true})
     .then((updatedUser) => {
       if (updatedUser == null)
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
 
       return Promise.resolve(updatedUser);
     })
@@ -163,6 +211,49 @@ export async function addBudgetCategory(uid, budgetName, category) {
     });
 }
 
+export async function editBudgetCategory(uid, budgetName, categoryName, changes) {
+  let updateClause = {$set: {}};
+
+  if (changes.name) {
+    // get names of budget categories
+    let categoryNames = [];
+    try {
+      categoryNames = await getBudgetCategoryNames(uid, budgetName);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
+    // protect against duplicate budget category names
+    if (categoryNames.includes(changes.name))
+      return Promise.reject('UserError: Category with name \"' + changes.name + '\" already exists');
+
+    updateClause.$set['budgets.$[budget].budgetCategories.$[category].name'] = changes.name;
+  }
+
+  if (changes.amount)
+    updateClause.$set['budgets.$[budget].budgetCategories.$[category].amount'] = changes.amount;
+
+  const options = {
+    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'new': true
+  };
+
+  return userModel.findOneAndUpdate(
+    {'_id': uid},
+    updateClause,
+    options)
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+
 export function deleteBudgetCategory(uid, budgetName, categoryName) {
   const findClause = {
     '_id': uid,
@@ -175,7 +266,7 @@ export function deleteBudgetCategory(uid, budgetName, categoryName) {
     {'new': true})
     .then((updatedUser) => {
       if (updatedUser == null)
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
 
       return Promise.resolve(updatedUser);
     })
@@ -207,7 +298,7 @@ export function addTransactionToBudget(uid, budgetName, categoryName, transactio
     options)
     .then(async (updatedUser) => {
       if (updatedUser == null)
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
 
       try {
         await addTransaction(uid, transaction);
@@ -234,7 +325,7 @@ export function removeTransactionFromBudget(uid, budgetName, categoryName, trans
     options)
     .then((updatedUser) => {
       if (updatedUser == null)
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
 
       return Promise.resolve(updatedUser);
     })
@@ -272,7 +363,7 @@ export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
 
         return Promise.resolve(transactions);
       } else {
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
       }
     })
     .catch((err) => {
@@ -350,7 +441,7 @@ export function getTransactionsInBudget(uid, budgetName) {
 
         return Promise.resolve(transactions);
       } else {
-        return Promise.reject('UserError: User not found');
+        return Promise.reject('UserError: User or budget not found');
       }
     })
     .catch((err) => {
