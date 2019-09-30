@@ -8,6 +8,8 @@ const Pie = props => {
       .pie()
       .value(d => d.amount)
       .sortValues(function(a, b) { return a - b; });
+
+    //console.log(createPie(props.data));
     const createArc = d3
       .arc()
       .innerRadius(props.innerRadius)
@@ -35,9 +37,10 @@ const Pie = props => {
   
         const arcTween = (d, i) => {
           const interpolator = d3.interpolate(prevData[i], d);
-  
+          
           return t => createArc(interpolator(t));
         };
+        
   
         path
           .attr("class", "arc")
@@ -58,7 +61,7 @@ const Pie = props => {
           .attr("transform", d => `translate(${createArc.centroid(d)})`)
           .tween("text", (d, i, nodes) => {
             const interpolator = d3.interpolate(prevData[i], d);
-    
+            console.log(nodes[i]);
             return t => d3.select(nodes[i]).text(format(interpolator(t).value));
             
           });

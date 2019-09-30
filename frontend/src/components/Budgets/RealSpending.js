@@ -1,17 +1,10 @@
-import React, {useEffect} from "react";
+import React from "react";
 import { Button } from 'reactstrap';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import Pie from "./Pie";
 import '../../css/Budgets.css';
 
-function BudgetTabs(props) {
-
-	useEffect(
-		() => {
-		
-		},
-		[props.budgetList]
-	);
+function RealSpending(props) {
 
 	return (
 		<div>
@@ -60,7 +53,6 @@ function BudgetTabs(props) {
 									/>
 								</div>
 							</Col>
-							{/* Call the real spending component*/}
 							<Col sm={5}>
 								<span className="label" id="title">Actual Spending</span>
 								<div className="addSpace">
