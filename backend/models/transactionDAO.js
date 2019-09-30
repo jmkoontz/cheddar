@@ -89,7 +89,7 @@ export function getAllTransactions(uid) {
     returnClause)
     .then((user) => {
       if (user)
-        return Promise.resolve(user.transactions);
+        return Promise.resolve(user.transactions.sort((t1, t2) => (t1.date < t2.date) ? 1 : -1));
       else
         return Promise.reject('UserError: User not found');
     })
@@ -114,4 +114,31 @@ export async function getTransactions(uid, transactionIdList) {
   }
 
   return Promise.resolve(matches);
+}
+
+export async function getTransactionsInDateRange(uid, dateRange) {
+  if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
+    return Promise.reject('UserError: No start date specified');
+
+  let transactions = [];
+  try {
+    transactions = await getAllTransactions(uid);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let currentDate = new Date();
+  if (!dateRange.endYear)
+    dateRange.endYear = currentDate.getFullYear();
+  if (!dateRange.endMonth)
+    dateRange.endMonth = currentDate.getMonth();
+  if (!dateRange.endDay)
+    dateRange.endDay = currentDate.getDate() + 1;
+
+  let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
+  let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
+
+  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+
+  return Promise.resolve(transactions);
 }

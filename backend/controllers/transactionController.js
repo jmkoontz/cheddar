@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
 import {addTransaction, editTransaction, deleteTransaction, getAllTransactions,
-    getTransactions} from '../models/transactionDAO';
+    getTransactions, getTransactionsInDateRange} from '../models/transactionDAO';
 
 export default (app) => {
   // add transaction
@@ -58,6 +58,27 @@ export default (app) => {
     let data;
     try {
       data = await getAllTransactions(req.params.uid);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get transactions in date range
+  app.get('/Cheddar/Transactions/DateRange/:uid', async (req, res) => {
+    let dateRange = {
+      startYear: req.query.startYear,
+      startMonth: req.query.startMonth,
+      startDay: req.query.startDay,
+      endYear: req.query.endYear,
+      endMonth: req.query.endMonth,
+      endDay: req.query.endDay
+    };
+
+    let data;
+    try {
+      data = await getTransactionsInDateRange(req.params.uid, dateRange);
     } catch (err) {
       data = {error: parseError(err)};
     }
