@@ -13,7 +13,8 @@ class EventCalendar extends React.Component {
     super(props);
 
     this.state = {
-      selectedEvent: null
+      selectedEvent: null,
+      isCreatingEvent: false
     };
 
     this.eventModal = React.createRef();
@@ -21,10 +22,23 @@ class EventCalendar extends React.Component {
 
   onSelectEvent = (event) => {
     this.setState({
-      selectedEvent: event
+      selectedEvent: event,
+      isCreatingEvent: false
     });
 
-    this.eventModal.current.open();
+    this.eventModal.current.open(event);
+  };
+
+  onSelectSlot = (event) => {
+    // It's a unique id assuming the same user doesn't somehow create 2 events at the same time
+    event.id = Date.now();
+
+    this.setState({
+      selectedEvent: event,
+      isCreatingEvent: true
+    });
+
+    this.eventModal.current.open(event);
   };
 
   onCloseEvent = () => {
@@ -38,28 +52,30 @@ class EventCalendar extends React.Component {
       <div id={"calendar-container"}>
         <Calendar
           localizer={localizer}
+          selectable
           events={[
             {
               title: "rent due",
-              start: Date.now(),
-              end: Date.now(),
+              start: new Date,
+              end: new Date,
               allDay: true
             }, {
               title: "rent due 2",
-              start: Date.now(),
-              end: Date.now(),
+              start: new Date,
+              end: new Date,
               allDay: true
             }
           ]}
           startAccessor="start"
           endAccessor="end"
           onSelectEvent={this.onSelectEvent}
+          onSelectSlot={this.onSelectSlot}
         />
 
         <EventModal
           ref={this.eventModal}
           event={this.state.selectedEvent}
-          isNew
+          isNew={this.state.isCreatingEvent}
         />
       </div>
     );
