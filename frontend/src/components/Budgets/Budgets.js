@@ -4,6 +4,7 @@ import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from '
 import axios from 'axios';
 import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
+import StudentLoan from "./StudentLoan";
 
 function Budgets() {
 
@@ -11,15 +12,17 @@ function Budgets() {
 	const [loading, setLoading] = useState(true);
 	// User data
 	const [userID, setUID] = useState("773202");
-	//const [data, setData] = useState(budget.budgetCategories); // TODO change to pieData
 	const [budgetList, setBudgetList] = useState([""]); // TODO this will contain the list of budgets a user has
 	// Creation modal states
 	const [modal, setModal] = useState(false); // Triggers the modal opening and closing
 	const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
 	const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
 	const [categoryArr, setCategoryArr] = useState([]);
+	// Budget type drop down
+	const [budgetType, setBudgetType] = useState(); // Currently selected budget type
+	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
+	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	// Form states
-	const [income, setIncome] = useState();
 	const [budgetName, setBudgetName] = useState("");
 	// Tab controlls
 	const [tab, setTab] = useState("0"); // Holds active tab
@@ -71,12 +74,6 @@ function Budgets() {
 		setBudgetName(event.target.value);
 	}
 
-  /**
-   * Helper method to handle user changes to income
-   */
-	const handleIncomeChange = (event) => {
-		setIncome(parseInt(event.target.value));
-	}
 
   /**
    * Helper method to reset the drop down menu text and add a new expense to the category array
@@ -135,13 +132,20 @@ function Budgets() {
    */
 	const createBudget = () => {
 		toggleAlert();
+
 		// TODO remove hard coded values here
+		let tmpIncome;
+		for (let x = 0; x < categoryArr.length; x++) {
+			if (categoryArr[x].name === "Income") {
+				tmpIncome = categoryArr[x].amount;
+			}
+		}
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
 				name: budgetName,
 				type: "secondary",
-				income: income,
+				income: tmpIncome,
 				timeFrame: 100,
 				favorite: false,
 				budgetCategories: categoryArr
@@ -166,93 +170,82 @@ function Budgets() {
 		[userID]
 	);
 
+	const formInfo = {
+		createBudget: createBudget,
+		categoryArr: categoryArr,
+		handleNameChange: handleNameChange,
+		handleCategoryChange: handleCategoryChange,
+		removeCategory:  removeCategory,
+		resetDropDown: resetDropDown,
+		toggleDropDown: toggleDropDown,
+		selectedDrop: selectedDrop,
+		setDropDown: setDropDown,
+		dropdown: dropdown,
 
-	if (budgetList == undefined) {
-		return (
-			<div />
-		)
-	}
+	};
+
 	return (
 		<div className="App">
 			{loading
 				?
 				<div />
 				:
-				<BudgetTabs budgetList={budgetList} setTab={setTab} tab={tab} setModal={setModal} />
+				<BudgetTabs userID={userID} budgetList={budgetList} setTab={setTab} tab={tab} setModal={setModal} />
 			}
 
 			<Modal isOpen={modal} toggle={() => setModal(false)}>
 				<ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
 				<ModalBody>
-					{creationError
-						?
-						<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
-						:
-						<div />
-					}
-					<Form onSubmit={createBudget}>
-						<FormGroup>
-							<Label for="name">Name</Label>
-							<Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" />
-						</FormGroup>
-						<FormGroup>
-							<Label for="income">Income</Label>
-							<Input onChange={handleIncomeChange} id="income" placeholder="Ex: $1000" />
-						</FormGroup>
-
-						{categoryArr.map((item, index) =>
-							<FormGroup key={index}>
-								<Label for={"" + index}>{item.name}</Label>
-								<Row>
-									<Col sm={10}>
-										<Input
-											onChange={handleCategoryChange}
-											type="text"
-											id={index}
-											placeholder="Amount"
-											required="required"
-										/>
-									</Col>
-									<Col sm={2}>
-										<Button block onClick={() => removeCategory(index)} color="danger">-</Button>
-									</Col>
-								</Row>
-							</FormGroup>
-						)}
-
-					</Form>
 					<Row>
-						<Col sm={4}>
-							{selectedDrop === "Select a Category"
-								?
-								<Button onClick={resetDropDown} className={"addSpace"} color="primary" disabled>Add Category</Button>
-								:
-								<Button onClick={resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
-							}
-						</Col>
-						<Col>
-							<Dropdown isOpen={dropdown} toggle={() => toggleDropDown(!dropdown)}>
+
+						<Col sm={3}>
+							<Dropdown isOpen={budgetDropDown} toggle={() => toggleBudgetDropDown(!budgetDropDown)}>
 								<DropdownToggle caret>
-									{selectedDrop}
+									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									<DropdownItem onClick={() => setDropDown("Entertainment")}>Entertainment</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Savings")}>Savings</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Debt")}>Debt</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Housing")}>Housing</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Gas")}>Gas</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Utilies")}>Utilies</DropdownItem>
-									<DropdownItem onClick={() => setDropDown("Other")}>Other</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Student")}>Student</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("No Money")}>No Money</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>
 					</Row>
+					{pickedCategory === "Select a Budget Type"
+						?
+						<div/>
+						: pickedCategory === "Student"
+							?
+							<div>
+								<ModalBody>
+									{creationError
+										?
+										<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
+										:
+										<div />
+									}
+									<StudentLoan {...formInfo} />
+									
+								</ModalBody>
+							</div>
+							:
+							<div />
+					}
 				</ModalBody>
-				<ModalFooter>
-					<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
-					<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
-				</ModalFooter>
+				{pickedCategory === "Select a Budget Type"
+					?
+					<ModalFooter>
+						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
+					</ModalFooter>
+					:
+					<ModalFooter>
+						<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
+						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
+					</ModalFooter>
+				}
+
+
 			</Modal>
 
 		</div>
