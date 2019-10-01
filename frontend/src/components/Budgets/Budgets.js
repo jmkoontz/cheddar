@@ -5,6 +5,7 @@ import axios from 'axios';
 import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
+import FormBody from "./FormBody";
 
 function Budgets() {
 
@@ -144,7 +145,7 @@ function Budgets() {
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
 				name: budgetName,
-				type: "secondary",
+				type: pickedCategory,
 				income: tmpIncome,
 				timeFrame: 100,
 				favorite: false,
@@ -175,12 +176,14 @@ function Budgets() {
 		categoryArr: categoryArr,
 		handleNameChange: handleNameChange,
 		handleCategoryChange: handleCategoryChange,
-		removeCategory:  removeCategory,
+		removeCategory: removeCategory,
 		resetDropDown: resetDropDown,
 		toggleDropDown: toggleDropDown,
 		selectedDrop: selectedDrop,
 		setDropDown: setDropDown,
 		dropdown: dropdown,
+		categoryArr: categoryArr,
+		setCategoryArr: setCategoryArr
 
 	};
 
@@ -204,9 +207,8 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									<DropdownItem onClick={() => setPickedCategory("Student")}>Student</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("No Money")}>No Money</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
@@ -214,25 +216,34 @@ function Budgets() {
 					</Row>
 					{pickedCategory === "Select a Budget Type"
 						?
-						<div/>
-						: pickedCategory === "Student"
-							?
-							<div>
-								<ModalBody>
-									{creationError
-										?
-										<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
-										:
-										<div />
-									}
+						<div />
+						:
+						<div>
+							<ModalBody>
+								{creationError
+									?
+									<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
+									:
+									<div />
+								}
+								{pickedCategory === "Student"
+									?
 									<StudentLoan {...formInfo} />
-									
-								</ModalBody>
-							</div>
-							:
-							<div />
+									: pickedCategory === "Custom"
+										?
+										<FormBody {...formInfo} />
+										:
+										<div>
+											{/* Other categories will go here */}
+										</div>
+								}
+
+
+							</ModalBody>
+						</div>
 					}
 				</ModalBody>
+
 				{pickedCategory === "Select a Budget Type"
 					?
 					<ModalFooter>
