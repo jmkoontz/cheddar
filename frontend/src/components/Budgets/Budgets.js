@@ -226,7 +226,7 @@ function Budgets() {
 									:
 									<div />
 								}
-								{pickedCategory === "Student"
+								{pickedCategory === "Loan Payment"
 									?
 									<StudentLoan {...formInfo} />
 									: pickedCategory === "Custom"
