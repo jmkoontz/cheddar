@@ -6,7 +6,21 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import './Investments.css';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Modal from 'react-bootstrap/Modal';
+import ModalHeader from 'react-bootstrap/ModalHeader';
+import ModalBody from 'react-bootstrap/ModalBody';
+import ModalTitle from 'react-bootstrap/ModalTitle';
+import Form from 'react-bootstrap/Form';
+import FormCheck from 'react-bootstrap/FormCheck';
+
+
+
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 class Investments extends React.Component {
@@ -19,6 +33,13 @@ class Investments extends React.Component {
             companyName: "Microsoft",
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
+            show: false,
+            companies: [
+                "Amazon",
+                "Apple",
+                "Google",
+                "Microsoft",
+            ]
         }
     }
 
@@ -98,7 +119,7 @@ class Investments extends React.Component {
                         return false;
                     }
                     catch(error2){
-                        alert("Sometheing went very wrong API");
+                        alert("Something went very wrong API");
                         return false;
                     }
                 }
@@ -130,6 +151,13 @@ class Investments extends React.Component {
         console.log(param);
     }
 
+    showModal = () => {
+        var show = this.state.show;
+        this.setState({
+            show: !this.state.show,
+        });
+    }
+
     render () {
         const options = {
             title: {
@@ -142,17 +170,46 @@ class Investments extends React.Component {
             data: this.state.data,
         }
 
+        let element = this.state.companies.map(function(object) { // for each element in the Roles array, display it https://stackoverflow.com/questions/37997893/promise-error-objects-are-not-valid-as-a-react-child
+            return (
+                <Form.Check type="checkbox" label={object} />
+            );
+          });
+        let OptionsList = this.state.companies.map((name,index)=>{return (<Form.Check type="checkbox" label={name} />)})
+
         
         return (
-            <div className="BigDivArea">
+            <div className="BigDivArea parent">
                 <h3>Investments!</h3>
-                <div className="cardContainer">
-                    <div className="card">
-                        <CanvasJSChart options = {options}
-                            /* onRef = {ref => this.chart = ref} */
-                        />
-                    </div>
+                <div className="add-button-container">
+                    <Button className="add-button" variant="primary" onClick={this.showModal}>Add</Button>
                 </div>
+                <div className="cardContainer visible-border">
+                    <CanvasJSChart options = {options}
+                        // onRef = {ref => this.chart = ref} 
+                    />
+                </div>
+                <Modal show={this.state.show} onHide={this.showModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                    Modal heading
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <Form>
+                    <Form.Group controlId="formBasicCheckbox">
+                        <Form.Check type="checkbox" label="Check me out" />
+                        {element}
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                        Submit
+                    </Button>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={this.showModal}>Close</Button>
+                </Modal.Footer>
+                </Modal>
                 <DropdownButton id="dropdown-basic-button" onSelect={this.test} title={this.state.companyName}>
                     <Dropdown.Item eventKey="AMZN">Amazon</Dropdown.Item>
                     <Dropdown.Item eventKey="AAPL">Apple</Dropdown.Item>
@@ -165,3 +222,39 @@ class Investments extends React.Component {
 }
 
 export default Investments;
+
+/*
+<Container>
+    <Row>
+        <Col>
+            <CanvasJSChart options = {options}
+                // onRef = {ref => this.chart = ref} 
+            />
+        </Col>
+        <Col>
+            <CanvasJSChart options = {options}
+                // onRef = {ref => this.chart = ref} 
+            />
+        </Col>
+        <Col>
+            <CanvasJSChart options = {options}
+                // onRef = {ref => this.chart = ref} 
+            />
+        </Col>
+    </Row>
+    <Row>
+        <Col>
+            <CanvasJSChart options = {options}
+                // onRef = {ref => this.chart = ref} 
+            />
+        </Col>
+        <Col>
+            <CanvasJSChart options = {options}
+                // onRef = {ref => this.chart = ref} 
+            />
+        </Col>
+        <Col>
+        </Col>
+    </Row>
+</Container>
+*/
