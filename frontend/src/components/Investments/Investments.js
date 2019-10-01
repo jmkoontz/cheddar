@@ -6,7 +6,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
-<<<<<<< HEAD
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import './Investments.css';
@@ -22,9 +21,6 @@ import FormCheck from 'react-bootstrap/FormCheck';
 
 
 
-=======
-import './Investments.css';
->>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 class Investments extends React.Component {
@@ -37,16 +33,14 @@ class Investments extends React.Component {
             companyName: "Microsoft",
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
-<<<<<<< HEAD
             show: false,
-            companies: [
-                "Amazon",
-                "Apple",
-                "Google",
-                "Microsoft",
-            ]
-=======
->>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
+            companies: {
+                "Amazon": "AMZN",
+                "Apple": "AAPL",
+                "Google": "GOOG",
+                "Microsoft": "MSFT",
+            },
+            selectedCompanies: [],
         }
     }
 
@@ -79,10 +73,11 @@ class Investments extends React.Component {
     }
 
     shouldComponentUpdate(nextProps,nextState){
+        
         if(this.state.key != nextState.key){
             return false;
         }
-        else{
+        else if(this.state.key == nextState.key){
             return true;
         }
     }
@@ -126,11 +121,7 @@ class Investments extends React.Component {
                         return false;
                     }
                     catch(error2){
-<<<<<<< HEAD
                         alert("Something went very wrong API");
-=======
-                        alert("Sometheing went very wrong API");
->>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
                         return false;
                     }
                 }
@@ -162,7 +153,6 @@ class Investments extends React.Component {
         console.log(param);
     }
 
-<<<<<<< HEAD
     showModal = () => {
         var show = this.state.show;
         this.setState({
@@ -170,8 +160,14 @@ class Investments extends React.Component {
         });
     }
 
-=======
->>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
+    addSelectedCompany = (company) => {
+        var companies = this.state.selectedCompanies;
+        companies.push(company);
+        this.setState({
+            selectedCompanies: companies,
+        },()=>{alert(this.state.selectedCompanies)});
+    }
+
     render () {
         const options = {
             title: {
@@ -183,14 +179,6 @@ class Investments extends React.Component {
             },
             data: this.state.data,
         }
-
-<<<<<<< HEAD
-        let element = this.state.companies.map(function(object) { // for each element in the Roles array, display it https://stackoverflow.com/questions/37997893/promise-error-objects-are-not-valid-as-a-react-child
-            return (
-                <Form.Check type="checkbox" label={object} />
-            );
-          });
-        let OptionsList = this.state.companies.map((name,index)=>{return (<Form.Check type="checkbox" label={name} />)})
 
         
         return (
@@ -213,10 +201,11 @@ class Investments extends React.Component {
                 <Modal.Body>
                 <Form>
                     <Form.Group controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="Check me out" />
-                        {element}
+                        {Object.keys(this.state.companies).map((name)=>{
+                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
+                        })}
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" onClick={this.showModal}>
                         Submit
                     </Button>
                     </Form>
@@ -225,24 +214,10 @@ class Investments extends React.Component {
                     <Button onClick={this.showModal}>Close</Button>
                 </Modal.Footer>
                 </Modal>
-=======
-        
-        return (
-            <div className="BigDivArea">
-                <h3>Investments!</h3>
-                <div className="cardContainer">
-                    <div className="card">
-                        <CanvasJSChart options = {options}
-                            /* onRef = {ref => this.chart = ref} */
-                        />
-                    </div>
-                </div>
->>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
                 <DropdownButton id="dropdown-basic-button" onSelect={this.test} title={this.state.companyName}>
-                    <Dropdown.Item eventKey="AMZN">Amazon</Dropdown.Item>
-                    <Dropdown.Item eventKey="AAPL">Apple</Dropdown.Item>
-                    <Dropdown.Item eventKey="MSFT">Microsoft</Dropdown.Item>
-                    <Dropdown.Item eventKey="GOOG">Google</Dropdown.Item>
+                {this.state.selectedCompanies.map((name)=>{
+                    return (<Dropdown.Item eventKey={this.state.companies[name]}>{name}</Dropdown.Item>)
+                })}
                 </DropdownButton>
             </div>
         );
@@ -285,4 +260,31 @@ export default Investments;
         </Col>
     </Row>
 </Container>
+
+
+
+
+
+<Modal show={this.state.show} onHide={this.showModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                    Modal heading
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <Form>
+                    <Form.Group controlId="formBasicCheckbox">
+                        {Object.keys(this.state.companies).map((name)=>{
+                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
+                        })}
+                    </Form.Group>
+                    <Button variant="primary" type="submit" onClick={this.showModal}>
+                        Submit
+                    </Button>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={this.showModal}>Close</Button>
+                </Modal.Footer>
+                </Modal>
 */
