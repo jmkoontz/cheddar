@@ -1,9 +1,9 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget,
-    deleteBudget, addBudgetCategory, deleteBudgetCategory, addTransactionToBudget,
-    removeTransactionFromBudget, getTransactionsInBudgetCategory,
+import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget, editBudget,
+    deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
+    addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
     getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
     getTransactionsInBudgetAndDateRange} from '../models/budgetDAO';
 
@@ -22,6 +22,25 @@ export default (app) => {
     let data;
     try {
       data = await createBudget(req.params.uid, budget);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // edit budget
+  app.put('/Cheddar/Budgets/:uid/:budgetName', async (req, res) => {
+    let changes = {
+      name: req.query.name,
+      type: req.query.type,
+      income: req.query.income,
+      timeFrame: req.query.timeFrame
+    };
+
+    let data;
+    try {
+      data = await editBudget(req.params.uid, req.params.budgetName, changes);
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -52,6 +71,23 @@ export default (app) => {
     let data;
     try {
       data = await addBudgetCategory(req.params.uid, req.params.budgetName, category);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // edit budget category
+  app.put('/Cheddar/Budgets/Budget/Categories/:uid/:budgetName/:categoryName', async (req, res) => {
+    let changes = {
+      name: req.query.name,
+      amount: req.query.amount
+    };
+
+    let data;
+    try {
+      data = await editBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName, changes);
     } catch (err) {
       data = {error: parseError(err)};
     }
