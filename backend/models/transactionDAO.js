@@ -77,3 +77,68 @@ export function deleteTransaction(uid, transactionId) {
       return Promise.reject(err);
     });
 }
+
+export function getAllTransactions(uid) {
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'transactions': 1
+  };
+
+  return userModel.findOne(
+    {'_id': uid},
+    returnClause)
+    .then((user) => {
+      if (user)
+        return Promise.resolve(user.transactions.sort((t1, t2) => (t1.date < t2.date) ? 1 : -1));
+      else
+        return Promise.reject('UserError: User not found');
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function getTransactions(uid, transactionIdList) {
+  let transactions = [];
+  try {
+    transactions = await getAllTransactions(uid);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let matches = [];
+  transactionIdList = JSON.stringify(transactionIdList);
+  for (let i in transactions) {
+    if (transactionIdList.includes(transactions[i]._id))
+      matches.push(transactions[i])
+  }
+
+  return Promise.resolve(matches);
+}
+
+export async function getTransactionsInDateRange(uid, dateRange) {
+  if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
+    return Promise.reject('UserError: No start date specified');
+
+  let transactions = [];
+  try {
+    transactions = await getAllTransactions(uid);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let currentDate = new Date();
+  if (!dateRange.endYear)
+    dateRange.endYear = currentDate.getFullYear();
+  if (!dateRange.endMonth)
+    dateRange.endMonth = currentDate.getMonth();
+  if (!dateRange.endDay)
+    dateRange.endDay = currentDate.getDate() + 1;
+
+  let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
+  let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
+
+  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+
+  return Promise.resolve(transactions);
+}
