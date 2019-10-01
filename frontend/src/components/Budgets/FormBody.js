@@ -33,6 +33,7 @@ function FormBody(props) {
                   id={index}
                   placeholder="Amount"
                   required="required"
+                  value={item.amount}
                 />
               </Col>
               <Col sm={2}>

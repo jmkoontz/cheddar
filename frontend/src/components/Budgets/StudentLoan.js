@@ -10,13 +10,21 @@ function StudentLoan(props) {
   const [dataEnter, setDataEnter] = useState(false); // Boolean to determine if user entered all their data
   const [amount, setAmount] = useState(); // Variable to hold the amount
   const [timeframe, setTimeframe] = useState(); // Variable to hold the timeframe
-  const [debt, setDebt] = useState(); // The amount of debt a user should pay a month
   
   /**
    * Function to calculate how much debt to pay a month
    */
   const calculatePayment = () => {
+    let monthlyPayment = amount / timeframe;
+    
+    // Make a tmp object to store the calculated amount
+    let tmpObj = {
+      name: "Debt",
+      amount: monthlyPayment
+    }
 
+    props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
+    setDataEnter(true); // Tell the page to now show the rest of the form
   }
 
   /**
