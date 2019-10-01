@@ -35,12 +35,13 @@ class Investments extends React.Component {
             key: keys.AlphaVantageAPIKey,
             show: false,
             companies: {
-                "Amazon": "AMZN",
-                "Apple": "AAPL",
-                "Google": "GOOG",
-                "Microsoft": "MSFT",
+                "Amazon": {"id":"AMZN","tracked":false},
+                "Apple": {"id":"AAPL","tracked":false},
+                "Google": {"id":"GOOG","tracked":false},
+                "Microsoft": {"id":"MSFT","tracked":false},
             },
             selectedCompanies: [],
+            showInfo: false,
         }
     }
 
@@ -90,7 +91,7 @@ class Investments extends React.Component {
                     var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
                     var points = [];
                     var i = 0;
-                    for(i=0;i<31;i++){
+                    for(i=0;i<52;i++){
                         points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
                     }
                     var dataArr = []
@@ -131,22 +132,22 @@ class Investments extends React.Component {
     test = (param) => {
         var name = "";
         switch(param){
-            case "MSFT":
-                name = "Microsoft";
+            case "Microsoft":
+                name = "MSFT";
                 break;
-            case "AAPL":
-                name = "Apple";
+            case "Apple":
+                name = "AAPL";
                 break;
-            case "AMZN":
-                name = "Amazon";
+            case "Amazon":
+                name = "AMZN";
                 break;
-            case "GOOG":
-                name = "Google";
+            case "Google":
+                name = "GOOG";
                 break;
         }
         this.setState({
-            company: param,
-            companyName: name,
+            company: name,
+            companyName: param,
         },() => {
             this.makeApiRequest();
         });
@@ -160,12 +161,40 @@ class Investments extends React.Component {
         });
     }
 
-    addSelectedCompany = (company) => {
-        var companies = this.state.selectedCompanies;
-        companies.push(company);
+    showInfoModal = () => {
         this.setState({
-            selectedCompanies: companies,
-        },()=>{alert(this.state.selectedCompanies)});
+            showInfo: !this.state.showInfo,
+        });
+    }
+
+    addSelectedCompany = (company) => {
+        var originalCompanies = this.state.companies;
+        var companies = this.state.selectedCompanies;
+        
+        if(originalCompanies[company]["tracked"] == true){
+            originalCompanies[company]["tracked"] = false;
+            if(companies.includes(company)){
+                companies.splice(companies.indexOf(company),1);
+            }
+            this.setState({
+                companies: originalCompanies,
+                selectedCompanies: companies,
+            });
+        }
+        else{
+            originalCompanies[company]["tracked"] = true;
+            if(!companies.includes(company)){
+                companies.push(company);
+            }
+            this.setState({
+                selectedCompanies: companies,
+                companies: originalCompanies,
+            },()=>{alert(this.state.selectedCompanies)});
+        }
+        
+        
+        
+        
     }
 
     render () {
@@ -195,14 +224,18 @@ class Investments extends React.Component {
                 <Modal show={this.state.show} onHide={this.showModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                    Modal heading
+                    Select Companies
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                 <Form>
                     <Form.Group controlId="formBasicCheckbox">
                         {Object.keys(this.state.companies).map((name)=>{
-                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
+                            var checkedd = false;
+                            if(this.state.companies[name]["tracked"] == true){
+                                checkedd = true;
+                            }
+                            return (<Form.Check type="checkbox" label={name} checked={checkedd} onClick={() => this.addSelectedCompany(name)}/>)
                         })}
                     </Form.Group>
                     <Button variant="primary" onClick={this.showModal}>
@@ -210,15 +243,35 @@ class Investments extends React.Component {
                     </Button>
                     </Form>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.showModal}>Close</Button>
-                </Modal.Footer>
+                
                 </Modal>
-                <DropdownButton id="dropdown-basic-button" onSelect={this.test} title={this.state.companyName}>
+
+                <Modal show={this.state.showInfo} onHide={this.showInfoModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                    Enter Investment Information for {this.state.companyName}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <Form>
+                    <Form.Group controlId="formBasic">
+                        <Form.Label>Invested Amount</Form.Label>
+                        <Form.Control type="number"/>
+                        <Form.Label>Date Invested</Form.Label>
+                        <Form.Control type="date"/>
+                    </Form.Group>
+                    <Button variant="primary" onClick={this.showInfoModal}>
+                        Submit
+                    </Button>
+                    </Form>
+                </Modal.Body>
+                </Modal>
+                <DropdownButton id="dropdown-basic-button" title={this.state.companyName}>
                 {this.state.selectedCompanies.map((name)=>{
-                    return (<Dropdown.Item eventKey={this.state.companies[name]}>{name}</Dropdown.Item>)
+                    return (<Dropdown.Item eventKey={this.state.companies[name]} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
                 })}
                 </DropdownButton>
+                <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
             </div>
         );
     }
