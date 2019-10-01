@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import axios from 'axios';
 import '../../css/Budgets.css';
@@ -173,7 +173,6 @@ function Budgets() {
 
 	const formInfo = {
 		createBudget: createBudget,
-		categoryArr: categoryArr,
 		handleNameChange: handleNameChange,
 		handleCategoryChange: handleCategoryChange,
 		removeCategory: removeCategory,
@@ -207,6 +206,7 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
+									{/*TODO: clean this up and store it in a state variable*/}
 									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
