@@ -6,6 +6,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
+<<<<<<< HEAD
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import './Investments.css';
@@ -21,6 +22,9 @@ import FormCheck from 'react-bootstrap/FormCheck';
 
 
 
+=======
+import './Investments.css';
+>>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 class Investments extends React.Component {
@@ -33,6 +37,7 @@ class Investments extends React.Component {
             companyName: "Microsoft",
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
+<<<<<<< HEAD
             show: false,
             companies: [
                 "Amazon",
@@ -40,6 +45,8 @@ class Investments extends React.Component {
                 "Google",
                 "Microsoft",
             ]
+=======
+>>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
         }
     }
 
@@ -119,7 +126,11 @@ class Investments extends React.Component {
                         return false;
                     }
                     catch(error2){
+<<<<<<< HEAD
                         alert("Something went very wrong API");
+=======
+                        alert("Sometheing went very wrong API");
+>>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
                         return false;
                     }
                 }
@@ -151,6 +162,7 @@ class Investments extends React.Component {
         console.log(param);
     }
 
+<<<<<<< HEAD
     showModal = () => {
         var show = this.state.show;
         this.setState({
@@ -158,6 +170,8 @@ class Investments extends React.Component {
         });
     }
 
+=======
+>>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
     render () {
         const options = {
             title: {
@@ -170,6 +184,7 @@ class Investments extends React.Component {
             data: this.state.data,
         }
 
+<<<<<<< HEAD
         let element = this.state.companies.map(function(object) { // for each element in the Roles array, display it https://stackoverflow.com/questions/37997893/promise-error-objects-are-not-valid-as-a-react-child
             return (
                 <Form.Check type="checkbox" label={object} />
@@ -210,6 +225,19 @@ class Investments extends React.Component {
                     <Button onClick={this.showModal}>Close</Button>
                 </Modal.Footer>
                 </Modal>
+=======
+        
+        return (
+            <div className="BigDivArea">
+                <h3>Investments!</h3>
+                <div className="cardContainer">
+                    <div className="card">
+                        <CanvasJSChart options = {options}
+                            /* onRef = {ref => this.chart = ref} */
+                        />
+                    </div>
+                </div>
+>>>>>>> c4af8e5c25b6be9f525ebf6d45e9e5a281a10f1d
                 <DropdownButton id="dropdown-basic-button" onSelect={this.test} title={this.state.companyName}>
                     <Dropdown.Item eventKey="AMZN">Amazon</Dropdown.Item>
                     <Dropdown.Item eventKey="AAPL">Apple</Dropdown.Item>
