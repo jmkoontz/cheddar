@@ -10,10 +10,13 @@ export default (app) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
-      type: req.body.type,
-      netWorth: req.body.netWorth,
-      budgets: req.body.budgets,
-      transactions: req.body.transactions
+      // hard-coded values for now
+      type: 'general',
+      netWorth: 0,
+      budgets: [],
+      transactions: [],
+      savings: [],
+      debts: []
     };
 
     let data;
@@ -42,7 +45,8 @@ export default (app) => {
   app.get('/Cheddar/:uid', async (req, res) => {
     let data;
     try {
-      data = await getUser(req.params.uid);
+      console.log('it worked');
+      data = 'Hello there';
     } catch (err) {
       data = {error: parseError(err)};
     }

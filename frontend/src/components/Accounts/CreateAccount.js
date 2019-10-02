@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { fireauth } from '../../firebase.js';
 import { Form, Input, Button, Alert, Row, Col } from 'reactstrap';
 //import {Redirect} from 'react-router-dom';
+import axios from 'axios';
 import history from '../../history';
 import './SignIn.css'
 
@@ -12,7 +13,8 @@ class CreateAccount extends Component {
     super(props);
 
     this.state = {
-      username: null,
+      firstName: null,
+      lastName: null,
       email: null,
       confirm_password: null,
 
@@ -24,13 +26,17 @@ class CreateAccount extends Component {
 
   onFormSubmit = (ev) => {
     ev.preventDefault();
-    let username = ev.target.username.value;
+    let firstName = ev.target.firstName.value;
+    let lastName = ev.target.lastName.value;
     let email = ev.target.email.value;
     let password = ev.target.password.value;
     let confirm_password = ev.target.confirm_password.value;
 
-    if (username === '') {
-      this.setError('Please enter a valid username.');
+    if (firstName === '') {
+      this.setError('Please enter a valid first name.');
+      return;
+    } if (lastName === '') {
+      this.setError('Please enter a valid last name.');
       return;
     } else if (email === ''){
       this.setError('Please enter a valid email.');
@@ -47,8 +53,9 @@ class CreateAccount extends Component {
     }
 
     this.setState({
-      username: username,
-      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      email: email
     });
 
     this.createAccount(email, password);
@@ -63,19 +70,24 @@ class CreateAccount extends Component {
     });
   };
 
-  addUserInfo(user){
+  addUserInfo(userData){
     let self = this;
-    //let docRef = firestore.collection("users").doc(user.uid);
-    /*docRef.set({
-      username: self.state.username,
-      email: self.state.email,
-      connections: [],
-      favorites: [],
-      watchlist: [],
-      reviews: [],
-    }).catch(function(error) {
-      console.log(error);
-    });*/
+    axios.post('http://localhost:8080/Cheddar/CreateAccount', {
+      _id: userData.user.uid,
+      firstName: self.state.firstName,
+      lastName: self.state.lastName,
+      email: self.state.email
+    }).then(() => {
+      window.location.reload();
+    }).catch((error) => {
+      if (error.response && error.response.data) {
+        console.log(error.response.data.error);
+        fireauth.currentUser.delete();  // delete invalid user from Firebase
+        sessionStorage.clear(); // remove saved UID
+      } else {
+        console.log(error);
+      }
+    });
 
     self.setState({
       account_created: true,
@@ -115,9 +127,18 @@ class CreateAccount extends Component {
 
                 <Input
                   type='text'
-                  id='username'
+                  id='firstName'
                   bsSize='lg'
-                  placeholder='Username'
+                  placeholder='First Name'
+                  style={{border: '1px solid #4682B4'}}/>
+
+                <div style={{height: '1em'}}/>
+
+                <Input
+                  type='text'
+                  id='lastName'
+                  bsSize='lg'
+                  placeholder='Last Name'
                   style={{border: '1px solid #4682B4'}}/>
 
                 <div style={{height: '1em'}}/>

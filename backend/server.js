@@ -6,6 +6,7 @@ import mainController from './controllers/mainController';
 import budgetController from './controllers/budgetController';
 import transactionController from './controllers/transactionController';
 import calendarController from './controllers/calendarController';
+import savingsController from './controllers/savingsController';
 
 const app = express();
 
@@ -24,6 +25,7 @@ mainController(app);
 budgetController(app);
 transactionController(app);
 calendarController(app);
+savingsController(app);
 
 // listen to port
 let port = process.env.PORT;

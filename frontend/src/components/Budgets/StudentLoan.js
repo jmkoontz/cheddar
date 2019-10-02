@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
+import { Button, Label, Input } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
-import axios from 'axios';
 import '../../css/Budgets.css';
 import FormBody from "./FormBody";
 
@@ -19,8 +18,9 @@ function StudentLoan(props) {
 
     // Make a tmp object to store the calculated amount
     let tmpObj = {
-      name: "Debt",
-      amount: monthlyPayment
+      name: "Loan",
+      amount: monthlyPayment,
+      preset: true
     }
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
