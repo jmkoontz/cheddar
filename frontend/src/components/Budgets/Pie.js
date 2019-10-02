@@ -58,7 +58,7 @@ const Pie = props => {
         .attr("transform", d => `translate(${createArc.centroid(d)})`)
         .style("fill", "black")
         .style("font-size", 10)
-        .text(d => {return d.data.name + ": " + d.value;});
+        .text(d => { return d.data.name + ": " + d.value; });
 
       cache.current = props.data;
     },
