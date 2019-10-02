@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import { Button } from 'reactstrap';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import RealSpending from './RealSpending';
 import Pie from "./Pie";
 import '../../css/Budgets.css';
 
@@ -10,7 +11,7 @@ function BudgetTabs(props) {
 		() => {
 		
 		},
-		[props.budgetList]
+		[props]
 	);
 
 	return (
@@ -62,15 +63,9 @@ function BudgetTabs(props) {
 							</Col>
 							{/* Call the real spending component*/}
 							<Col sm={5}>
-								<span className="label" id="title">Actual Spending</span>
+								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-									<Pie
-										data={item.budgetCategories}
-										width={500}
-										height={500}
-										innerRadius={150}
-										outerRadius={250}
-									/>
+									<RealSpending userID={props.userID}/>
 								</div>
 							</Col>
 							<Col sm={1} />
