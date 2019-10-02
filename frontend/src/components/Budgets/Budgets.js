@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import axios from 'axios';
 import '../../css/Budgets.css';
@@ -12,7 +12,7 @@ function Budgets() {
 	// State to manage budgets loading
 	const [loading, setLoading] = useState(true);
 	// User data
-	const [userID, setUID] = useState("773202");
+	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	const [budgetList, setBudgetList] = useState([""]); // TODO this will contain the list of budgets a user has
 	// Creation modal states
 	const [modal, setModal] = useState(false); // Triggers the modal opening and closing
@@ -20,13 +20,15 @@ function Budgets() {
 	const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
 	const [categoryArr, setCategoryArr] = useState([]);
 	// Budget type drop down
+	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [budgetType, setBudgetType] = useState(); // Currently selected budget type
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
-	// Form states
-	const [budgetName, setBudgetName] = useState("");
+	// Page states
+	const [newData, setNewData] = useState(false); // Toggles prop changes
 	// Tab controlls
 	const [tab, setTab] = useState("0"); // Holds active tab
+	const [curBudget, setCurBudget] = useState(); // Currently shown budget
 	// Budget creation error message
 	const [errMsg, setErrMsg] = useState(""); // Error message
 	const [creationError, setCreationAlert] = useState(false); // Toggles error alert
@@ -64,7 +66,6 @@ function Budgets() {
 				arr[x] = newObj;
 			}
 		}
-		console.log(arr);
 		setCategoryArr(arr);
 	}
 
@@ -89,9 +90,33 @@ function Budgets() {
 		setDropDown("Select a Category");
 	}
 
+	/**
+	 * Helper function for failed budget creation
+	 */
 	const toggleAlert = () => {
 		setErrMsg("");
 		setCreationAlert(false);
+	}
+
+	/**
+	 * Helper to set the next budget and tab
+	 * @param {String: contains the tab index} newTab 
+	 */
+	const setNewTab = (newTab) => {
+		//console.log(newTab);
+		setTab(newTab);
+		//console.log(budgetList[parseInt(newTab)])
+		setCurBudget(budgetList[parseInt(newTab)]);
+	}
+
+	/**
+	 * Helper to set the first budget tab to open
+	 * @param {Object: a budget} budg 
+	 * @param {String: tab to be set} x 
+	 */
+	const setFirstBudget = (budg, x) => {
+		setTab(x);
+		setCurBudget(budg);
 	}
 
 	// Server calls below here
@@ -106,12 +131,18 @@ function Budgets() {
 				setBudgetList(response.data);
 				setLoading(false);
 
+				let flag = false;
 				for (let x = 0; x < response.data.length; x++) {
 					if (response.data[x].favorite === true) {
 						//setBudget(response.data.budgets[x]);
-						setTab(x.toString());
+						flag = true;
+						setFirstBudget(response.data[x], x.toString());
 						break;
 					}
+				}
+
+				if (!flag) {
+					setFirstBudget(response.data[0], "0");
 				}
 			})
 			.catch((error) => {
@@ -136,11 +167,16 @@ function Budgets() {
 
 		// TODO remove hard coded values here
 		let tmpIncome;
+		let index = 0;
 		for (let x = 0; x < categoryArr.length; x++) {
 			if (categoryArr[x].name === "Income") {
+				index = x;
 				tmpIncome = categoryArr[x].amount;
 			}
 		}
+		//console.log(index);
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);;
+		//console.log(removedIncomeArr)
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
@@ -149,7 +185,7 @@ function Budgets() {
 				income: tmpIncome,
 				timeFrame: 100,
 				favorite: false,
-				budgetCategories: categoryArr
+				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
 				console.log(response);
@@ -173,7 +209,6 @@ function Budgets() {
 
 	const formInfo = {
 		createBudget: createBudget,
-		categoryArr: categoryArr,
 		handleNameChange: handleNameChange,
 		handleCategoryChange: handleCategoryChange,
 		removeCategory: removeCategory,
@@ -183,7 +218,15 @@ function Budgets() {
 		setDropDown: setDropDown,
 		dropdown: dropdown,
 		categoryArr: categoryArr,
-		setCategoryArr: setCategoryArr
+		setCategoryArr: setCategoryArr,
+		tab: tab,
+		setNewTab: setNewTab,
+		curBudget: curBudget,
+		userID: userID,
+		budgetList: budgetList,
+		setModal: setModal,
+		newData: newData,
+		setNewData: setNewData
 
 	};
 
@@ -193,7 +236,7 @@ function Budgets() {
 				?
 				<div />
 				:
-				<BudgetTabs userID={userID} budgetList={budgetList} setTab={setTab} tab={tab} setModal={setModal} />
+				<BudgetTabs {...formInfo} />
 			}
 
 			<Modal isOpen={modal} toggle={() => setModal(false)}>
@@ -207,6 +250,7 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
+									{/*TODO: clean this up and store it in a state variable*/}
 									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>

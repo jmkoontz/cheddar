@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Button } from 'reactstrap';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import RealSpending from './RealSpending';
@@ -9,14 +9,14 @@ function BudgetTabs(props) {
 
 	useEffect(
 		() => {
-		
+
 		},
 		[props]
 	);
 
 	return (
 		<div>
-			<Row >
+			<Row className="padTop">
 				<Col sm={3} />
 				<Col sm={6}>
 					<h3 className={"addSpace"}>Select a Budget</h3>
@@ -30,7 +30,7 @@ function BudgetTabs(props) {
 						{props.budgetList.map((item, index) =>
 							<div key={index}>
 								<NavItem >
-									<NavLink onClick={() => props.setTab(index.toString())}>
+									<NavLink onClick={() => props.setNewTab(index.toString())}>
 										{item.name}
 									</NavLink>
 								</NavItem>
@@ -43,7 +43,7 @@ function BudgetTabs(props) {
 				</Col>
 				<Col sm={3} />
 			</Row>
-			<TabContent activeTab={props.tab}>
+			<TabContent className="padTop" activeTab={props.tab}>
 
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
@@ -51,7 +51,7 @@ function BudgetTabs(props) {
 							<Col sm={1} />
 							<Col sm={5}>
 								<span className="label" id="title">{item.name}</span>
-								<div className="addSpace">
+								<div className="padTop">
 									<Pie
 										data={item.budgetCategories}
 										width={500}
@@ -61,11 +61,16 @@ function BudgetTabs(props) {
 									/>
 								</div>
 							</Col>
-							{/* Call the real spending component*/}
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-									<RealSpending userID={props.userID}/>
+									
+									{index === parseInt(props.tab) && props.curBudget
+										?
+										<RealSpending {...props} />
+										:
+										<p>Loading...</p>
+									}
 								</div>
 							</Col>
 							<Col sm={1} />
@@ -73,6 +78,7 @@ function BudgetTabs(props) {
 					</TabPane>
 				)}
 			</TabContent>
+
 		</div>
 	);
 }

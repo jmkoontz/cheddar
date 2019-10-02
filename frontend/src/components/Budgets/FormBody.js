@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
+import React, { useEffect } from "react";
+import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import axios from 'axios';
 import '../../css/Budgets.css';
-import BudgetTabs from "./BudgetTabs";
 
 function FormBody(props) {
 
-	useEffect(
-		() => {
-			
-		},
-		[props]
+  useEffect(
+    () => {
+
+    },
+    [props]
   );
-  
+
   return (
     <div>
       <Form onSubmit={props.createBudget}>
@@ -27,14 +25,25 @@ function FormBody(props) {
             <Label for={"" + index}>{item.name}</Label>
             <Row>
               <Col sm={10}>
-                <Input
-                  onChange={props.handleCategoryChange}
-                  type="text"
-                  id={index}
-                  placeholder="Amount"
-                  required="required"
-                  value={item.amount}
-                />
+                {item.preset === true
+                  ?
+                  <Input
+                    onChange={props.handleCategoryChange}
+                    type="text"
+                    id={index}
+                    placeholder="Amount"
+                    required="required"
+                    value={item.amount}
+                  />
+                  :
+                  <Input
+                    onChange={props.handleCategoryChange}
+                    type="text"
+                    id={index}
+                    placeholder="Amount"
+                    required="required"
+                  />
+                }
               </Col>
               <Col sm={2}>
                 <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
