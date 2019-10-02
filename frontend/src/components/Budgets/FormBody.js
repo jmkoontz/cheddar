@@ -5,13 +5,13 @@ import '../../css/Budgets.css';
 
 function FormBody(props) {
 
-	useEffect(
-		() => {
-			
-		},
-		[props]
+  useEffect(
+    () => {
+
+    },
+    [props]
   );
-  
+
   return (
     <div>
       <Form onSubmit={props.createBudget}>
@@ -25,14 +25,25 @@ function FormBody(props) {
             <Label for={"" + index}>{item.name}</Label>
             <Row>
               <Col sm={10}>
-                <Input
-                  onChange={props.handleCategoryChange}
-                  type="text"
-                  id={index}
-                  placeholder="Amount"
-                  required="required"
-                  value={item.amount}
-                />
+                {item.preset === true
+                  ?
+                  <Input
+                    onChange={props.handleCategoryChange}
+                    type="text"
+                    id={index}
+                    placeholder="Amount"
+                    required="required"
+                    value={item.amount}
+                  />
+                  :
+                  <Input
+                    onChange={props.handleCategoryChange}
+                    type="text"
+                    id={index}
+                    placeholder="Amount"
+                    required="required"
+                  />
+                }
               </Col>
               <Col sm={2}>
                 <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>

@@ -31,14 +31,12 @@ function TransactionForm(props) {
   }
 
   const createTransaction = () => {
-    // TODO remove hard coded date
-    // Also maybe don't force getTransaction call
-    let tmpObj = {
-      name: transactionName,
-      amount: transactionAmount,
-      date: date,
-      category: transactionCate
-    };
+    // let tmpObj = {
+    //   name: transactionName,
+    //   amount: transactionAmount,
+    //   date: date,
+    //   category: transactionCate
+    // };
 
     axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
       {
