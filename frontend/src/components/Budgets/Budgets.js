@@ -25,7 +25,7 @@ function Budgets() {
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	// Page states
-
+	const [newData, setNewData] = useState(false); // Toggles prop changes
 	// Tab controlls
 	const [tab, setTab] = useState("0"); // Holds active tab
 	const [curBudget, setCurBudget] = useState(); // Currently shown budget
@@ -214,8 +214,9 @@ function Budgets() {
 		curBudget: curBudget,
 		userID: userID,
 		budgetList: budgetList,
-		setModal: setModal
-
+		setModal: setModal,
+		newData: newData,
+		setNewData: setNewData
 
 	};
 
