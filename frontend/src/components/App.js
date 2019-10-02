@@ -8,6 +8,8 @@ import Saving from './Saving/Saving';
 import Investments from './Investments/Investments';
 import Debts from './Debts/Debts';
 import Transactions from './Transactions/Transactions';
+import SignIn from './Accounts/SignIn';
+import CreateAccount from './Accounts/CreateAccount';
 import './App.css';
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
         <Route path="/investments" render={() => <Investments />} />
         <Route path="/debts" render={() => <Debts />} />
         <Route path="/transactions" render={() => <Transactions />} />
+        <Route path="/sign-in" render={() => <SignIn />} />
+        <Route path="/create-account" render={() => <CreateAccount />} />
         <Route path="/" render={() => <Redirect to="/" />} />
       </Switch>
     </div>
