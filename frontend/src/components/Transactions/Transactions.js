@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 // import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
-import { Row, Col, Card, CardHeader, CardFooter, CardBody, CardTitle, CardText } from 'reactstrap';
+import { Button, Row, Col, Card, CardHeader, CardFooter, CardBody, CardTitle, CardText } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import axios from 'axios';
 import '../../css/Budgets.css';
 
 function Transactions(props) {
 
-	const [Transactions, setTransactions] = useState(); // Transcations between two dates
+	const [userID, setUID] = useState(sessionStorage.getItem('user'));
+	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState();
 	const [startDate, setStartDate] = useState();
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
@@ -31,12 +32,12 @@ function Transactions(props) {
 		xAxis: {
 			type: 'datetime',
 			dateTimeLabelFormats: {
-				day: '%e of %b'
+				day: '%b %e'
 			}
 		},
 		series: [{
 			data: [100, 2, 3],
-			pointStart: Date.UTC(2019, 9, 1),
+			pointStart: startDate,
 			pointInterval: 24 * 3600 * 1000 // one day
 		}],
 		plotOptions: {
@@ -51,8 +52,29 @@ function Transactions(props) {
 	}
 
 	const [chartData, setChartData] = useState(options); // Obj containing chart info
-	
 
+	/**
+	 * Helper function to calculate the difference between two dates
+	 */
+	const calcNumberDays = (end, start) => {
+		return ((endDate - startDate) / (24 * 3600 * 1000)) + 1;
+	}
+
+	/**
+	 * Sorts all the transactions by date and stores them in their own
+	 */
+	const sortByDay = () => {
+		let numDays = calcNumberDays(endDate, startDate);
+		let daysArray = [];
+
+		for (let x = 0; x < numDays; x++) {
+			daysArray.push(0);
+		}
+
+		// for () {
+
+		// }
+	}
 
 	/**
 	 * Server call to get all transactions in a given time frame
@@ -64,21 +86,24 @@ function Transactions(props) {
 		//   date: date,
 		//   category: transactionCate
 		// };
+		console.log();
+		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
+		let queryTwo = `&endYear=${startDate.getFullYear()}&endMonth=${startDate.getMonth()}&endDay=${startDate.getDay()}`;
+		let query = queryOne + queryTwo;
 
-		// axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
-		//   {
+		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
+			.then(function (response) {
+				// handle success
+				console.log("Success");
+				console.log(response);
 
-		//   }).then(function (response) {
-		//     // handle success
-		//     console.log("Success");
-
-		//     // Update the transaction state
+				// Update the transaction state
 
 
-		//   })
-		//   .catch((error) => {
-		//     console.log("Transaction call did not work");
-		//   });
+			})
+			.catch((error) => {
+				console.log("Transaction call did not work");
+			});
 	}
 
 	useEffect(
@@ -94,6 +119,19 @@ function Transactions(props) {
 			<Row>
 				<Col sm={4} />
 				<Col sm={4}>
+
+				</Col>
+				<Col sm={4} />
+			</Row>
+			<Row>
+				<Col sm={2} />
+				<Col sm={6}>
+					<HighchartsReact
+						highcharts={Highcharts}
+						options={chartData}
+					/>
+				</Col>
+				<Col sm={4} >
 					<Card>
 						<CardHeader>
 							Enter Date Range
@@ -101,6 +139,7 @@ function Transactions(props) {
 						<CardBody>
 							<Row>
 								<Col>
+									<p>Start Date</p>
 									<DatePicker
 										id="date"
 										selected={startDate}
@@ -112,6 +151,7 @@ function Transactions(props) {
 									<p>to</p>
 								</Col>
 								<Col >
+									<p>End Date</p>
 									<DatePicker
 										id="date"
 										selected={endDate}
@@ -119,21 +159,15 @@ function Transactions(props) {
 										maxDate={new Date()}
 									/>
 								</Col>
+								<Col sm={12}>
+									<Button onClick={getTransactions}>
+
+									</Button>
+								</Col>
 							</Row>
 						</CardBody>
 					</Card>
 				</Col>
-				<Col sm={4} />
-			</Row>
-			<Row>
-				<Col sm={3} />
-				<Col sm={6}>
-					<HighchartsReact
-						highcharts={Highcharts}
-						options={chartData}
-					/>
-				</Col>
-				<Col sm={3} />
 			</Row>
 
 		</div>
