@@ -1,6 +1,7 @@
 import React from "react";
 import { Calendar, momentLocalizer  } from 'react-big-calendar';
 import moment from 'moment';
+import axios from 'axios';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Calendar.css';
@@ -14,10 +15,20 @@ class EventCalendar extends React.Component {
 
     this.state = {
       selectedEvent: null,
-      isCreatingEvent: false
+      isCreatingEvent: false,
+      events: []
     };
 
     this.eventModal = React.createRef();
+    this.displayEvents();
+  }
+
+  displayEvents () {
+    axios.get('http://localhost:8080/Cheddar/Calendar/test').then((resp) => {
+      this.setState({
+        events: resp.data
+      });
+    });
   }
 
   onSelectEvent = (event) => {
@@ -53,19 +64,7 @@ class EventCalendar extends React.Component {
         <Calendar
           localizer={localizer}
           selectable
-          events={[
-            {
-              title: "rent due",
-              start: new Date,
-              end: new Date,
-              allDay: true
-            }, {
-              title: "rent due 2",
-              start: new Date,
-              end: new Date,
-              allDay: true
-            }
-          ]}
+          events={this.state.events}
           startAccessor="start"
           endAccessor="end"
           onSelectEvent={this.onSelectEvent}
