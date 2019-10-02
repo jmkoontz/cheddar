@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Button } from 'reactstrap';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import RealSpending from './RealSpending';
@@ -9,7 +9,7 @@ function BudgetTabs(props) {
 
 	useEffect(
 		() => {
-		
+
 		},
 		[props]
 	);
@@ -30,7 +30,7 @@ function BudgetTabs(props) {
 						{props.budgetList.map((item, index) =>
 							<div key={index}>
 								<NavItem >
-									<NavLink onClick={() => props.setTab(index.toString())}>
+									<NavLink onClick={() => props.setNewTab(index.toString())}>
 										{item.name}
 									</NavLink>
 								</NavItem>
@@ -65,7 +65,12 @@ function BudgetTabs(props) {
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-									<RealSpending userID={props.userID}/>
+									{index === parseInt(props.tab) && props.curBudget
+										?
+										<RealSpending {...props} />
+										:
+										<p>Loading...</p>
+									}
 								</div>
 							</Col>
 							<Col sm={1} />
