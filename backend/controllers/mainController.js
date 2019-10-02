@@ -14,7 +14,9 @@ export default (app) => {
       type: 'general',
       netWorth: 0,
       budgets: [],
-      transactions: []
+      transactions: [],
+      savings: [],
+      debts: []
     };
 
     let data;
