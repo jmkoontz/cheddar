@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { fireauth } from '../../firebase.js';
+import firebase from '../../firebase.js';
 import { NavLink, Redirect } from 'react-router-dom';
 import { Form, Input, Button, Alert, Row, Col} from 'reactstrap';
 import history from '../../history';
@@ -11,7 +11,6 @@ class SignIn extends Component {
     super(props);
 
     this.state = {
-      signed_in: false,
       error_message: '',
       error_visible: false,
     };
@@ -24,16 +23,11 @@ class SignIn extends Component {
     let email = ev.target.email.value;
     let password = ev.target.password.value;
 
-    fireauth.signInWithEmailAndPassword(email, password).catch(function(err) {
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(err) {
       // Handle errors
       self.setState({
         error_message: err.message,
         error_visible: true,
-      });
-
-    }).then(function (){
-      self.setState({
-        signed_in: true,
       });
     });
   };
@@ -52,12 +46,6 @@ class SignIn extends Component {
   };
 
   render() {
-
-    if(this.state.signed_in){
-      return (
-        <Redirect to='/'/>
-      );
-    }
 
     return (
       <div className='text-center'>
@@ -107,12 +95,6 @@ class SignIn extends Component {
               <div style={{display: 'flex', justifyContent: 'center'}}>
                 <Button className='signInButton' onClick={this.createAccount}> Create New Account </Button>
               </div>
-
-              <div style={{height: '1em'}}/>
-
-              <NavLink style={{ textDecoration: 'none' }} to="/forgot-password">
-                <p style={{fontSize: '1.2em', color: '#0d39ed', cursor: 'pointer'}}><u>Forgot Password</u></p>
-              </NavLink>
 
               <div/>
 
