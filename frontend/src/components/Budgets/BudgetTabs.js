@@ -64,7 +64,7 @@ function BudgetTabs(props) {
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-									{console.log("Index of tab is: " + index + " and props.curBudget is: " + props.curBudget)}
+									
 									{index === parseInt(props.tab) && props.curBudget
 										?
 										<RealSpending {...props} />
