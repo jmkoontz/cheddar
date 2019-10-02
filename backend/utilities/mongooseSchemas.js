@@ -37,3 +37,15 @@ export const userSchema = new mongoose.Schema({
   budgets: [budgetSchema],
   transactions: [transactionSchema]
 });
+
+export const investmentSchema = new mongoose.Schema({
+    type: String,
+    startingInvestment: Number,
+    company: String,
+    startDate: Date
+});
+
+export const allInvestmentsSchema = new mongoose.Schema({
+    trackedCompanies: [String],
+    investments: [investmentSchema]
+})
