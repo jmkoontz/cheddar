@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Progress, Row } from 'reactstrap';
+import { Progress, Row, Col, Form, FormGroup, Label, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
 import axios from 'axios';
 import '../../css/Budgets.css';
 
@@ -10,6 +10,10 @@ function RealSpending(props) {
 	const [loadingTransactions, setLoadingTransactions] = useState(false); // State to check if transactions are received yet 
 	const [categoryObjs, setCategoryObjs] = useState([]);	// Array of the category objects for Progress bars
 
+	// Handle drop down
+	const [drop, setDrop] = useState(false); // Boolean to control dropdown
+	const [transactionCate, setTransactionCate] = useState("Select a Category"); // The category for a new transaction
+	const [transactionName, setTransactionName] = useState(); // The name for a new transaction
 
 	/**
 	 * Generate category objects with respective transaction data inside
@@ -85,7 +89,7 @@ function RealSpending(props) {
 					{categoryObjs.map((item, index) =>
 						<div className="padTop" key={index}>
 							<p>{item.name}: ${item.spent} / ${item.allocated}</p>
-							<Progress multi className="box-shadow-preview">
+							<Progress multi className="barShadow">
 								{item.percentUsed > 100
 									?
 									<Progress className="leftText" bar animated color="danger" value={item.percentUsed}>{(item.percentUsed).toFixed(2)}%</Progress>
@@ -99,6 +103,58 @@ function RealSpending(props) {
 							</Progress>
 						</div>
 					)}
+
+					<Row className="heavyPadTop">
+						<Col sm={3} />
+						<Col sm={6}>
+							<p className={"addSpace"}>Enter New Transaction</p>
+						</Col>
+						<Col sm={3} />
+					</Row>
+					<div >
+						<Form className="textLeft">
+							<Row>
+								<Col sm={3}>
+									<FormGroup>
+										<Row>
+											<Label for="category">Category</Label>
+										</Row>
+										<Row>
+											<Dropdown id="category" isOpen={drop} toggle={() => setDrop(!drop)}>
+												<DropdownToggle caret>
+													{transactionCate}
+												</DropdownToggle>
+												<DropdownMenu>
+													{props.curBudget.budgetCategories.map((item, index) =>
+														<DropdownItem onClick={() => setTransactionCate(item.name)}>{item.name}</DropdownItem>
+													)}
+												</DropdownMenu>
+											</Dropdown>
+										</Row>
+									</FormGroup>
+								</Col>
+								<Col sm={3}>
+									<FormGroup>
+										<Label for="name">Name</Label>
+										<Input id="name">Name</Input>
+									</FormGroup>
+								</Col>
+								<Col sm={3}>
+									<FormGroup>
+										<Label for="amount">Amount</Label>
+										<Input id="amount">Amount</Input>
+									</FormGroup>
+								</Col>
+								<Col sm={2} className="buttonFix">
+									<Button color="primary">Submit</Button>
+								</Col>
+							</Row>
+						</Form>
+
+
+
+					</div>
+
 
 				</div>
 			}
