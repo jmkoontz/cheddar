@@ -66,7 +66,6 @@ function Budgets() {
 				arr[x] = newObj;
 			}
 		}
-		console.log(arr);
 		setCategoryArr(arr);
 	}
 
@@ -168,13 +167,16 @@ function Budgets() {
 
 		// TODO remove hard coded values here
 		let tmpIncome;
-		let x = 0;
-		for (x = 0; x < categoryArr.length; x++) {
+		let index = 0;
+		for (let x = 0; x < categoryArr.length; x++) {
 			if (categoryArr[x].name === "Income") {
+				index = x;
 				tmpIncome = categoryArr[x].amount;
 			}
 		}
-		let removedIncomeArr = categoryArr.filter((s, sidx) => x !== sidx);;
+		//console.log(index);
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);;
+		//console.log(removedIncomeArr)
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{

@@ -74,7 +74,7 @@ function RealSpending(props) {
 			//console.log("fetching transactions");
 			getTransactions();
 		},
-		[props]
+		[props.budgetList]
 	);
 
 	return (
