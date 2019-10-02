@@ -5,6 +5,7 @@ import db from './config/db';
 import mainController from './controllers/mainController';
 import budgetController from './controllers/budgetController';
 import transactionController from './controllers/transactionController';
+import calendarController from './controllers/calendarController';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.options('/*', (req, res) => {
 mainController(app);
 budgetController(app);
 transactionController(app);
+calendarController(app);
 
 // listen to port
 let port = process.env.PORT;
