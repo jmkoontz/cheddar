@@ -7,7 +7,7 @@ import Modal from 'react-bootstrap/Modal'
 class Saving extends React.Component {
   constructor(props){
     super(props);
-    this.state = {show: false, setShow: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: '', year: (new Date()).getFullYear()}, monthlyCont: ''}
+    this.state = {show: false, setShow: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: '', year: (new Date()).getFullYear()}, monthlyContribution: ''}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,7 +29,7 @@ class Saving extends React.Component {
   }
 
   handleSubmit(event){
-    alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyCont + ' a month until ' + this.state.month + ' ' + this.state.year);
+    alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
     event.preventDefault();
     this.setState({show: false})
   }
@@ -93,7 +93,7 @@ class Saving extends React.Component {
               <br/>
               <label>
                 <b>Monthly Contribution</b><br/>$
-                <input name="monthlyCont" type="number" value={this.state.monthlyCont} onChange={this.handleChange} />
+                <input name="monthlyContribution" type="number" value={this.state.monthlyContribution} onChange={this.handleChange} />
               </label>
               </form>
           </Modal.Body>
