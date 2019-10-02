@@ -16,7 +16,7 @@ function BudgetTabs(props) {
 
 	return (
 		<div>
-			<Row >
+			<Row className="padTop">
 				<Col sm={3} />
 				<Col sm={6}>
 					<h3 className={"addSpace"}>Select a Budget</h3>
@@ -51,7 +51,7 @@ function BudgetTabs(props) {
 							<Col sm={1} />
 							<Col sm={5}>
 								<span className="label" id="title">{item.name}</span>
-								<div className="addSpace">
+								<div className="padTop">
 									<Pie
 										data={item.budgetCategories}
 										width={500}
@@ -77,6 +77,7 @@ function BudgetTabs(props) {
 					</TabPane>
 				)}
 			</TabContent>
+
 		</div>
 	);
 }
