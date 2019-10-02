@@ -12,6 +12,7 @@ import SignIn from './Accounts/SignIn';
 import firebase from '../firebase.js';
 import './App.css';
 import CreateAccount from "./Accounts/CreateAccount";
+import AccountSettings from "./Accounts/AccountSettings";
 
 class App extends Component {
 
@@ -78,6 +79,7 @@ class App extends Component {
             <Route path="/investments" render={() => <Investments/>}/>
             <Route path="/debts" render={() => <Debts/>}/>
             <Route path="/transactions" render={() => <Transactions/>}/>
+            <Route path="/account-settings" render={() => <AccountSettings/>}/>
             <Route path="/" render={() => <Redirect to="/"/>}/>
           </Switch>
         </div>
