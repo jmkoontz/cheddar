@@ -1,0 +1,40 @@
+#title {
+    font-size: 1.5em;
+}
+
+.addSpace {
+    margin-bottom: 1em;
+}
+
+.padTop {
+    margin-top: 1.5em;
+}
+
+.heavyPadTop {
+    margin-top: 4em;
+}
+
+.leftText {
+    padding-left: 10px;
+    text-align: left !important;
+    font-weight: bold;
+}
+
+.barShadow { 
+    box-shadow: 5px 10px #b3b3b3;
+    border-radius: 4px; 
+}
+
+.textLeft {
+    text-align: left;
+}
+
+.shadow {
+    -moz-box-shadow:    inset 0 0 10px #000000;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+    box-shadow:         inset 0 0 10px #000000;
+ }
+
+ .cardSize {
+     border-radius: 12px !important;
+ }

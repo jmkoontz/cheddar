@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import History from "../../history";
+import firebase from '../../firebase.js'
 
 import './Header.css';
 
@@ -18,6 +19,8 @@ class Header extends Component {
       tabValue = 3;
     } else if (!History.location.pathname.indexOf("/debts")) {
       tabValue = 4;
+    } else if (!History.location.pathname.indexOf("/transactions")) {
+      tabValue = 5;
     }
 
     this.state = {
@@ -37,8 +40,19 @@ class Header extends Component {
       History.push("/investments");
     } else if (newValue === '4') {
       History.push("/debts");
+    } else if (newValue === '5') {
+      History.push("/transactions");
+    } else if (newValue === '6') {
+      this.signOut();
     }
 
+  };
+
+  signOut() {
+    firebase.auth().signOut().catch(function(error){
+      console.log(error);
+    });
+    sessionStorage.clear();
   };
 
   renderTabs = () => {
@@ -50,6 +64,8 @@ class Header extends Component {
           <Nav.Link eventKey={2}>Saving</Nav.Link>
           <Nav.Link eventKey={3}>Investments</Nav.Link>
           <Nav.Link eventKey={4}>Debts</Nav.Link>
+          <Nav.Link eventKey={5}>Transactions</Nav.Link>
+          <Nav.Link eventKey={6}>Sign Out</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     );
