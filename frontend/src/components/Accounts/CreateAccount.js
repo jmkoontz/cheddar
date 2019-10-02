@@ -19,7 +19,6 @@ class CreateAccount extends Component {
       error_message: '',
       error_visible: false,
 
-      account_created: false,
     }
   }
 
@@ -97,13 +96,6 @@ class CreateAccount extends Component {
   };
 
   render() {
-
-    if(this.state.account_created){
-      history.push({
-        pathname: '/sign-in',
-      });
-      //window.location.reload();
-    }
 
     return (
       <div className='text-center'>
