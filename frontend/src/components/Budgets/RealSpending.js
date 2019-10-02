@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Progress } from 'reactstrap';
+import { Progress, Row } from 'reactstrap';
 import axios from 'axios';
 import '../../css/Budgets.css';
 
@@ -83,17 +83,17 @@ function RealSpending(props) {
 				:
 				<div> {/** Loop thru budget categories prop and compare the amount with the objects  */}
 					{categoryObjs.map((item, index) =>
-						<div key={index}>
-							<p>{item.name}: {item.spent}/{item.allocated}</p>
-							<Progress multi>
-								{item.percentUsed >= 100
+						<div className="padTop" key={index}>
+							<p>{item.name}: ${item.spent} / ${item.allocated}</p>
+							<Progress multi className="box-shadow-preview">
+								{item.percentUsed > 100
 									?
-									<Progress bar animated color="danger" value={item.percentUsed} />
+									<Progress className="leftText" bar animated color="danger" value={item.percentUsed}>{(item.percentUsed).toFixed(2)}%</Progress>
 									: item.percentUsed >= 75
 										?
-										<Progress bar animated color="warning" value={item.percentUsed} />
+										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
 										:
-										<Progress bar animated color="success" value={item.percentUsed} />
+										<Progress className="leftText" bar animated color="success" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
 								}
 
 							</Progress>

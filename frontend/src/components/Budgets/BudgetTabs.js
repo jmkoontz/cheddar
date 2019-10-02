@@ -43,7 +43,7 @@ function BudgetTabs(props) {
 				</Col>
 				<Col sm={3} />
 			</Row>
-			<TabContent activeTab={props.tab}>
+			<TabContent className="padTop" activeTab={props.tab}>
 
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
@@ -61,7 +61,6 @@ function BudgetTabs(props) {
 									/>
 								</div>
 							</Col>
-							{/* Call the real spending component*/}
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
