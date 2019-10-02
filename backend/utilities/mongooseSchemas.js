@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export const transactionSchema = new mongoose.Schema({
   name: String,
   amount: Number,
-  date: Number
+  date: Date
 });
 
 export const budgetCategorySchema = new mongoose.Schema({
@@ -13,7 +13,7 @@ export const budgetCategorySchema = new mongoose.Schema({
   },
   name: String,
   amount: Number,
-  transactions: [transactionSchema]
+  transactions: [mongoose.Schema.Types.ObjectId]
 });
 
 export const budgetSchema = new mongoose.Schema({
@@ -21,6 +21,7 @@ export const budgetSchema = new mongoose.Schema({
   type: String,
   income: Number,
   timeFrame: Number,
+  favorite: Boolean,
   budgetCategories: [budgetCategorySchema]
 });
 
