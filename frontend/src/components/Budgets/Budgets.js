@@ -12,7 +12,7 @@ function Budgets() {
 	// State to manage budgets loading
 	const [loading, setLoading] = useState(true);
 	// User data
-	const [userID, setUID] = useState("773202");
+	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	const [budgetList, setBudgetList] = useState([""]); // TODO this will contain the list of budgets a user has
 	// Creation modal states
 	const [modal, setModal] = useState(false); // Triggers the modal opening and closing
@@ -132,12 +132,18 @@ function Budgets() {
 				setBudgetList(response.data);
 				setLoading(false);
 
+				let flag = false;
 				for (let x = 0; x < response.data.length; x++) {
 					if (response.data[x].favorite === true) {
 						//setBudget(response.data.budgets[x]);
+						flag = true;
 						setFirstBudget(response.data[x], x.toString());
 						break;
 					}
+				}
+
+				if (!flag) {
+					setFirstBudget(response.data[0], "0");
 				}
 			})
 			.catch((error) => {
@@ -162,11 +168,13 @@ function Budgets() {
 
 		// TODO remove hard coded values here
 		let tmpIncome;
-		for (let x = 0; x < categoryArr.length; x++) {
+		let x = 0;
+		for (x = 0; x < categoryArr.length; x++) {
 			if (categoryArr[x].name === "Income") {
 				tmpIncome = categoryArr[x].amount;
 			}
 		}
+		let removedIncomeArr = categoryArr.filter((s, sidx) => x !== sidx);;
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
@@ -175,7 +183,7 @@ function Budgets() {
 				income: tmpIncome,
 				timeFrame: 100,
 				favorite: false,
-				budgetCategories: categoryArr
+				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
 				console.log(response);

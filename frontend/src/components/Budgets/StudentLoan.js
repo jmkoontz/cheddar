@@ -19,7 +19,8 @@ function StudentLoan(props) {
     // Make a tmp object to store the calculated amount
     let tmpObj = {
       name: "Loan",
-      amount: monthlyPayment
+      amount: monthlyPayment,
+      preset: true
     }
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
