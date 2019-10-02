@@ -77,19 +77,6 @@ function RealSpending(props) {
 		[props]
 	);
 
-	// const tranForm = {
-	// 	drop: drop,
-	// 	setDrop: setDrop,
-	// 	transactionCate: transactionCate,
-	// 	setTransactionCate: setTransactionCate,
-	// 	transactionName: transactionName,
-	// 	setTransactionName: setTransactionName,
-	// 	transactionAmount: transactionAmount,
-	// 	setTransactionAmount: setTransactionAmount,
-	// 	date: date,
-	// 	setDate: setDate
-	// }
-
 	return (
 		<div>
 			{loadingTransactions
@@ -115,7 +102,7 @@ function RealSpending(props) {
 						</div>
 					)}
 
-					<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs}/>
+					<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs} getTransactions={getTransactions}/>
 
 				</div>
 			}

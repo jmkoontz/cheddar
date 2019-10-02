@@ -33,37 +33,25 @@ function TransactionForm(props) {
   const createTransaction = () => {
     // TODO remove hard coded date
     // Also maybe don't force getTransaction call
+    let tmpObj = {
+      name: transactionName,
+      amount: transactionAmount,
+      date: date,
+      category: transactionCate
+    };
+
     axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
       {
         name: transactionName,
         amount: transactionAmount,
-        date: "2019-07-21T20:14:00Z"
+        date: date
       }).then(function (response) {
         // handle success
         console.log("Success");
-        console.log(response);
 
         // Update the transaction state
-        let tmpObj = {
-          name: transactionName,
-          amount: transactionAmount,
-          date: "2019-07-21T20:14:00Z"
-        };
-        let tmpArr = props.categoryObjs;
-        for (let y = 0; y < tmpArr.length; y++) {
-          if (transactionName === tmpArr[y].name) {
-            // Accumulate spendings and transcation array
-            let item = tmpArr[y];
-            item.spent += transactionAmount;
-            item.percentUsed = (item.spent / item.allocated) * 100;
-            item.transactions = [...item.transactions, tmpObj];
-          }
-        }
-        console.log(tmpArr);
-        props.setCategoryObjs(tmpArr);
-        //setTransactionCate("Select a Category");
-        //setTransactionAmount(0);
-        //setTransactionName("");
+        props.getTransactions();
+        
       })
       .catch((error) => {
         console.log("Transaction call did not work");
