@@ -24,7 +24,7 @@ class EventCalendar extends React.Component {
   }
 
   displayEvents () {
-    axios.get('http://localhost:8080/Cheddar/Calendar/test').then((resp) => {
+    axios.get('http://localhost:8080/Cheddar/Calendar/123456').then((resp) => {
       this.setState({
         events: resp.data
       });

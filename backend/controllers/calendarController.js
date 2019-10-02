@@ -8,8 +8,8 @@ export default (app) => {
   app.get('/Cheddar/Calendar/:uid', async (req, res) => {
     let data;
     try {
-      //data = await getUser(req.params.uid);
-      data = [
+      data = await getUser(req.params.uid);
+      /*data = [
         {
           title: "rent due",
           start: new Date,
@@ -21,7 +21,9 @@ export default (app) => {
           end: new Date,
           allDay: true
         }
-      ];
+      ];*/
+
+      data = data.events;
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -30,7 +32,11 @@ export default (app) => {
   });
 
   // Create a new event
-  app.post('/Cheddar/Calendar/event/:uid/:eventId', async (req, res) => {
+  app.post('/Cheddar/Calendar/event/:uid', async (req, res) => {
+    const events = await getUser(req.params.uid).events;
+    events.append(req.body);
+
+    await editUser(req.params.uid, {events: events});
 
     buildResponse(res, data);
   });
