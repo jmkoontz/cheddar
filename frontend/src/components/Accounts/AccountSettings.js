@@ -89,7 +89,6 @@ class AccountSettings extends Component {
   }
 
   setErrorWithRef(self, message){
-    console.log(message);
     self.setState({
       alert_message: message.message,
       alert_visible: true,
