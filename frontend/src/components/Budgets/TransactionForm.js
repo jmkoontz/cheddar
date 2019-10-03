@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, FormGroup, Label, Input, Card, CardHeader, CardFooter, CardBody, CardTitle, CardText } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
@@ -15,6 +14,7 @@ function TransactionForm(props) {
   const [transactionName, setTransactionName] = useState(); // The name for a new transaction
   const [transactionAmount, setTransactionAmount] = useState(); // The amount for a new transaction
   const [date, setDate] = useState(new Date());
+
 
   /**
    * Helper method to handle user changes to name
@@ -31,13 +31,6 @@ function TransactionForm(props) {
   }
 
   const createTransaction = () => {
-    // let tmpObj = {
-    //   name: transactionName,
-    //   amount: transactionAmount,
-    //   date: date,
-    //   category: transactionCate
-    // };
-
     axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
       {
         name: transactionName,
@@ -110,6 +103,7 @@ function TransactionForm(props) {
                     id="date"
                     selected={date}
                     onChange={d => setDate(d)}
+                    maxDate={new Date()}
                   />
                 </FormGroup>
 
