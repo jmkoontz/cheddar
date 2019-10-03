@@ -84,8 +84,8 @@ class EventModal extends React.Component {
         <Modal.Header closeButton>
           {
             this.props.isNew ?
-              <Modal.Title>Create Event</Modal.Title>
-              : <Modal.Title>Edit Event</Modal.Title>
+              <Modal.Title>Add Transaction</Modal.Title>
+              : <Modal.Title>Edit Transaction</Modal.Title>
           }
         </Modal.Header>
 
@@ -130,7 +130,7 @@ class EventModal extends React.Component {
         <Modal.Footer>
           <Button variant="secondary" onClick={this.handleClose}>Cancel</Button>
           {this.props.isNew ? null : <Button variant="danger" onClick={this.handleDelete}>Delete</Button>}
-          <Button variant="primary" onClick={this.handleSave}>Save Event</Button>
+          <Button variant="primary" onClick={this.handleSave}>Save</Button>
         </Modal.Footer>
       </Modal>
     );
