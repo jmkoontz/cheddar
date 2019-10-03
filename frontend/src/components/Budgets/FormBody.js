@@ -29,7 +29,7 @@ function FormBody(props) {
                   ?
                   <Input
                     onChange={props.handleCategoryChange}
-                    type="text"
+                    type="number"
                     id={index}
                     placeholder="Amount"
                     required="required"
@@ -38,7 +38,7 @@ function FormBody(props) {
                   :
                   <Input
                     onChange={props.handleCategoryChange}
-                    type="text"
+                    type="number"
                     id={index}
                     placeholder="Amount"
                     required="required"

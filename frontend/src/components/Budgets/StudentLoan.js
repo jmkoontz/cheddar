@@ -57,9 +57,9 @@ function StudentLoan(props) {
           <Row className="addSpace">
             <Col>
               <Label for="loan">Loan Amount</Label>
-              <Input onChange={handleAmountChange} name="loan" id="loan" placeholder="10000" />
+              <Input onChange={handleAmountChange} type="number" name="loan" id="loan" placeholder="10000" />
               <Label for="timeframe">Timeframe of Loan</Label>
-              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of months" />
+              <Input onChange={handleTimeChange} type="number" name="timeframe" id="timeframe" placeholder="Enter number of months" />
             </Col>
           </Row>
           <Row>
@@ -73,8 +73,8 @@ function StudentLoan(props) {
           <FormBody {...props} />
         </div>
       }
-    </div >
+    </div>
   );
-};
+}
 
 export default StudentLoan;
