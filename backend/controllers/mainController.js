@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getUser, createUser, editUser} from '../models/userDAO';
+import {getUser, createUser, editUser, deleteUser} from '../models/userDAO';
 
 export default (app) => {
   app.post('/Cheddar/CreateAccount', async (req, res) => {
@@ -72,4 +72,17 @@ export default (app) => {
 
     buildResponse(res, data);
   });
+
+  // delete a user
+  app.delete('/Cheddar/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await deleteUser(req.params.uid)
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
 };
