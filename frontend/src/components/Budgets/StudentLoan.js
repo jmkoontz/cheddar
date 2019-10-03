@@ -25,6 +25,7 @@ function StudentLoan(props) {
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
     setDataEnter(true); // Tell the page to now show the rest of the form
+    props.setButtonDisplay(true);
   }
 
   /**
@@ -63,7 +64,7 @@ function StudentLoan(props) {
           </Row>
           <Row>
             <Col>
-              <Button color="success" onClick={calculatePayment}>Enter Data</Button>
+              <Button color="success" onClick={calculatePayment}>Calculate Loan Payment</Button>
             </Col>
           </Row>
         </div>

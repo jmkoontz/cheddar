@@ -86,7 +86,7 @@ function Transactions(props) {
 		//   date: date,
 		//   category: transactionCate
 		// };
-		console.log();
+		
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
 		let queryTwo = `&endYear=${startDate.getFullYear()}&endMonth=${startDate.getMonth()}&endDay=${startDate.getDay()}`;
 		let query = queryOne + queryTwo;

@@ -19,14 +19,14 @@ function TransactionForm(props) {
   /**
    * Helper method to handle user changes to name
    */
-  const handleNameChange = (event) => {
+  const handleNChange = (event) => {
     setTransactionName(event.target.value);
   }
 
 	/**
    * Helper method to handle user changes to amount
    */
-  const handleAmountChange = (event) => {
+  const handleAmtChange = (event) => {
     setTransactionAmount(event.target.value);
   }
 
@@ -87,13 +87,13 @@ function TransactionForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNameChange} />
+                  <Input id="name" onChange={handleNChange} />
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input id="amount" onChange={handleAmountChange} />
+                  <Input id="amount" onChange={handleAmtChange} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
