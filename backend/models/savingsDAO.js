@@ -71,25 +71,9 @@ export async function createSavings(uid, saving) {
 export async function editSavings(uid, savingsTitle, changes) {
   let updateClause = {$set: {}};
 
-  if (changes.title) {
-    // get names of budgets
-    let titles = [];
-    try {
-      titles = await getBudgetNames(uid);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-
-    // protect against duplicate savings names
-    if (titles.includes(changes.title))
-      return Promise.reject('UserError: Savings with title \"' + changes.title + '\" already exists');
-
-    updateClause.$set['savings.$.title'] = changes.title;
-  }
-
   const findClause = {
     '_id': uid,
-    'budgets.name': budgetName
+    'savings.title': savingsTitle
   };
 
   if (changes.title)
