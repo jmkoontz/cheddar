@@ -63,7 +63,7 @@ function Transactions(props) {
 	/**
 	 * Sorts all the transactions by date and stores them in their own
 	 */
-	const sortByDay = () => {
+	const sortByDay = (transactionsList) => {
 		let numDays = calcNumberDays(endDate, startDate);
 		let daysArray = [];
 
@@ -71,9 +71,18 @@ function Transactions(props) {
 			daysArray.push(0);
 		}
 
-		// for () {
+		console.log(daysArray);
 
-		// }
+		for (let x = 0; x < transactionsList.length; x++) {
+			console.log(transactionsList[x]);
+			let index = calcNumberDays(transactionsList[x].date - startDate) - 1;
+			console.log(index);
+			if (index >= 0 && index < transactionsList.length) {
+				daysArray[index] += transactionsList[x].amount;
+				console.log(daysArray[index]);
+			}
+		}
+		console.log(daysArray);
 	}
 
 	/**
@@ -88,7 +97,7 @@ function Transactions(props) {
 		// };
 		
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
-		let queryTwo = `&endYear=${startDate.getFullYear()}&endMonth=${startDate.getMonth()}&endDay=${startDate.getDay()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDay()}`;
 		let query = queryOne + queryTwo;
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
@@ -98,7 +107,7 @@ function Transactions(props) {
 				console.log(response);
 
 				// Update the transaction state
-
+				sortByDay(response.data);
 
 			})
 			.catch((error) => {
@@ -162,8 +171,7 @@ function Transactions(props) {
 							</Row>
 							<Row>
 								<Col sm={12}>
-									<Button onClick={getTransactions}>
-									</Button>
+									<Button onClick={getTransactions}>Get Transactions</Button>
 								</Col>
 							</Row>
 

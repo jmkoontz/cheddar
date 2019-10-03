@@ -1,3 +1,7 @@
 .padTop {
   margin-top: 3em;
 }
+
+#date {
+  width: 100%;
+}
