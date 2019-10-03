@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import {userSchema, budgetSchema, budgetCategorySchema, transactionSchema, investmentSchema, allInvestmentsSchema, investmentSchema, allInvestmentsSchema} from './mongooseSchemas';
+import {userSchema, budgetSchema, budgetCategorySchema, transactionSchema, savingsSchema, debtSchema, investmentSchema, allInvestmentsSchema} from './mongooseSchemas';
 
 export const userModel = mongoose.model('User', userSchema);
 export const budgetModel = mongoose.model('Budget', budgetSchema);
