@@ -28,7 +28,7 @@ export const budgetSchema = new mongoose.Schema({
 export const eventsSchema = new mongoose.Schema({
   id: Number,
   title: String,
-  state: Date,
+  start: Date,
   end: Date,
   allDay: Boolean,
   amount: Number
