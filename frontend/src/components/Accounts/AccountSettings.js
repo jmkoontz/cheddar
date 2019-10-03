@@ -76,10 +76,11 @@ class AccountSettings extends Component {
   }
 
   setErrorWithRef(self, message){
+    console.log(message);
     self.setState({
-      alert_message: message,
+      alert_message: message.message,
       alert_visible: true,
-      alert_color: "danger",
+      alert_color: 'danger',
     });
   }
 
@@ -115,6 +116,7 @@ class AccountSettings extends Component {
       self.closeReauthenticate();
       self.updatePassword();
     }).catch(function(error) {
+      self.closeReauthenticate();
       self.setErrorWithRef(self, error);
     });
   };
@@ -145,7 +147,7 @@ class AccountSettings extends Component {
           <ModalBody>
             <p>This will delete all of your saved data!</p>
             <hr/>
-            <Button color='danger' size='sm' onClick={this.deleteAccount}>Delete My Account and  My Data</Button>
+            <Button color='danger' size='sm' onClick={this.deleteAccount}>Delete My Account and My Data</Button>
           </ModalBody>
         </Modal>
 
