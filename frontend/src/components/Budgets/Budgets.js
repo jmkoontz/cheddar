@@ -5,6 +5,7 @@ import axios from 'axios';
 import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
+import FixedAmount from "./FixedAmount";
 import FormBody from "./FormBody";
 import FixedAmount from "./FixedAmount";
 
@@ -275,8 +276,9 @@ function Budgets() {
 								{pickedCategory === "Loan Payment"
 									?
 									<StudentLoan {...formInfo} />
-									: pickedCategory === "Custom"
+									: pickedCategory === "Fixed Amount"
 										?
+<<<<<<< HEAD
 										<FormBody {...formInfo} />
 										: pickedCategory === "Fixed Amount"
 											?
@@ -285,6 +287,16 @@ function Budgets() {
 												<div>
 													{/* Other categories will go here */}
 												</div>
+=======
+										<FixedAmount {...formInfo} />
+										: pickedCategory === "Custom"
+											?
+											<FormBody {...formInfo} />
+											:
+											<div>
+												{/* Other categories will go here */}
+											</div>
+>>>>>>> 14c5e6c9efa36a445680b5cb82f8c4015f1a3cb1
 								}
 
 
