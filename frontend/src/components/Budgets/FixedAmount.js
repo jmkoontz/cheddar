@@ -18,7 +18,7 @@ function FixedAmount(props) {
 
     // Make a tmp object to store the calculated amount
     let tmpObj = {
-      name: "Sum",
+      name: "Income",
       amount: monthlyPayment,
       preset: true
     }
@@ -55,9 +55,9 @@ function FixedAmount(props) {
         <div>
           <Row className="addSpace">
             <Col>
-              <Label for="sum">Sum Amount</Label>
+              <Label for="sum">Enter Your Savings</Label>
               <Input onChange={handleAmountChange} name="sum" id="sum" placeholder="10000" />
-              <Label for="timeframe">Timeframe of Sum</Label>
+              <Label for="timeframe">Enter Your Timeframe</Label>
               <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of months" />
             </Col>
           </Row>
