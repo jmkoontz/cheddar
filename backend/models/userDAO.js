@@ -33,19 +33,7 @@ export function createUser(user) {
 }
 
 export function editUser(uid, changes) {
-  let updateClause = {$set: {}};
-
-  if (changes.firstName)
-    updateClause.$set['firstName'] = changes.firstName;
-
-  if (changes.lastName)
-    updateClause.$set['lastName'] = changes.lastName;
-
-  if (changes.type)
-    updateClause.$set['type'] = changes.type;
-
-  if (changes.netWorth)
-    updateClause.$set['netWorth'] = changes.netWorth;
+  let updateClause = {$set: changes};
 
   return userModel.findOneAndUpdate(
     {'_id': uid},
@@ -56,6 +44,19 @@ export function editUser(uid, changes) {
         return Promise.reject('UserError: User not found');
 
       return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function deleteUser(uid) {
+  return userModel.findOneAndDelete({_id: uid})
+    .then((user) => {
+      if (user)
+        return Promise.resolve(user);
+      else
+        return Promise.reject('UserError: User not found');
     })
     .catch((err) => {
       return Promise.reject(err);

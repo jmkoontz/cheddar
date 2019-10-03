@@ -35,7 +35,6 @@
 .BigDivArea {
 	/* background-color: blue; */
 	height:calc(100vh - 56px);
-	width:100vw;
-	overflow-y: auto;
-	overflow-x: hidden;
+	width:1000px;
+	margin: auto;
 }
