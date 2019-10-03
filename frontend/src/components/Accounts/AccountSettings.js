@@ -151,6 +151,7 @@ class AccountSettings extends Component {
     return(
 
       <div className="BigDivArea">
+        <div style={{height: '1em'}}/>
         <h3>Edit Account Settings</h3>
         <hr/>
 
@@ -194,8 +195,8 @@ class AccountSettings extends Component {
         <hr/>
         <Form onSubmit={this.openReauth}>
           <Row>
-            <Col md='4'/>
-            <Col md='2'>
+            <Col md='3'/>
+            <Col md='3'>
               <Input type='password' id='newpassword' bsSize='lg' placeholder='New Password' style={{border: '1px solid #4682B4'}}/>
             </Col>
           </Row>
@@ -203,11 +204,11 @@ class AccountSettings extends Component {
           <div style={{height: '1em'}}/>
 
           <Row>
-            <Col md='4'/>
-            <Col md='2'>
+            <Col md='3'/>
+            <Col md='3'>
               <Input type='password' id='confirmpassword' bsSize='lg' placeholder='Confirm Password' style={{border: '1px solid #4682B4'}}/>
             </Col>
-            <Col md='1'>
+            <Col md='3'>
               <Button className='signInButton' size='lg'> Update Password </Button>
             </Col>
           </Row>
@@ -215,8 +216,8 @@ class AccountSettings extends Component {
           <div style={{height: '1em'}}/>
 
           <Row>
-            <Col md='4'/>
-            <Col md='4'>
+            <Col md='3'/>
+            <Col md='6'>
               <Alert color={this.state.alert_color} isOpen={this.state.alert_visible} toggle={this.onDismiss}>
                 {this.state.alert_message}
               </Alert>
@@ -226,12 +227,12 @@ class AccountSettings extends Component {
         </Form>
 
         <hr/>
-        <div style={{height: '2em'}}/>
+        <div style={{height: '1em'}}/>
 
         <Row>
-          <Col md='5'/>
-          <Col md='2'>
-            <Button color='danger' onClick={this.confirmDelete}> Delete My Account </Button>
+          <Col md='4'/>
+          <Col md='4'>
+            <Button color='danger' className='deleteButton' size='lg' onClick={this.confirmDelete}> Delete My Account </Button>
           </Col>
         </Row>
       </div>
