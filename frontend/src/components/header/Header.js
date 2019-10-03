@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import History from "../../history";
+import { Col } from 'reactstrap';
 import firebase from '../../firebase.js'
 
 import './Header.css';
@@ -21,6 +22,8 @@ class Header extends Component {
       tabValue = 4;
     } else if (!History.location.pathname.indexOf("/transactions")) {
       tabValue = 5;
+    } else if (!History.location.pathname.indexOf("/account-settings")) {
+      tabValue = 6;
     }
 
     this.state = {
@@ -43,6 +46,8 @@ class Header extends Component {
     } else if (newValue === '5') {
       History.push("/transactions");
     } else if (newValue === '6') {
+      History.push("/account-settings");
+    } else if (newValue === '7') {
       this.signOut();
     }
 
@@ -57,18 +62,21 @@ class Header extends Component {
 
   renderTabs = () => {
     return (
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="mr-auto nav-container" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
-          <Nav.Link eventKey={0}><span id={"icon-tab"}><img src={"Icon.png"} id={"icon"}/></span></Nav.Link>
-          <Nav.Link eventKey={0}>Overview</Nav.Link>
-          <Nav.Link eventKey={1}>Budgets</Nav.Link>
-          <Nav.Link eventKey={2}>Saving</Nav.Link>
-          <Nav.Link eventKey={3}>Investments</Nav.Link>
-          <Nav.Link eventKey={4}>Debts</Nav.Link>
-          <Nav.Link eventKey={5}>Transactions</Nav.Link>
-          <Nav.Link eventKey={6}>Sign Out</Nav.Link>
-        </Nav>
-      </Navbar.Collapse>
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto nav-container" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
+            <Nav.Link eventKey={0}><span id={"icon-tab"}><img src={"Icon.png"} id={"icon"}/></span></Nav.Link>
+            <Nav.Link eventKey={0}>Overview</Nav.Link>
+            <Nav.Link eventKey={1}>Budgets</Nav.Link>
+            <Nav.Link eventKey={2}>Saving</Nav.Link>
+            <Nav.Link eventKey={3}>Investments</Nav.Link>
+            <Nav.Link eventKey={4}>Debts</Nav.Link>
+            <Nav.Link eventKey={5}>Transactions</Nav.Link>
+          </Nav>
+          <Nav pullRight onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
+            <Nav.Link eventKey={6}>👤</Nav.Link>
+            <Nav.Link eventKey={7}>Sign Out</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
     );
   };
 
