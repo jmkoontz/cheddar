@@ -14,7 +14,9 @@ export default (app) => {
       type: 'general',
       netWorth: 0,
       budgets: [],
-      transactions: []
+      transactions: [],
+      investments: {}
+
     };
 
     let data;
@@ -44,7 +46,7 @@ export default (app) => {
     let data;
     try {
       console.log('it worked');
-      data = 'Hello there';
+      data = 'Hello the';
     } catch (err) {
       data = {error: parseError(err)};
     }

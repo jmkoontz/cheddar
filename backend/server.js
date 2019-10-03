@@ -20,9 +20,10 @@ app.options('/*', (req, res) => {
 });
 
 // run controllers
+investmentsController(app);
 mainController(app);
 budgetController(app);
-investmentsController(app);
+
 transactionController(app);
 
 // listen to port
