@@ -6,6 +6,7 @@ import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
 import FormBody from "./FormBody";
+import FixedAmount from "./FixedAmount";
 
 function Budgets() {
 
@@ -52,7 +53,7 @@ function Budgets() {
 
   /**
    * Handles user input from the modal form and updates the state
-   * @param {*} index 
+   * @param {*} index
    */
 	const handleCategoryChange = (event) => {
 		let newObj = {
@@ -101,7 +102,7 @@ function Budgets() {
 
 	/**
 	 * Helper to set the next budget and tab
-	 * @param {String: contains the tab index} newTab 
+	 * @param {String: contains the tab index} newTab
 	 */
 	const setNewTab = (newTab) => {
 		//console.log(newTab);
@@ -112,8 +113,8 @@ function Budgets() {
 
 	/**
 	 * Helper to set the first budget tab to open
-	 * @param {Object: a budget} budg 
-	 * @param {String: tab to be set} x 
+	 * @param {Object: a budget} budg
+	 * @param {String: tab to be set} x
 	 */
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
@@ -255,6 +256,7 @@ function Budgets() {
 								<DropdownMenu>
 									{/*TODO: clean this up and store it in a state variable*/}
 									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
 								</DropdownMenu>
@@ -279,10 +281,13 @@ function Budgets() {
 									: pickedCategory === "Custom"
 										?
 										<FormBody {...formInfo} />
-										:
-										<div>
-											{/* Other categories will go here */}
-										</div>
+										: pickedCategory === "Fixed Amount"
+											?
+											<FixedAmount {...formInfo} />
+											:
+												<div>
+													{/* Other categories will go here */}
+												</div>
 								}
 
 
