@@ -1,8 +1,21 @@
 #header {
-
+	border-bottom: 1px solid lightgray;
 }
 
 #navbar {
 	width: 1200px;
 	margin: auto;
+	padding: 0;
+}
+
+#icon-tab {
+	height: 20px;
+}
+
+#icon {
+	width: 50px;
+}
+
+.nav-container a {
+	align-self: center;
 }
