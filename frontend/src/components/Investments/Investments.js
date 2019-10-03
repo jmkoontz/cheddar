@@ -194,9 +194,13 @@ class Investments extends React.Component {
             if(companies.includes(company)){
                 companies.splice(companies.indexOf(company),1);
             }
-            this.setState({
-                companies: originalCompanies,
-                selectedCompanies: companies,
+            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+                updatedCompanies: companies,
+                }).then(res => {
+                    this.setState({
+                        companies: originalCompanies,
+                        selectedCompanies: companies,
+                    });
             });
         }
         else{
@@ -204,10 +208,16 @@ class Investments extends React.Component {
             if(!companies.includes(company)){
                 companies.push(company);
             }
-            this.setState({
-                selectedCompanies: companies,
-                companies: originalCompanies,
-            },()=>{alert(this.state.selectedCompanies)});
+
+            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+                updatedCompanies: companies,
+                }).then(res => {
+                    this.setState({
+                        selectedCompanies: companies,
+                        companies: originalCompanies,
+                    });
+            });
+            //console.log(res);
         }
         
         

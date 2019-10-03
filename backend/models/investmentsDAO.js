@@ -20,3 +20,19 @@ export function getAllInvestments(uid){
         return Promise.reject(err);
     });
 }
+
+export function addTrackedCompanies(companies){
+
+}
+
+export function addInvestment(investment){
+
+}
+
+export function editInvestment(investment){
+
+}
+
+export function deleteInvestment(investment){
+
+}
