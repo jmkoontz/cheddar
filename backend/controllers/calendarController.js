@@ -64,7 +64,7 @@ export default (app) => {
 
       for (let i = 0; i < events.length; i++) {
         if (events[i].id == req.params.eventId) {
-          delete events[i];
+          events.splice(i, 1);
           break;
         }
       }
