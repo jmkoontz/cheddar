@@ -64,8 +64,8 @@ class Saving extends React.Component {
     axios.get(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/`)
       .then((response) => {
         this.setState({savingsList: response.data})
-        console.log(response);
-        console.log(this.state.savingsList)
+        //console.log(response);
+        //console.log(this.state.savingsList)
       })
       .catch((error) => {
         console.error("Error getting Savings\n" + error);
@@ -118,18 +118,18 @@ class Saving extends React.Component {
               <label>
               <b>Planned End Date</b><br/>
               <select name="month" value={this.state.month} onChange={this.handleChange}>
-                <option value="january">January</option>
-                <option value="february">February</option>
-                <option value="march">March</option>
-                <option value="april">April</option>
-                <option value="may">May</option>
-                <option value="june">June</option>
-                <option value="july">July</option>
-                <option value="august">August</option>
-                <option value="september">September</option>
-                <option value="october">October</option>
-                <option value="november">November</option>
-                <option value="december">December</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
               </select>
               <select name="year" value={this.state.year} onChange={this.handleChange}>
               {

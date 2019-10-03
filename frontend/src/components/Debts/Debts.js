@@ -8,8 +8,8 @@ import axios from 'axios';
 
 const DebtModel = ({category, nickname, initial, currBalance, interestRate}) => (
   <div>
-    {nickname && <h3>{nickname}</h3>}
-    <h2>{category}</h2>
+    {nickname && <h2>{nickname}</h2>}
+    <h3>{category}</h3>
     <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p>
   </div>
 )
@@ -115,7 +115,7 @@ class Debts extends React.Component {
                 <input name="interestRate" type="number" step="0.01" value={this.state.interestRate} onChange={this.handleChange} />
               %</label><br/>
               <b>Nickname</b> (<i>optional</i>)<br/>
-                <input name="title" type="text" value={this.state.title} onChange={this.handleChange} />
+                <input name="nickname" type="text" value={this.state.nickname} onChange={this.handleChange} />
               </label>
               </form>
           </Modal.Body>
