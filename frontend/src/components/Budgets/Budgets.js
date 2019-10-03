@@ -279,14 +279,14 @@ function Budgets() {
 									<StudentLoan {...formInfo} />
 									: pickedCategory === "Fixed Amount"
 										?
-											<FixedAmount {...formInfo} />
+										<FixedAmount {...formInfo} />
 										: pickedCategory === "Custom"
-										?
-										<FormBody {...formInfo} />
-										:
-										<div>
-											{/* Other categories will go here */}
-										</div>
+											?
+											<FormBody {...formInfo} />
+											:
+											<div>
+												{/* Other categories will go here */}
+											</div>
 								}
 
 
