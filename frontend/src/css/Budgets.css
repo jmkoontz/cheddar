@@ -42,3 +42,9 @@
  .card {
     width: auto !important;
 }
+
+.buttonFix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
