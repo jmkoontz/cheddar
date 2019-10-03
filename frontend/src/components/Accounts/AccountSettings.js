@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col} from 'reactstrap';
-import { fireauth } from '../../firebase.js';
+import firebase from '../../firebase.js';
 import './SignIn.css'
 
 class AccountSettings extends Component {
@@ -11,13 +11,17 @@ class AccountSettings extends Component {
     this.state = {
       new_password: null,
       confirm_password: null,
-      new_email: null,
 
-      error_message: null,
-      error_visible: false,
+      alert_message: null,
+      alert_visible: false,
+      alert_color: null,
 
       modal_visible: false,
-    }
+
+      reauthenticate_visible: false,
+      current_password: null,
+    };
+
   }
 
   confirmDelete = () => {
@@ -29,7 +33,7 @@ class AccountSettings extends Component {
 
   };
 
-  updatePassword = (ev) => {
+  openReauth = (ev) => {
     ev.preventDefault();
     let new_password = ev.target.newpassword.value;
     let confirm_password = ev.target.confirmpassword.value;
@@ -45,30 +49,89 @@ class AccountSettings extends Component {
       this.setError("Passwords do not match.");
       return;
     }
-    //TODO update firebase password
+    this.setState({
+      new_password: new_password,
+      confirm_password: confirm_password,
+      reauthenticate_visible: true,
+    });
+
   };
 
-  getEmail = () => {
-    return fireauth.currentUser.email;
+  updatePassword = () => {
+    let self = this;
+    let user = firebase.auth().currentUser;
+    user.updatePassword(self.state.new_password).then(function() {
+      self.passwordUpdatedSuccessfully();
+    }).catch(function(error){
+      self.setErrorWithRef(self, error);
+    });
   };
 
   setError(message){
     this.setState({
-      error_message: message,
-      error_visible: true,
+      alert_message: message,
+      alert_visible: true,
+      alert_color: "danger",
+    });
+  }
+
+  setErrorWithRef(self, message){
+    self.setState({
+      alert_message: message,
+      alert_visible: true,
+      alert_color: "danger",
+    });
+  }
+
+  passwordUpdatedSuccessfully(){
+    let self = this;
+    self.setState({
+      alert_message: "Your password has been updated successfully.",
+      alert_visible: true,
+      alert_color: 'success',
     });
   }
 
   onDismiss = () => {
     this.setState({
-      error_message: null,
-      error_visible: false,
+      alert_message: null,
+      alert_visible: false,
+      alert_color: null,
+    });
+  };
+
+  reauthenticate = (ev) => {
+    ev.preventDefault();
+    let self = this;
+    let current_password = ev.target.currentpassword.value;
+
+    const user = firebase.auth().currentUser;
+    const credential = firebase.auth.EmailAuthProvider.credential(
+      user.email,
+      current_password
+    );
+
+    user.reauthenticateWithCredential(credential).then(function() {
+      self.closeReauthenticate();
+      self.updatePassword();
+    }).catch(function(error) {
+      self.setErrorWithRef(self, error);
     });
   };
 
   closeModal = () => {
-    this.setState({ modal_visible: false });
-  }
+    let self = this;
+    self.setState({ modal_visible: false });
+  };
+
+  closeReauthenticate = () => {
+    let self = this;
+    self.setState( { reauthenticate_visible: false });
+  };
+
+  getEmail = () => {
+    return firebase.auth().currentUser.email;
+  };
 
   render(){
     return(
@@ -86,6 +149,27 @@ class AccountSettings extends Component {
           </ModalBody>
         </Modal>
 
+        <Modal isOpen={this.state.reauthenticate_visible} toggle={this.closeReauthenticate}>
+          <ModalHeader toggle={this.closeReauthenticate}> Please Confirm your Current Password </ModalHeader>
+          <ModalBody>
+            <Form onSubmit={this.reauthenticate}>
+              <Row>
+                <Col md='2'/>
+                <Col md='8'>
+                  <Input type='password' id='currentpassword' bsSize='lg' placeholder='Current Password' style={{border: '1px solid #4682B4'}}/>
+                </Col>
+              </Row>
+              <div style={{height: '1em'}}/>
+              <Row>
+                <Col md='3'/>
+                <Col md='6'>
+                  <Button className='signInButton' size='lg'>Confirm</Button>
+                </Col>
+              </Row>
+            </Form>
+          </ModalBody>
+        </Modal>
+
         <Row>
           <Col md='4'/>
           <Col md='4'>
@@ -94,7 +178,7 @@ class AccountSettings extends Component {
         </Row>
 
         <hr/>
-        <Form onSubmit={this.updatePassword}>
+        <Form onSubmit={this.openReauth}>
           <Row>
             <Col md='4'/>
             <Col md='2'>
@@ -119,8 +203,8 @@ class AccountSettings extends Component {
           <Row>
             <Col md='4'/>
             <Col md='4'>
-              <Alert color="danger" isOpen={this.state.error_visible} toggle={this.onDismiss}>
-                {this.state.error_message}
+              <Alert color={this.state.alert_color} isOpen={this.state.alert_visible} toggle={this.onDismiss}>
+                {this.state.alert_message}
               </Alert>
             </Col>
           </Row>
