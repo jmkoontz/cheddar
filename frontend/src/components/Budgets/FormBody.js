@@ -40,7 +40,7 @@ function FormBody(props) {
                   :
                   <Input
                     onChange={props.handleCategoryChange}
-                    type="text"
+                    type="number"
                     id={index}
                     placeholder="Amount"
                     required="required"
@@ -64,8 +64,8 @@ function FormBody(props) {
             <Button onClick={props.resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
           }
         </Col>
-        <Col>
-          <Dropdown isOpen={props.dropdown} toggle={() => props.toggleDropDown(!props.dropdown)}>
+        <Col className="buttonFix">
+          <Dropdown  isOpen={props.dropdown} toggle={() => props.toggleDropDown(!props.dropdown)}>
             <DropdownToggle caret>
               {props.selectedDrop}
             </DropdownToggle>
