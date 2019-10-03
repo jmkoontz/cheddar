@@ -5,7 +5,7 @@ import HighchartsReact from 'highcharts-react-official';
 import { Button, Row, Col, Card, CardHeader, CardFooter, CardBody, CardTitle, CardText } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import axios from 'axios';
-import '../../css/Budgets.css';
+import '../../css/Transactions.css';
 
 function Transactions(props) {
 
@@ -86,7 +86,7 @@ function Transactions(props) {
 		//   date: date,
 		//   category: transactionCate
 		// };
-		console.log();
+		
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
 		let queryTwo = `&endYear=${startDate.getFullYear()}&endMonth=${startDate.getMonth()}&endDay=${startDate.getDay()}`;
 		let query = queryOne + queryTwo;
@@ -116,29 +116,29 @@ function Transactions(props) {
 	return (
 		<div >
 			<h3>Transactions Page</h3>
-			<Row>
+			{/* <Row>
 				<Col sm={4} />
 				<Col sm={4}>
 
 				</Col>
 				<Col sm={4} />
-			</Row>
-			<Row>
-				<Col sm={2} />
+			</Row> */}
+			<Row className="padTop">
+				<Col sm={1} />
 				<Col sm={6}>
 					<HighchartsReact
 						highcharts={Highcharts}
 						options={chartData}
 					/>
 				</Col>
-				<Col sm={4} >
+				<Col sm={3} >
 					<Card>
 						<CardHeader>
 							Enter Date Range
 						</CardHeader>
 						<CardBody>
 							<Row>
-								<Col>
+								<Col >
 									<p>Start Date</p>
 									<DatePicker
 										id="date"
@@ -147,7 +147,7 @@ function Transactions(props) {
 										maxDate={new Date()}
 									/>
 								</Col>
-								<Col>
+								<Col >
 									<p>to</p>
 								</Col>
 								<Col >
@@ -159,12 +159,14 @@ function Transactions(props) {
 										maxDate={new Date()}
 									/>
 								</Col>
+							</Row>
+							<Row>
 								<Col sm={12}>
 									<Button onClick={getTransactions}>
-
 									</Button>
 								</Col>
 							</Row>
+
 						</CardBody>
 					</Card>
 				</Col>
