@@ -9,20 +9,6 @@ export default (app) => {
     let data;
     try {
       data = await getUser(req.params.uid);
-      /*data = [
-        {
-          title: "rent due",
-          start: new Date,
-          end: new Date,
-          allDay: true
-        }, {
-          title: "rent due 2",
-          start: new Date,
-          end: new Date,
-          allDay: true
-        }
-      ];*/
-
       data = data.events;
     } catch (err) {
       data = {error: parseError(err)};
@@ -33,22 +19,60 @@ export default (app) => {
 
   // Create a new event
   app.post('/Cheddar/Calendar/event/:uid', async (req, res) => {
-    const events = await getUser(req.params.uid).events;
-    events.append(req.body);
+    let data;
+    try {
+      const user = await getUser(req.params.uid);
+      const events = user.events;
+      events.push(req.body);
 
-    await editUser(req.params.uid, {events: events});
+      data = await editUser(req.params.uid, {events: events});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
 
     buildResponse(res, data);
   });
 
   // edit an event indexed by the id
-  app.put('/Cheddar/Calendar/event/:uid/:eventId', async (req, res) => {
+  app.put('/Cheddar/Calendar/event/:uid', async (req, res) => {
+    let data;
+    try {
+      const user = await getUser(req.params.uid);
+      const events = user.events;
+
+      for (let i = 0; i < events.length; i++) {
+        if (events[i].id === req.body.id) {
+          events[i] = req.body;
+          break;
+        }
+      }
+
+      data = await editUser(req.params.uid, {events: events});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
 
     buildResponse(res, data);
   });
 
   // Delete an event
   app.delete('/Cheddar/Calendar/event/:uid/:eventId', async (req, res) => {
+    let data;
+    try {
+      const user = await getUser(req.params.uid);
+      const events = user.events;
+
+      for (let i = 0; i < events.length; i++) {
+        if (events[i].id == req.params.eventId) {
+          delete events[i];
+          break;
+        }
+      }
+
+      data = await editUser(req.params.uid, {events: events});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
 
     buildResponse(res, data);
   });

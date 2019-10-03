@@ -23,15 +23,18 @@ class EventCalendar extends React.Component {
     this.displayEvents();
   }
 
-  displayEvents () {
-    axios.get('http://localhost:8080/Cheddar/Calendar/123456').then((resp) => {
+  displayEvents = () => {
+    axios.get('http://localhost:8080/Cheddar/Calendar/' + sessionStorage.getItem('user')).then((resp) => {
       this.setState({
         events: resp.data
       });
     });
-  }
+  };
 
   onSelectEvent = (event) => {
+    event.start = new Date(event.start);
+    event.end = new Date(event.start);
+
     this.setState({
       selectedEvent: event,
       isCreatingEvent: false
@@ -45,7 +48,11 @@ class EventCalendar extends React.Component {
     event.id = Date.now();
 
     this.setState({
-      selectedEvent: event,
+      selectedEvent: {
+        start: event.start,
+        end: event.start,
+        id: event.id
+      },
       isCreatingEvent: true
     });
 
@@ -75,6 +82,7 @@ class EventCalendar extends React.Component {
           ref={this.eventModal}
           event={this.state.selectedEvent}
           isNew={this.state.isCreatingEvent}
+          onClose={this.displayEvents}
         />
       </div>
     );

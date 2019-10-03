@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Calendar from 'react-calendar';
+import axios from 'axios';
 
 import './EventModal.css';
 
@@ -27,8 +28,25 @@ class EventModal extends React.Component {
 
   handleSave = () => {
     // Save stuff here
+    if (this.props.isNew) {
+      axios.post('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user'), this.state.event).then((resp) => {
+        this.setState({isSaved: true});
+        this.handleClose();
+      });
+    } else {
+      axios.put('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user'), this.state.event).then((resp) => {
+        this.setState({isSaved: true});
+        this.handleClose();
+      });
+    }
+  };
 
-    this.handleClose();
+  handleDelete = () => {
+    // Delete stuff here
+    axios.delete('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user') + '/' + this.state.event.id, this.state.event).then((resp) => {
+      this.setState({isSaved: true});
+      this.handleClose();
+    });
   };
 
   handleClose = () => {
@@ -111,7 +129,7 @@ class EventModal extends React.Component {
 
         <Modal.Footer>
           <Button variant="secondary" onClick={this.handleClose}>Cancel</Button>
-
+          {this.props.isNew ? null : <Button variant="danger" onClick={this.handleDelete}>Delete</Button>}
           <Button variant="primary" onClick={this.handleSave}>Save Event</Button>
         </Modal.Footer>
       </Modal>
