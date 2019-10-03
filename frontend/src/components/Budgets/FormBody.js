@@ -7,7 +7,9 @@ function FormBody(props) {
 
   useEffect(
     () => {
-
+      if (props.pickedCategory === "Custom") {
+        props.setButtonDisplay(true);
+      }
     },
     [props]
   );
