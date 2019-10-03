@@ -157,9 +157,6 @@ function Transactions(props) {
 									/>
 								</Col>
 								<Col >
-									<p>to</p>
-								</Col>
-								<Col >
 									<p>End Date</p>
 									<DatePicker
 										id="date"
@@ -169,7 +166,7 @@ function Transactions(props) {
 									/>
 								</Col>
 							</Row>
-							<Row>
+							<Row  className="padTop">
 								<Col sm={12}>
 									<Button onClick={getTransactions}>Get Transactions</Button>
 								</Col>
