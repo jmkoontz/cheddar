@@ -11,7 +11,7 @@ function Transactions(props) {
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
-	const [endDate, setEndDate] = useState();
+	const [endDate, setEndDate] = useState(new Date());
 	const [startDate, setStartDate] = useState();
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of 
@@ -48,7 +48,7 @@ function Transactions(props) {
 			daysArray.push(0);
 		}
 
-		console.log(transactionsList.length);
+		console.log(transactionsList);
 
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
@@ -58,7 +58,6 @@ function Transactions(props) {
 			daysArray[index] += tmpObj.amount;
 
 		}
-
 
 		let options = {
 			title: {
@@ -72,7 +71,7 @@ function Transactions(props) {
 			},
 			series: [{
 				data: daysArray,
-				pointStart: Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDay()),
+				pointStart: startDate.getTime(),
 				pointInterval: 24 * 3600 * 1000 // one day
 			}],
 			plotOptions: {
