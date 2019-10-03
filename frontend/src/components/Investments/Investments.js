@@ -42,11 +42,29 @@ class Investments extends React.Component {
             },
             selectedCompanies: [],
             showInfo: false,
+            uid: sessionStorage.getItem('user'),
         }
     }
 
 
     componentDidMount(){
+        const test = {uid: this.state.uid};
+        console.log(this.state.uid);
+        axios.get("http://localhost:8080/Cheddar/Investments", {
+            params: test,
+                }).then(res => {
+                    var companies = this.state.companies;
+                    var i;
+                    var trackedCompanies = res.data.trackedCompanies;
+                    for(i=0;i<trackedCompanies.length;i++){
+                        companies[trackedCompanies[i]]["tracked"]=true;
+                    }
+                    this.setState({
+                        companies: companies,
+                        selectedCompanies: res.data.trackedCompanies,
+                    });
+            //console.log(res);
+        });
         if(this.state.defaultRate == "Daily"){
             if(this.state.frequency != "TIME_SERIES_DAILY_ADJUSTED"){
                 this.setState({frequency: "TIME_SERIES_DAILY_ADJUSTED"},
@@ -235,7 +253,7 @@ class Investments extends React.Component {
                             if(this.state.companies[name]["tracked"] == true){
                                 checkedd = true;
                             }
-                            return (<Form.Check type="checkbox" label={name} checked={checkedd} onClick={() => this.addSelectedCompany(name)}/>)
+                            return (<Form.Check key={name+this.state.companies[name]["id"]} type="checkbox" label={name} checked={checkedd} onChange={() => this.addSelectedCompany(name)}/>)
                         })}
                     </Form.Group>
                     <Button variant="primary" onClick={this.showModal}>
@@ -267,8 +285,8 @@ class Investments extends React.Component {
                 </Modal.Body>
                 </Modal>
                 <DropdownButton id="dropdown-basic-button" title={this.state.companyName}>
-                {this.state.selectedCompanies.map((name)=>{
-                    return (<Dropdown.Item eventKey={this.state.companies[name]} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
+                {this.state.selectedCompanies.map((name,index)=>{
+                    return (<Dropdown.Item key={this.state.companies[name]+index} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
                 })}
                 </DropdownButton>
                 <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
