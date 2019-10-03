@@ -102,7 +102,7 @@ function TransactionForm(props) {
                   <DatePicker
                     id="date"
                     selected={date}
-                    onChange={d => setDate(d)}
+                    onChange={d => setDate(date.setHours(0,0,0,0))}
                     maxDate={new Date()}
                   />
                 </FormGroup>

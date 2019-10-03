@@ -57,7 +57,7 @@ function Transactions(props) {
 	 * Helper function to calculate the difference between two dates
 	 */
 	const calcNumberDays = (end, start) => {
-		return ((endDate - startDate) / (24 * 3600 * 1000)) + 1;
+		return ((endDate.getTime() - startDate.getTime()) / (24 * 3600 * 1000)) + 1;
 	}
 
 	/**
@@ -67,20 +67,23 @@ function Transactions(props) {
 		let numDays = calcNumberDays(endDate, startDate);
 		let daysArray = [];
 
+		// Populate the daysArray with the number of days between the start and end dates
 		for (let x = 0; x < numDays; x++) {
 			daysArray.push(0);
 		}
 
-		console.log(daysArray);
+		console.log(transactions);
 
+		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
-			console.log(transactionsList[x]);
-			let index = calcNumberDays(transactionsList[x].date - startDate) - 1;
-			console.log(index);
-			if (index >= 0 && index < transactionsList.length) {
-				daysArray[index] += transactionsList[x].amount;
-				console.log(daysArray[index]);
-			}
+			console.log(startDate.getTime());
+			console.log(transactionsList[x].date.getTime());
+			// let index = calcNumberDays(transactionsList[x].date - startDate);
+			// console.log(index);
+			// if (index >= 0 && index < transactionsList.length) {
+			// 	daysArray[index] += transactionsList[x].amount;
+			// 	console.log(daysArray[index]);
+			// }
 		}
 		console.log(daysArray);
 	}
@@ -105,7 +108,7 @@ function Transactions(props) {
 				// handle success
 				console.log("Success");
 				console.log(response);
-
+				setTransactions(response.data);
 				// Update the transaction state
 				sortByDay(response.data);
 
