@@ -14,12 +14,12 @@ function FixedAmount(props) {
    * Function to calculate how much debt to pay a month
    */
   const calculatePayment = () => {
-    let monthlyPayment = amount / timeframe;
+    let monthlyIncome = amount / timeframe;
 
     // Make a tmp object to store the calculated amount
     let tmpObj = {
       name: "Income",
-      amount: monthlyPayment,
+      amount: monthlyIncome,
       preset: true
     }
 
@@ -55,10 +55,10 @@ function FixedAmount(props) {
         <div>
           <Row className="addSpace">
             <Col>
-              <Label for="sum">Enter Your Savings</Label>
+              <Label for="sum">Enter Your Sum of Money or Valued Objects</Label>
               <Input onChange={handleAmountChange} name="sum" id="sum" placeholder="10000" />
               <Label for="timeframe">Enter Your Timeframe</Label>
-              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of months" />
+              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of weeks" />
             </Col>
           </Row>
           <Row>
