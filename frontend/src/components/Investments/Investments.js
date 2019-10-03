@@ -296,7 +296,7 @@ class Investments extends React.Component {
 
         
         return (
-            <div className="BigDivArea parent">
+            <div className="BigDivArea">
                 <h3>Investments!</h3>
                 <div className="add-button-container">
                     <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
