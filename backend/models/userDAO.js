@@ -49,3 +49,16 @@ export function editUser(uid, changes) {
       return Promise.reject(err);
     });
 }
+
+export function deleteUser(uid) {
+  return userModel.findOneAndDelete({_id: uid})
+    .then((user) => {
+      if (user)
+        return Promise.resolve(user);
+      else
+        return Promise.reject('UserError: User not found');
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
