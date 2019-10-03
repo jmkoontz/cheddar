@@ -19,6 +19,7 @@ function Budgets() {
 	const [dropdown, toggleDropDown] = useState(false); // Toggles the drop down opening and closing
 	const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
 	const [categoryArr, setCategoryArr] = useState([]);
+	const [buttonDisplay, setButtonDisplay] = useState(false); // Tells the modal to display the button
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [budgetType, setBudgetType] = useState(); // Currently selected budget type
@@ -226,7 +227,8 @@ function Budgets() {
 		budgetList: budgetList,
 		setModal: setModal,
 		newData: newData,
-		setNewData: setNewData
+		setNewData: setNewData,
+		setButtonDisplay: setButtonDisplay
 
 	};
 
@@ -289,7 +291,7 @@ function Budgets() {
 					}
 				</ModalBody>
 
-				{pickedCategory === "Select a Budget Type"
+				{!buttonDisplay || pickedCategory !== "Custom"
 					?
 					<ModalFooter>
 						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
