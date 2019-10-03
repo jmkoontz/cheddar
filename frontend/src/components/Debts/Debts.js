@@ -94,10 +94,10 @@ class Debts extends React.Component {
               <label>
               <select name="category" value={this.state.category} onChange={this.handleChange}>
                 <option value="Choose a category">Choose a category</option>
-                <option value="grapefruit">Grapefruit</option>
-                <option value="lime">Lime</option>
-                <option value="coconut">Coconut</option>
-                <option value="mango">Mango</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Vehicle">Vehicle</option>
+                <option value="coconut">Loan</option>
+                <option value="mango">Other</option>
               </select>
               <br/>
                 <label>
