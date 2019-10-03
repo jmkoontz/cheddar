@@ -63,6 +63,16 @@ export const allInvestmentsSchema = new mongoose.Schema({
     investments: [investmentSchema]
 });
 
+export const retirementHistorySchema = new mongoose.Schema({
+    date: String,
+    amount: Number,
+});
+
+export const retirementSchema = new mongoose.Schema({
+    total: Number,
+    history: [retirementHistorySchema]
+});
+
 export const userSchema = new mongoose.Schema({
   _id: String,
   firstName: String,
@@ -78,6 +88,7 @@ export const userSchema = new mongoose.Schema({
   events: [eventsSchema],
   savings: [savingsSchema],
   debts: [debtSchema],
-  investments: allInvestmentsSchema
+  investments: allInvestmentsSchema,
+  retirment: retirementSchema
 });
 

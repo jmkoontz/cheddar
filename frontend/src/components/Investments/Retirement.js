@@ -45,8 +45,19 @@ class Retirement extends React.Component {
 
         
         return (
-            <div className="BigDivArea parent">
+            <div className="BigDivArea">
                 <h3>Retirement!</h3>
+                <Form>
+                    <Form.Group controlId="formBasic">
+                        <Form.Label>Invested Amount</Form.Label>
+                        <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
+                        <Form.Label>Date Invested</Form.Label>
+                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
+                    </Form.Group>
+                    <Button variant="primary" onClick={() => this.updateInvestment()}>
+                        Submit
+                    </Button>
+                </Form>
             </div>
         );
     }
