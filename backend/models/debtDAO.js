@@ -24,9 +24,9 @@ export async function createDebt(uid, debt) {
   for (let i in debt) {
     if (debt.hasOwnProperty(i)) {
       if (debt[i] === undefined)
-        return Promise.reject('UserError: Missing field(s)');
-      else if (debt[i] === '')
-        return Promise.reject('UserError: Missing field(s)');
+        return Promise.reject('UserError: Missing field(s): ' + i);
+      else if (debt[i] === '' & i != "nickname")
+        return Promise.reject('UserError: Missing field(s): ' + i);
     }
   }
 
