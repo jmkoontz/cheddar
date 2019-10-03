@@ -9,12 +9,15 @@ import '../../css/Transactions.css';
 
 function Transactions(props) {
 
+
+
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState();
 	const [startDate, setStartDate] = useState();
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of 
+	//const [chartOptions, setChartOptions] = useState();
 
 	/**
 	 * Helper method to show each data point on the chart
@@ -36,8 +39,8 @@ function Transactions(props) {
 			}
 		},
 		series: [{
-			data: [100, 2, 3],
-			pointStart: startDate,
+			data: [],
+			pointStart: "",
 			pointInterval: 24 * 3600 * 1000 // one day
 		}],
 		plotOptions: {
@@ -50,39 +53,52 @@ function Transactions(props) {
 			}
 		}
 	}
-
 	const [chartData, setChartData] = useState(options); // Obj containing chart info
 
 	/**
 	 * Helper function to calculate the difference between two dates
 	 */
 	const calcNumberDays = (end, start) => {
-		return ((endDate - startDate) / (24 * 3600 * 1000)) + 1;
+		let newEnd = new Date(end);
+		let newStart = new Date(start);
+		return Math.floor((newEnd.getTime() - newStart.getTime()) / (24 * 3600 * 1000));
 	}
 
 	/**
 	 * Sorts all the transactions by date and stores them in their own
 	 */
 	const sortByDay = (transactionsList) => {
-		let numDays = calcNumberDays(endDate, startDate);
+		let numDays = calcNumberDays(endDate, startDate) + 1;
 		let daysArray = [];
 
+		// Populate the daysArray with the number of days between the start and end dates
 		for (let x = 0; x < numDays; x++) {
 			daysArray.push(0);
 		}
 
-		console.log(daysArray);
+		console.log(transactionsList.length);
 
+		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
-			console.log(transactionsList[x]);
-			let index = calcNumberDays(transactionsList[x].date - startDate) - 1;
+
+			let tmpObj = transactionsList[x];
+			let index = calcNumberDays(tmpObj.date, startDate);
 			console.log(index);
 			if (index >= 0 && index < transactionsList.length) {
-				daysArray[index] += transactionsList[x].amount;
-				console.log(daysArray[index]);
+				daysArray[index] += tmpObj.amount;
+
+				//console.log(daysArray[index]);
 			}
 		}
 		console.log(daysArray);
+
+
+		let tmpChart = chartData;
+		tmpChart.series[0].data = daysArray;
+		tmpChart.series[0].pointStart = Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDay());
+		console.log(tmpChart);
+		setChartData(tmpChart);
+		setDayList(daysArray);
 	}
 
 	/**
@@ -95,7 +111,7 @@ function Transactions(props) {
 		//   date: date,
 		//   category: transactionCate
 		// };
-		
+
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDay()}`;
 		let query = queryOne + queryTwo;
@@ -105,13 +121,14 @@ function Transactions(props) {
 				// handle success
 				console.log("Success");
 				console.log(response);
-
+				setTransactions(response.data);
 				// Update the transaction state
 				sortByDay(response.data);
 
 			})
 			.catch((error) => {
 				console.log("Transaction call did not work");
+				console.log(error);
 			});
 	}
 
@@ -124,21 +141,21 @@ function Transactions(props) {
 
 	return (
 		<div >
-			<h3>Transactions Page</h3>
-			{/* <Row>
-				<Col sm={4} />
-				<Col sm={4}>
-
-				</Col>
-				<Col sm={4} />
-			</Row> */}
+			<h3 className="padTop">Transactions Page</h3>
 			<Row className="padTop">
 				<Col sm={1} />
 				<Col sm={6}>
-					<HighchartsReact
-						highcharts={Highcharts}
-						options={chartData}
-					/>
+					{dayList
+						?
+						<HighchartsReact
+							allowChartUpdate={true}
+							highcharts={Highcharts}
+							options={chartData}
+						/>
+						:
+						<div />
+					}
+
 				</Col>
 				<Col sm={3} >
 					<Card>
@@ -166,7 +183,7 @@ function Transactions(props) {
 									/>
 								</Col>
 							</Row>
-							<Row  className="padTop">
+							<Row className="padTop">
 								<Col sm={12}>
 									<Button onClick={getTransactions}>Get Transactions</Button>
 								</Col>
