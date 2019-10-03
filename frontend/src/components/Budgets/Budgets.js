@@ -228,7 +228,8 @@ function Budgets() {
 		setModal: setModal,
 		newData: newData,
 		setNewData: setNewData,
-		setButtonDisplay: setButtonDisplay
+		setButtonDisplay: setButtonDisplay,
+		pickedCategory: pickedCategory
 
 	};
 
@@ -290,7 +291,7 @@ function Budgets() {
 					}
 				</ModalBody>
 
-				{!buttonDisplay || pickedCategory !== "Custom"
+				{!buttonDisplay
 					?
 					<ModalFooter>
 						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
