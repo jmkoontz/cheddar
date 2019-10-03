@@ -9,8 +9,6 @@ import '../../css/Transactions.css';
 
 function Transactions(props) {
 
-
-
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState();
@@ -27,33 +25,7 @@ function Transactions(props) {
 		setHoverData(e.target.category);
 	}
 
-	// Default for chart TODO: remove this and replace with real data after a server call
-	const options = {
-		title: {
-			text: 'My chart'
-		},
-		xAxis: {
-			type: 'datetime',
-			dateTimeLabelFormats: {
-				day: '%b %e'
-			}
-		},
-		series: [{
-			data: [],
-			pointStart: "",
-			pointInterval: 24 * 3600 * 1000 // one day
-		}],
-		plotOptions: {
-			series: {
-				point: {
-					events: {
-						mouseOver: showHoverData
-					}
-				}
-			}
-		}
-	}
-	const [chartData, setChartData] = useState(options); // Obj containing chart info
+	const [chartData, setChartData] = useState(); // Obj containing chart info
 
 	/**
 	 * Helper function to calculate the difference between two dates
@@ -80,24 +52,41 @@ function Transactions(props) {
 
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
-
+			// Add each transaction into its respective array index
 			let tmpObj = transactionsList[x];
 			let index = calcNumberDays(tmpObj.date, startDate);
-			console.log(index);
-			if (index >= 0 && index < transactionsList.length) {
-				daysArray[index] += tmpObj.amount;
+			daysArray[index] += tmpObj.amount;
 
-				//console.log(daysArray[index]);
+		}
+
+
+		let options = {
+			title: {
+				text: 'My chart'
+			},
+			xAxis: {
+				type: 'datetime',
+				dateTimeLabelFormats: {
+					day: '%b %e'
+				}
+			},
+			series: [{
+				data: daysArray,
+				pointStart: Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDay()),
+				pointInterval: 24 * 3600 * 1000 // one day
+			}],
+			plotOptions: {
+				series: {
+					point: {
+						events: {
+							mouseOver: showHoverData
+						}
+					}
+				}
 			}
 		}
-		console.log(daysArray);
 
-
-		let tmpChart = chartData;
-		tmpChart.series[0].data = daysArray;
-		tmpChart.series[0].pointStart = Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDay());
-		console.log(tmpChart);
-		setChartData(tmpChart);
+		setChartData(options);
 		setDayList(daysArray);
 	}
 
@@ -105,22 +94,14 @@ function Transactions(props) {
 	 * Server call to get all transactions in a given time frame
 	 */
 	const getTransactions = () => {
-		// let tmpObj = {
-		//   name: transactionName,
-		//   amount: transactionAmount,
-		//   date: date,
-		//   category: transactionCate
-		// };
-
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDay()}`;
 		let query = queryOne + queryTwo;
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
-				// handle success
-				console.log("Success");
-				console.log(response);
+				// handle success				
+				
 				setTransactions(response.data);
 				// Update the transaction state
 				sortByDay(response.data);
