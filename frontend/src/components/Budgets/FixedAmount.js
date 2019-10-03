@@ -74,6 +74,6 @@ function FixedAmount(props) {
       }
     </div >
   );
-};
+}
 
 export default FixedAmount;

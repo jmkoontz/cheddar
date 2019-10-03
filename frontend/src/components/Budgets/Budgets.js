@@ -166,6 +166,9 @@ function Budgets() {
 	const createBudget = () => {
 		toggleAlert();
 
+		// Form validation
+
+
 		// TODO remove hard coded values here
 		let tmpIncome;
 		let index = 0;
@@ -175,37 +178,32 @@ function Budgets() {
 				tmpIncome = categoryArr[x].amount;
 			}
 		}
+
 		//console.log(index);
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);;
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 		//console.log(removedIncomeArr)
 
-		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
-			{
-				name: budgetName,
-				type: pickedCategory,
-				income: tmpIncome,
-				timeFrame: 100,
-				favorite: false,
-				budgetCategories: removedIncomeArr
-			}).then(function (response) {
-
-				console.log(response);
-				setModal(false);
-				getBudgets();
-
-
-			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
-			});
+		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`, {
+      name: budgetName,
+      type: pickedCategory,
+      income: tmpIncome,
+      timeFrame: 100,
+      favorite: false,
+      budgetCategories: removedIncomeArr
+    }).then(function (response) {
+      console.log(response);
+      setModal(false);
+      getBudgets();
+    }).catch(function (error) {
+      //setErrMsg(error);
+      //setCreationAlert(true);
+      console.log(error);
+    });
 	};
 
-	useEffect(
-		() => {
+	useEffect(() => {
 			getBudgets();
-		},
-		[userID]
+		}, [userID]
 	);
 
 	const formInfo = {
