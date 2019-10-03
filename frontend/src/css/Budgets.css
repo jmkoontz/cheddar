@@ -38,3 +38,7 @@
  .cardSize {
      border-radius: 12px !important;
  }
+ 
+ .card {
+    width: auto !important;
+}
