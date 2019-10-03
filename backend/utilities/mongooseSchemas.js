@@ -29,7 +29,7 @@ export const investmentSchema = new mongoose.Schema({
     type: String,
     startingInvestment: Number,
     company: String,
-    startDate: Date
+    startDate: String,
 });
 
 export const allInvestmentsSchema = new mongoose.Schema({

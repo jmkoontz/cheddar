@@ -18,6 +18,7 @@ import ModalBody from 'react-bootstrap/ModalBody';
 import ModalTitle from 'react-bootstrap/ModalTitle';
 import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
+import { isNullOrUndefined } from 'util';
 
 
 
@@ -40,9 +41,13 @@ class Investments extends React.Component {
                 "Google": {"id":"GOOG","tracked":false},
                 "Microsoft": {"id":"MSFT","tracked":false},
             },
+            investments: [],
             selectedCompanies: [],
             showInfo: false,
             uid: sessionStorage.getItem('user'),
+            enteredInvestment: 0,
+            enteredInvestmentDate: "",
+            newInvestment: {},
         }
     }
 
@@ -62,6 +67,7 @@ class Investments extends React.Component {
                     this.setState({
                         companies: companies,
                         selectedCompanies: res.data.trackedCompanies,
+                        investments: res.data.investments,
                     });
             //console.log(res);
         });
@@ -116,6 +122,8 @@ class Investments extends React.Component {
                     dataArr.push({type: "line", dataPoints: points})
                     this.setState({
                         data: dataArr,
+                        updateInvestedAmount: 0,
+                        updateInvestmentDate: "",
                     });
                     return true;
                 }
@@ -195,7 +203,8 @@ class Investments extends React.Component {
                 companies.splice(companies.indexOf(company),1);
             }
             axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
-                updatedCompanies: companies,
+                "uid": this.state.uid,
+                "updatedCompanies": companies,
                 }).then(res => {
                     this.setState({
                         companies: originalCompanies,
@@ -210,6 +219,7 @@ class Investments extends React.Component {
             }
 
             axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+                "uid": this.state.uid,
                 updatedCompanies: companies,
                 }).then(res => {
                     this.setState({
@@ -220,8 +230,55 @@ class Investments extends React.Component {
             //console.log(res);
         }
         
-        
-        
+    }
+
+    updateInvestedAmount = (amount) => {
+        console.log(amount.target.value);
+        this.setState({
+            enteredInvestment: amount.target.value,
+        });
+    }
+
+    updateInvestmentDate = (date) => {
+        console.log(date.target.value);
+        this.setState({
+            enteredInvestmentDate: date.target.value,
+        });
+    }
+
+    updateInvestment = () => {
+        let investment = {};
+        investment["type"] = "stock";
+        investment["startingInvestment"] = this.state.enteredInvestment;
+        investment["startDate"] = this.state.enteredInvestmentDate;
+        investment["company"] = this.state.companyName;
+        this.setState({
+            newInvestment: investment,
+            enteredInvestment: 0,
+            enteredInvestmentDate: "",
+        },()=>{console.log(this.state.newInvestment)});
+        let i = 0;
+        var proceed = true;
+        for(i=0;i<this.state.investments.length;i++){
+            if(this.state.investments[i]){
+                if(this.state.investments[i].company && this.state.investments[i].company == this.state.companyName){
+                    proceed = false;
+                }
+            }
+        }
+        if(proceed){
+            console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
+            this.state.investments.push(investment);
+            axios.post("http://localhost:8080/Cheddar/Investments", {
+                "uid": this.state.uid,
+                "investments": this.state.investments,
+            }).then(res => {
+                this.showInfoModal();
+            });
+        }
+        else{
+            alert("Investment already exists");
+        }
         
     }
 
@@ -242,7 +299,7 @@ class Investments extends React.Component {
             <div className="BigDivArea parent">
                 <h3>Investments!</h3>
                 <div className="add-button-container">
-                    <Button className="add-button" variant="primary" onClick={this.showModal}>Add</Button>
+                    <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
                 </div>
                 <div className="cardContainer visible-border">
                     <CanvasJSChart options = {options}
@@ -284,11 +341,11 @@ class Investments extends React.Component {
                 <Form>
                     <Form.Group controlId="formBasic">
                         <Form.Label>Invested Amount</Form.Label>
-                        <Form.Control type="number"/>
+                        <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
                         <Form.Label>Date Invested</Form.Label>
-                        <Form.Control type="date"/>
+                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
                     </Form.Group>
-                    <Button variant="primary" onClick={this.showInfoModal}>
+                    <Button variant="primary" onClick={() => this.updateInvestment()}>
                         Submit
                     </Button>
                     </Form>
