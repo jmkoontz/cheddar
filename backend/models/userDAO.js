@@ -33,19 +33,7 @@ export function createUser(user) {
 }
 
 export function editUser(uid, changes) {
-  let updateClause = {$set: {}};
-
-  if (changes.firstName)
-    updateClause.$set['firstName'] = changes.firstName;
-
-  if (changes.lastName)
-    updateClause.$set['lastName'] = changes.lastName;
-
-  if (changes.type)
-    updateClause.$set['type'] = changes.type;
-
-  if (changes.netWorth)
-    updateClause.$set['netWorth'] = changes.netWorth;
+  let updateClause = {$set: changes};
 
   return userModel.findOneAndUpdate(
     {'_id': uid},
