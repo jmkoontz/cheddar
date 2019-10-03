@@ -6,6 +6,7 @@ import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
 import FormBody from "./FormBody";
+import FixedAmount from "./FixedAmount";
 
 function Budgets() {
 
