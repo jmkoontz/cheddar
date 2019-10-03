@@ -51,6 +51,18 @@ export const debtSchema = new mongoose.Schema({
   interestRate: Number
 });
 
+export const investmentSchema = new mongoose.Schema({
+    type: String,
+    startingInvestment: Number,
+    company: String,
+    startDate: String,
+});
+
+export const allInvestmentsSchema = new mongoose.Schema({
+    trackedCompanies: [String],
+    investments: [investmentSchema]
+});
+
 export const userSchema = new mongoose.Schema({
   _id: String,
   firstName: String,
@@ -65,5 +77,7 @@ export const userSchema = new mongoose.Schema({
   transactions: [transactionSchema],
   events: [eventsSchema],
   savings: [savingsSchema],
-  debts: [debtSchema]
+  debts: [debtSchema],
+  investments: allInvestmentsSchema
 });
+

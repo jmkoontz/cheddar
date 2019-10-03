@@ -18,6 +18,7 @@ import ModalBody from 'react-bootstrap/ModalBody';
 import ModalTitle from 'react-bootstrap/ModalTitle';
 import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
+import { isNullOrUndefined } from 'util';
 
 
 
@@ -40,13 +41,36 @@ class Investments extends React.Component {
                 "Google": {"id":"GOOG","tracked":false},
                 "Microsoft": {"id":"MSFT","tracked":false},
             },
+            investments: [],
             selectedCompanies: [],
             showInfo: false,
+            uid: sessionStorage.getItem('user'),
+            enteredInvestment: 0,
+            enteredInvestmentDate: "",
+            newInvestment: {},
         }
     }
 
 
     componentDidMount(){
+        const test = {uid: this.state.uid};
+        console.log(this.state.uid);
+        axios.get("http://localhost:8080/Cheddar/Investments", {
+            params: test,
+                }).then(res => {
+                    var companies = this.state.companies;
+                    var i;
+                    var trackedCompanies = res.data.trackedCompanies;
+                    for(i=0;i<trackedCompanies.length;i++){
+                        companies[trackedCompanies[i]]["tracked"]=true;
+                    }
+                    this.setState({
+                        companies: companies,
+                        selectedCompanies: res.data.trackedCompanies,
+                        investments: res.data.investments,
+                    });
+            //console.log(res);
+        });
         if(this.state.defaultRate == "Daily"){
             if(this.state.frequency != "TIME_SERIES_DAILY_ADJUSTED"){
                 this.setState({frequency: "TIME_SERIES_DAILY_ADJUSTED"},
@@ -98,6 +122,8 @@ class Investments extends React.Component {
                     dataArr.push({type: "line", dataPoints: points})
                     this.setState({
                         data: dataArr,
+                        updateInvestedAmount: 0,
+                        updateInvestmentDate: "",
                     });
                     return true;
                 }
@@ -176,9 +202,14 @@ class Investments extends React.Component {
             if(companies.includes(company)){
                 companies.splice(companies.indexOf(company),1);
             }
-            this.setState({
-                companies: originalCompanies,
-                selectedCompanies: companies,
+            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+                "uid": this.state.uid,
+                "updatedCompanies": companies,
+                }).then(res => {
+                    this.setState({
+                        companies: originalCompanies,
+                        selectedCompanies: companies,
+                    });
             });
         }
         else{
@@ -186,14 +217,68 @@ class Investments extends React.Component {
             if(!companies.includes(company)){
                 companies.push(company);
             }
-            this.setState({
-                selectedCompanies: companies,
-                companies: originalCompanies,
-            },()=>{alert(this.state.selectedCompanies)});
+
+            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+                "uid": this.state.uid,
+                updatedCompanies: companies,
+                }).then(res => {
+                    this.setState({
+                        selectedCompanies: companies,
+                        companies: originalCompanies,
+                    });
+            });
+            //console.log(res);
         }
         
-        
-        
+    }
+
+    updateInvestedAmount = (amount) => {
+        console.log(amount.target.value);
+        this.setState({
+            enteredInvestment: amount.target.value,
+        });
+    }
+
+    updateInvestmentDate = (date) => {
+        console.log(date.target.value);
+        this.setState({
+            enteredInvestmentDate: date.target.value,
+        });
+    }
+
+    updateInvestment = () => {
+        let investment = {};
+        investment["type"] = "stock";
+        investment["startingInvestment"] = this.state.enteredInvestment;
+        investment["startDate"] = this.state.enteredInvestmentDate;
+        investment["company"] = this.state.companyName;
+        this.setState({
+            newInvestment: investment,
+            enteredInvestment: 0,
+            enteredInvestmentDate: "",
+        },()=>{console.log(this.state.newInvestment)});
+        let i = 0;
+        var proceed = true;
+        for(i=0;i<this.state.investments.length;i++){
+            if(this.state.investments[i]){
+                if(this.state.investments[i].company && this.state.investments[i].company == this.state.companyName){
+                    proceed = false;
+                }
+            }
+        }
+        if(proceed){
+            console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
+            this.state.investments.push(investment);
+            axios.post("http://localhost:8080/Cheddar/Investments", {
+                "uid": this.state.uid,
+                "investments": this.state.investments,
+            }).then(res => {
+                this.showInfoModal();
+            });
+        }
+        else{
+            alert("Investment already exists");
+        }
         
     }
 
@@ -214,7 +299,7 @@ class Investments extends React.Component {
             <div className="BigDivArea parent">
                 <h3>Investments!</h3>
                 <div className="add-button-container">
-                    <Button className="add-button" variant="primary" onClick={this.showModal}>Add</Button>
+                    <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
                 </div>
                 <div className="cardContainer visible-border">
                     <CanvasJSChart options = {options}
@@ -235,7 +320,7 @@ class Investments extends React.Component {
                             if(this.state.companies[name]["tracked"] == true){
                                 checkedd = true;
                             }
-                            return (<Form.Check type="checkbox" label={name} checked={checkedd} onClick={() => this.addSelectedCompany(name)}/>)
+                            return (<Form.Check key={name+this.state.companies[name]["id"]} type="checkbox" label={name} checked={checkedd} onChange={() => this.addSelectedCompany(name)}/>)
                         })}
                     </Form.Group>
                     <Button variant="primary" onClick={this.showModal}>
@@ -256,19 +341,19 @@ class Investments extends React.Component {
                 <Form>
                     <Form.Group controlId="formBasic">
                         <Form.Label>Invested Amount</Form.Label>
-                        <Form.Control type="number"/>
+                        <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
                         <Form.Label>Date Invested</Form.Label>
-                        <Form.Control type="date"/>
+                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
                     </Form.Group>
-                    <Button variant="primary" onClick={this.showInfoModal}>
+                    <Button variant="primary" onClick={() => this.updateInvestment()}>
                         Submit
                     </Button>
                     </Form>
                 </Modal.Body>
                 </Modal>
                 <DropdownButton id="dropdown-basic-button" title={this.state.companyName}>
-                {this.state.selectedCompanies.map((name)=>{
-                    return (<Dropdown.Item eventKey={this.state.companies[name]} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
+                {this.state.selectedCompanies.map((name,index)=>{
+                    return (<Dropdown.Item key={this.state.companies[name]+index} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
                 })}
                 </DropdownButton>
                 <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
