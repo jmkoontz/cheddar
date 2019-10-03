@@ -95,7 +95,7 @@ function Transactions(props) {
 
 		let options = {
 			title: {
-				text: 'My chart'
+				text: 'Total Spending'
 			},
 			xAxis: {
 				type: 'datetime',
@@ -104,6 +104,7 @@ function Transactions(props) {
 				}
 			},
 			series: [{
+				name: "Daily Spending",
 				data: daysArray,
 				pointStart: startDate.getTime(),
 				pointInterval: 24 * 3600 * 1000 // one day
@@ -159,7 +160,7 @@ function Transactions(props) {
 			<h3 className="padTop">Transactions Page</h3>
 			<Row className="padTop">
 				<Col sm={1} />
-				<Col sm={6}>
+				<Col sm={5}>
 					{dayList
 						?
 						<HighchartsReact
@@ -172,6 +173,7 @@ function Transactions(props) {
 					}
 
 				</Col>
+				<Col sm={1}/>
 				<Col sm={3} >
 					<Card>
 						<CardHeader>
