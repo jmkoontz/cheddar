@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col} from 'reactstrap';
 import firebase from '../../firebase.js';
+import axios from 'axios';
 import './SignIn.css'
+import {fireauth} from "../../firebase";
 
 class AccountSettings extends Component {
 
@@ -30,7 +32,18 @@ class AccountSettings extends Component {
   };
 
   deleteAccount = () => {
-
+    let uid = sessionStorage.getItem('user');
+    axios.delete(`http://localhost:8080/Cheddar/${uid}`).then(() => {
+      window.location.reload();
+      fireauth.currentUser.delete();  // delete invalid user from Firebase
+      sessionStorage.clear(); // remove saved UID
+    }).catch((error) => {
+      if (error.response && error.response.data) {
+        console.log(error.response.data.error);
+      } else {
+        console.log(error);
+      }
+    });
   };
 
   openReauth = (ev) => {
