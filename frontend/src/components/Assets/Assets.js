@@ -24,10 +24,16 @@ class Assets extends Component {
     this.state = {
       category_names: [],
       modal: false,
-
+      child: null,
+      assetValue: 0,
     };
-
   }
+
+  addToAssetValue = (val) => {
+    this.setState({
+      assetValue: this.state.assetValue + parseInt(val),
+    })
+  };
 
   addNewCategory = (ev) => {
     ev.preventDefault();
@@ -51,10 +57,12 @@ class Assets extends Component {
 
 
   render(){
+
     return (
       <div className='divArea'>
         <div style={{height: '1em'}}/>
         <h3>Assets</h3>
+        <h3>{this.state.assetValue}</h3>
         <hr/>
 
         <Modal isOpen={this.state.modal} toggle={this.closeModal}>
@@ -87,7 +95,7 @@ class Assets extends Component {
         {this.state.category_names.map((name, i) => {
           return (
             <div key={i}>
-              <CategoryTable category_name={name}/>
+              <CategoryTable addToAssetValue={this.addToAssetValue} category_name={name}/>
             </div>
           );
         })}

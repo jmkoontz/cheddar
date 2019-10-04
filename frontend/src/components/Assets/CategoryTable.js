@@ -13,11 +13,8 @@ class CategoryTable extends Component {
       assets: [],
 
       modal_visible: false,
+      totalAssetValue: 0,
     };
-  }
-
-  componentDidMount() {
-    console.log('mounted');
   }
 
   addNewAsset = (ev) => {
@@ -29,12 +26,16 @@ class CategoryTable extends Component {
       asset_value: asset_value,
     };
     this.state.assets.push(asset);
+    this.props.addToAssetValue(asset_value);
     this.closeModal();
     this.forceUpdate();
   };
 
   removeItem = (ref, i) => {
-    ref.state.assets.splice(i, 1);
+    let asset = ref.state.assets.splice(i, 1);
+    let value = parseInt(asset[0].asset_value);
+    value *= -1;
+    this.props.addToAssetValue(value);
     ref.forceUpdate();
   };
 
