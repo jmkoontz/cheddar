@@ -6,6 +6,7 @@ import Budgets from './Budgets/Budgets';
 import CreateSavings from './Saving/CreateSavings'
 import Saving from './Saving/Saving';
 import Investments from './Investments/Investments';
+import Retirement from './Investments/Retirement';
 import Debts from './Debts/Debts';
 import Transactions from './Transactions/Transactions';
 import SignIn from './Accounts/SignIn';
@@ -61,6 +62,7 @@ class App extends Component {
             <Route path="/createsavings" render={() => <CreateSavings/>}/>
             <Route path="/saving" render={() => <Saving/>}/>
             <Route path="/investments" render={() => <Investments/>}/>
+            <Route path="/retirement" render={() => <Retirement/>}/>
             <Route path="/debts" render={() => <Debts/>}/>
             <Route path="/transactions" render={() => <Transactions/>}/>
             <Route path="/account-settings" render={() => <AccountSettings/>}/>
