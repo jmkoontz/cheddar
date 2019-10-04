@@ -249,14 +249,13 @@ function Budgets() {
 
 						<Col sm={3}>
 							<Dropdown isOpen={budgetDropDown} toggle={() => toggleBudgetDropDown(!budgetDropDown)}>
-								<DropdownToggle caret>
+								<DropdownToggle calssName="smallText" caret>
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
 									{/*TODO: clean this up and store it in a state variable*/}
 									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
