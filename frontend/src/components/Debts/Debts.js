@@ -10,14 +10,14 @@ const DebtModel = ({category, nickname, initial, currBalance, interestRate}) => 
   <div>
     {nickname && <h2>{nickname}</h2>}
     <h3>{category}</h3>
-    <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p>
+    <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p><br/>
   </div>
 )
 
 class Debts extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), show: false, debtList: [], category: '', nickname: '', initial: '', currBalance: '', interestRate: ''}
+    this.state = { userID: sessionStorage.getItem('user'), show: false, debtList: [], category: '', nickname: '', initial: '', currBalance: '', interestRate: '', validInit: false, validCurr: false, validInterest: false, validCat: false}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -35,7 +35,26 @@ class Debts extends React.Component {
     const value = target.value;
     const name = target.name;
 
-    this.setState({[name]: value});
+    this.setState({[name]: value}, () => { this.validateField(name, value) });
+  }
+
+  validateField(name, value){
+    switch(name) {
+      case "category":
+        this.setState({validCat: (value != "Choose a category")});
+        break;
+      case "initial":
+        this.setState({validInit: (value > 0)});
+        break;
+      case "currBalance":
+        this.setState({validCurr: (value > 0)});
+        break;
+      case "interestRate":
+        this.setState({validInterest: (value > 0 && value < 100)});
+        break;
+      default:
+        break;
+      }
   }
 
   handleSubmit(event){
@@ -96,8 +115,9 @@ class Debts extends React.Component {
                 <option value="Choose a category">Choose a category</option>
                 <option value="Real Estate">Real Estate</option>
                 <option value="Vehicle">Vehicle</option>
-                <option value="coconut">Loan</option>
-                <option value="mango">Other</option>
+                <option value="Loan">Loan</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Other">Other</option>
               </select>
               <br/>
                 <label>
@@ -120,12 +140,12 @@ class Debts extends React.Component {
               </form>
           </Modal.Body>
           <Modal.Footer>
-            <button variant="secondary" onClick={this.handleClose}>
+            <Button variant="secondary" onClick={this.handleClose}>
               Close
-            </button>
-            <button variant="primary" onClick={this.handleSubmit}>
+            </Button>
+            <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validCat)}>
               Save Changes
-            </button>
+            </Button>
           </Modal.Footer>
         </Modal>
       </div>

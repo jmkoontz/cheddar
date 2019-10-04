@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllSavings, getSavingsTitles, createSavings, editSavings, deleteSavings} from '../models/savingsDAO';
+import {getAllSavings, getSavingsTitles, createSavings, editSavings, deleteSavings, getOneSavings} from '../models/savingsDAO';
 
 export default (app) => {
   app.get('/Cheddar/Savings/test', async (req, res) => {
@@ -9,6 +9,18 @@ export default (app) => {
     try {
       console.log('it worked');
       data = 'Savings - Hello there';
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  //find one savings
+  app.get('Cheddar/Savings/Saving/:uid/:savingsTitle', async (req, res) => {
+    let data;
+    try {
+      data = await getOneSavings(req.params.uid, req.params.savingsTitle);
     } catch (err) {
       data = {error: parseError(err)};
     }
