@@ -58,7 +58,7 @@ function FixedAmount(props) {
               <Label for="sum">Enter Your Sum of Money or Valued Objects</Label>
               <Input onChange={handleAmountChange} name="sum" id="sum" placeholder="10000" />
               <Label for="timeframe">Enter Your Timeframe</Label>
-              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of weeks" />
+              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of months" />
             </Col>
           </Row>
           <Row>
