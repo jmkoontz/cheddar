@@ -26,24 +26,17 @@ class Assets extends Component {
   render(){
 
     return (
-      <div className='BigDivArea'>
+      <div className='divArea'>
         <div style={{height: '1em'}}/>
         <h3>Assets</h3>
         <hr/>
 
-        <div className='left'>
-        <Row>
-          <Col>
-            <Button className='signInButton' size='sm'>Add New Asset</Button>
-          </Col>
-
-        </Row>
-          <div style={{height: '1em'}}/>
-        <Row>
-          <Col>
-            <Button className='signInButton' size='sm'>Add New Category</Button>
-          </Col>
-        </Row>
+        <div className='right'>
+          <Row>
+            <Col>
+              <Button className='signInButton' size='sm'>Add New Category</Button>
+            </Col>
+          </Row>
         </div>
 
         <hr/>
