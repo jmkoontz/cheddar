@@ -77,7 +77,7 @@ function FormBody(props) {
               <DropdownItem onClick={() => props.setDropDown("Debt")}>Debt</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Housing")}>Housing</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Gas")}>Gas</DropdownItem>
-              <DropdownItem onClick={() => props.setDropDown("Utilies")}>Utilies</DropdownItem>
+              <DropdownItem onClick={() => props.setDropDown("Utilies")}>Utilities</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Other")}>Other</DropdownItem>
             </DropdownMenu>
           </Dropdown>

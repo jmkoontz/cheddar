@@ -9,14 +9,29 @@ import axios from 'axios';
 const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont}) => (
     <div>
      <h3>{title}</h3>
-     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
+     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p><br/>
     </div>
 )
+
+const Months = {
+  "January":1,
+  "February":2,
+  "March":3,
+  "April":4,
+  "May":5,
+  "June":6,
+  "July":7,
+  "August":8,
+  "September":9,
+  "October":10,
+  "November":11,
+  "December":12
+}
 
 class Saving extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: 'january', year: (new Date()).getFullYear()}, monthlyContribution: ''}
+    this.state = { userID: sessionStorage.getItem('user'), show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: 'january', year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,12 +49,32 @@ class Saving extends React.Component {
     const value = target.value;
     const name = target.name;
 
-    this.setState({[name]: value});
+    this.setState({[name]: value}, () => { this.validateField(name, value) });
+  }
+
+  validateField(name, value){
+    switch(name) {
+      case "category":
+        this.setState({validCat: (value != "Choose a category")});
+        break;
+      case "title":
+        this.setState({validTitle: (value != "")});
+        break;
+      case "goalAmount":
+        this.setState({validAmount: (value > 0)});
+        break;
+      case "monthlyContribution":
+        this.setState({validCont: (value > 0)});
+        break;
+      default:
+        break;
+      }
   }
 
   handleSubmit(event){
     //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
     // TODO: check user inputs
+
     axios.post(`http://localhost:8080/Cheddar/Savings/${this.state.userID}`,
       {
         title: this.state.title,
@@ -82,7 +117,7 @@ class Saving extends React.Component {
     const savings = this.state.savingsList
     return (
       <div className="BigDivArea">
-        <h3>Saving!</h3>
+        <h3>Savings Goals</h3>
           {(savings.length > 0 && savings[0])
             ? savings.map(plan => <SavingsPlan {...plan} />)
             : <p>You have no savings plans. Why don't you add one below</p>}
@@ -107,6 +142,7 @@ class Saving extends React.Component {
                 <option value="Pay off Loans">Pay off Loans</option>
                 <option value="Save for Emeregency">Save for Emeregency</option>
                 <option value="Save for a Trip">Save for a Trip</option>
+                <option value="Save for a Purchase">Save for a Purchase</option>
                 <option value="Other">Other</option>
               </select>
               <br/>
@@ -147,12 +183,12 @@ class Saving extends React.Component {
               </form>
           </Modal.Body>
           <Modal.Footer>
-            <button variant="secondary" onClick={this.handleClose}>
+            <Button variant="secondary" onClick={this.handleClose}>
               Close
-            </button>
-            <button variant="primary" onClick={this.handleSubmit}>
+            </Button>
+            <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validAmount && this.state.validCont && this.state.validCat && this.state.validTitle)}>
               Save Changes
-            </button>
+            </Button>
           </Modal.Footer>
         </Modal>
       </div>

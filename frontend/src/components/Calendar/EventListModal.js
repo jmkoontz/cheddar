@@ -99,7 +99,7 @@ class EventListModal extends React.Component {
       <span>
         <Modal show={this.state.isOpen} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Upcoming Transactions</Modal.Title>
+            <Modal.Title>Upcoming Expenses</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
