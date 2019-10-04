@@ -249,7 +249,7 @@ function Budgets() {
 
 						<Col sm={3}>
 							<Dropdown isOpen={budgetDropDown} toggle={() => toggleBudgetDropDown(!budgetDropDown)}>
-								<DropdownToggle calssName="smallText" caret>
+								<DropdownToggle className="smallText" caret>
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
