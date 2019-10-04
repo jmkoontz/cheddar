@@ -6,6 +6,7 @@ import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
 import FormBody from "./FormBody";
+import FixedAmount from "./FixedAmount";
 
 function Budgets() {
 
@@ -22,7 +23,6 @@ function Budgets() {
 	const [buttonDisplay, setButtonDisplay] = useState(false); // Tells the modal to display the button
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
-	const [budgetType, setBudgetType] = useState(); // Currently selected budget type
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	// Page states
@@ -52,7 +52,7 @@ function Budgets() {
 
   /**
    * Handles user input from the modal form and updates the state
-   * @param {*} index 
+   * @param {*} index
    */
 	const handleCategoryChange = (event) => {
 		let newObj = {
@@ -101,7 +101,7 @@ function Budgets() {
 
 	/**
 	 * Helper to set the next budget and tab
-	 * @param {String: contains the tab index} newTab 
+	 * @param {String: contains the tab index} newTab
 	 */
 	const setNewTab = (newTab) => {
 		//console.log(newTab);
@@ -112,8 +112,8 @@ function Budgets() {
 
 	/**
 	 * Helper to set the first budget tab to open
-	 * @param {Object: a budget} budg 
-	 * @param {String: tab to be set} x 
+	 * @param {Object: a budget} budg
+	 * @param {String: tab to be set} x
 	 */
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
@@ -191,6 +191,8 @@ function Budgets() {
 
 				console.log(response);
 				setModal(false);
+				setCategoryArr([]);
+				setButtonDisplay(false);
 				getBudgets();
 
 
@@ -228,7 +230,8 @@ function Budgets() {
 		setModal: setModal,
 		newData: newData,
 		setNewData: setNewData,
-		setButtonDisplay: setButtonDisplay
+		setButtonDisplay: setButtonDisplay,
+		pickedCategory: pickedCategory
 
 	};
 
@@ -248,13 +251,13 @@ function Budgets() {
 
 						<Col sm={3}>
 							<Dropdown isOpen={budgetDropDown} toggle={() => toggleBudgetDropDown(!budgetDropDown)}>
-								<DropdownToggle caret>
+								<DropdownToggle className="smallText" caret>
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
 									{/*TODO: clean this up and store it in a state variable*/}
 									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Old people")}>Old People</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
@@ -278,10 +281,13 @@ function Budgets() {
 									: pickedCategory === "Custom"
 										?
 										<FormBody {...formInfo} />
-										:
-										<div>
-											{/* Other categories will go here */}
-										</div>
+										: pickedCategory === "Fixed Amount"
+											?
+											<FixedAmount {...formInfo} />
+											:
+												<div>
+													{/* Other categories will go here */}
+												</div>
 								}
 
 
@@ -290,7 +296,7 @@ function Budgets() {
 					}
 				</ModalBody>
 
-				{!buttonDisplay || pickedCategory !== "Custom"
+				{!buttonDisplay
 					?
 					<ModalFooter>
 						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>

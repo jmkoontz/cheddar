@@ -25,8 +25,11 @@ class Header extends Component {
     } else if (!History.location.pathname.indexOf("/account-settings")) {
       tabValue = 6;
     } else if (!History.location.pathname.indexOf("/assets")) {
+      tabValue = 8;
+    } else if (!History.location.pathname.indexOf("/retirement")) {
       tabValue = 9;
     }
+    
 
     this.state = {
       tabValue: tabValue
@@ -51,8 +54,10 @@ class Header extends Component {
       History.push("/account-settings");
     } else if (newValue === '7') {
       this.signOut();
-    } else if (newValue === '9') {
+    } else if (newValue === '8') {
       History.push("/assets");
+    } else if (newValue === '9') {
+      History.push("/retirement");
     }
 
   };
@@ -70,12 +75,13 @@ class Header extends Component {
           <Nav className="mr-auto nav-container" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
             <Nav.Link eventKey={0}><span id={"icon-tab"}><img src={"Icon.png"} id={"icon"}/></span></Nav.Link>
             <Nav.Link eventKey={0}>Overview</Nav.Link>
-            <Nav.Link eventKey={9}>Assets</Nav.Link>
             <Nav.Link eventKey={1}>Budgets</Nav.Link>
             <Nav.Link eventKey={2}>Saving</Nav.Link>
             <Nav.Link eventKey={3}>Investments</Nav.Link>
             <Nav.Link eventKey={4}>Debts</Nav.Link>
             <Nav.Link eventKey={5}>Transactions</Nav.Link>
+            <Nav.Link eventKey={8}>Assets</Nav.Link>
+            <Nav.Link eventKey={9}>Retirement</Nav.Link>
           </Nav>
           <Nav pullRight onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
             <Nav.Link eventKey={6}>👤</Nav.Link>

@@ -4,7 +4,7 @@ import { Row, Col } from 'reactstrap';
 import '../../css/Budgets.css';
 import FormBody from "./FormBody";
 
-function StudentLoan(props) {
+function FixedAmount(props) {
 
   const [dataEnter, setDataEnter] = useState(false); // Boolean to determine if user entered all their data
   const [amount, setAmount] = useState(); // Variable to hold the amount
@@ -14,12 +14,12 @@ function StudentLoan(props) {
    * Function to calculate how much debt to pay a month
    */
   const calculatePayment = () => {
-    let monthlyPayment = amount / timeframe;
+    let monthlyIncome = amount / timeframe;
 
     // Make a tmp object to store the calculated amount
     let tmpObj = {
-      name: "Loan",
-      amount: monthlyPayment,
+      name: "Income",
+      amount: monthlyIncome,
       preset: true
     }
 
@@ -56,21 +56,15 @@ function StudentLoan(props) {
         <div>
           <Row className="addSpace">
             <Col>
-              <Label for="loan">Loan Amount</Label>
-              <Input onChange={handleAmountChange} type="number" name="loan" id="loan" placeholder="Ex: 10000" />
-              <Label for="timeframe">Timeframe of Loan</Label>
-              <Input onChange={handleTimeChange} type="number" name="timeframe" id="timeframe" placeholder="Enter number of months" />
+              <Label for="sum">Enter Your Sum of Money or Valued Objects</Label>
+              <Input onChange={handleAmountChange}type="number" name="sum" id="sum" placeholder="Ex: $10000" />
+              <Label for="timeframe">Enter Your Timeframe</Label>
+              <Input onChange={handleTimeChange} type="number" name="timeframe" id="timeframe" placeholder="Enter number of weeks" />
             </Col>
           </Row>
           <Row>
             <Col>
-              {amount && timeframe
-                ?
-                <Button color="success" onClick={calculatePayment}>Calculate Loan Payment</Button>
-                :
-                <Button color="success" onClick={calculatePayment} disabled>Calculate Loan Payment</Button>
-              }
-
+              <Button color="success" onClick={calculatePayment}>Enter Data</Button>
             </Col>
           </Row>
         </div>
@@ -83,4 +77,4 @@ function StudentLoan(props) {
   );
 };
 
-export default StudentLoan;
+export default FixedAmount;
