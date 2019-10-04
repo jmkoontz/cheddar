@@ -19,6 +19,7 @@ import ModalTitle from 'react-bootstrap/ModalTitle';
 import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
+import Loader from "../Loader/Loader";
 
 
 
@@ -302,9 +303,12 @@ class Investments extends React.Component {
                     <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
                 </div>
                 <div className="cardContainer">
-                    <CanvasJSChart options = {options}
-                        // onRef = {ref => this.chart = ref} 
+                  { this.state.data.length > 0 ?
+                    <CanvasJSChart options={options}
+                      // onRef = {ref => this.chart = ref}
                     />
+                    : <Loader/>
+                  }
                 </div>
                 <Modal show={this.state.show} onHide={this.showModal} centered>
                 <Modal.Header closeButton>
