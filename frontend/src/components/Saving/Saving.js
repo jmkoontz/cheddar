@@ -1,13 +1,22 @@
 import React from 'react';
 import { Component } from 'react';
+import { Button } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
+import axios from 'axios';
+
+const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont}) => (
+    <div>
+     <h3>{title}</h3>
+     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
+    </div>
+)
 
 class Saving extends React.Component {
   constructor(props){
     super(props);
-    this.state = {show: false, setShow: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: '', year: (new Date()).getFullYear()}, monthlyContribution: ''}
+    this.state = { userID: sessionStorage.getItem('user'), show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: 'january', year: (new Date()).getFullYear()}, monthlyContribution: ''}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,19 +38,58 @@ class Saving extends React.Component {
   }
 
   handleSubmit(event){
-    alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
-    event.preventDefault();
-    this.setState({show: false})
+    //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
+    // TODO: check user inputs
+    axios.post(`http://localhost:8080/Cheddar/Savings/${this.state.userID}`,
+      {
+        title: this.state.title,
+        category: this.state.category,
+        goalAmount: this.state.goalAmount,
+        goalYear: this.state.year,
+        goalMonth: this.state.month,
+        monthlyContribution: this.state.monthlyContribution
+      })
+      .then((response) => {
+        console.log(response);
+        event.preventDefault();
+        this.getSavings();
+        this.setState({show: false})
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  getSavings = () => {
+    axios.get(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/`)
+      .then((response) => {
+        this.setState({savingsList: response.data})
+        //console.log(response);
+        //console.log(this.state.savingsList)
+      })
+      .catch((error) => {
+        console.error("Error getting Savings\n" + error);
+      });
+  }
+
+
+  componentDidMount(){
+    this.getSavings();
   }
 
   render () {
     const years = Array.from(new Array(20),(val, index) => index + this.state.goalDate.year);
+    const savings = this.state.savingsList
     return (
       <div className="BigDivArea">
         <h3>Saving!</h3>
+          {(savings.length > 0 && savings[0])
+            ? savings.map(plan => <SavingsPlan {...plan} />)
+            : <p>You have no savings plans. Why don't you add one below</p>}
          <span className="input-group-btn">
-              <button onClick={this.handleClick} type="button">+</button>
+              <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
         </span>
+
 
         <Modal show={this.state.show} onHide={this.handleClose} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
@@ -55,10 +103,11 @@ class Saving extends React.Component {
               </label><br/>
               <select name="category" value={this.state.category} onChange={this.handleChange}>
                 <option value="Choose a category">Choose a category</option>
-                <option value="grapefruit">Grapefruit</option>
-                <option value="lime">Lime</option>
-                <option value="coconut">Coconut</option>
-                <option value="mango">Mango</option>
+                <option value="Pay off Debts">Pay off Credit Card Debt</option>
+                <option value="Pay off Loans">Pay off Loans</option>
+                <option value="Save for Emeregency">Save for Emeregency</option>
+                <option value="Save for a Trip">Save for a Trip</option>
+                <option value="Other">Other</option>
               </select>
               <br/>
                 <label>
@@ -69,18 +118,18 @@ class Saving extends React.Component {
               <label>
               <b>Planned End Date</b><br/>
               <select name="month" value={this.state.month} onChange={this.handleChange}>
-                <option value="january">January</option>
-                <option value="february">February</option>
-                <option value="march">March</option>
-                <option value="april">April</option>
-                <option value="may">May</option>
-                <option value="june">June</option>
-                <option value="july">July</option>
-                <option value="august">August</option>
-                <option value="september">September</option>
-                <option value="october">October</option>
-                <option value="november">November</option>
-                <option value="december">December</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
               </select>
               <select name="year" value={this.state.year} onChange={this.handleChange}>
               {

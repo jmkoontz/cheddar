@@ -7,7 +7,7 @@
 }
 
 .padTop {
-    margin-top: 1.5em;
+    margin-top: 1em;
 }
 
 .heavyPadTop {
@@ -41,4 +41,10 @@
  
  .card {
     width: auto !important;
+}
+
+.buttonFix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

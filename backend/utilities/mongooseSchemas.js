@@ -43,6 +43,26 @@ export const savingsSchema = new mongoose.Schema({
   monthlyContribution: Number
 });
 
+export const debtSchema = new mongoose.Schema({
+  category: String,
+  nickname: String,
+  initial: Number,
+  currBalance: Number,
+  interestRate: Number
+});
+
+export const investmentSchema = new mongoose.Schema({
+    type: String,
+    startingInvestment: Number,
+    company: String,
+    startDate: String,
+});
+
+export const allInvestmentsSchema = new mongoose.Schema({
+    trackedCompanies: [String],
+    investments: [investmentSchema]
+});
+
 export const userSchema = new mongoose.Schema({
   _id: String,
   firstName: String,
@@ -56,5 +76,8 @@ export const userSchema = new mongoose.Schema({
   budgets: [budgetSchema],
   transactions: [transactionSchema],
   events: [eventsSchema],
-  savings: [savingsSchema]
+  savings: [savingsSchema],
+  debts: [debtSchema],
+  investments: allInvestmentsSchema
 });
+

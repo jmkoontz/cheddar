@@ -11,10 +11,44 @@ function Transactions(props) {
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
-	const [endDate, setEndDate] = useState();
-	const [startDate, setStartDate] = useState();
+	const [endDate, setEndDate] = useState(); // Time the backend understand
+	//const [endDateOff, setEndDateOff] = useState(); // With UTC offset, for displaying
+	const [startDate, setStartDate] = useState(); // Time the backend understand
+	//const [startDateOff, setStartDateOff] = useState();// With UTC offset, for displaying
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
-	const [dayList, setDayList] = useState(); // Array of 
+	const [dayList, setDayList] = useState(); // Array of each day's spending
+	const [chartData, setChartData] = useState(); // Obj containing chart info
+	const [error, setError] = useState(); // Error message
+
+	const endDateHelper = (date) => {
+		let interval = 1000 * 60 * 60 * 24;
+		let end = Math.floor(date / interval) * interval
+		console.log(end)
+		// let endDat = new Date(date).getTime();
+		// let offset = new Date().getTimezoneOffset();
+		// endDat = (endDat / (24 * 3600 * 1000)) * (24 * 3600 * 1000);
+
+		// let endDatOff = endDat - offset + 1000;
+
+		// Use for displaying
+		//setEndDateOff(new Date(end));
+		setEndDate(new Date(end));
+	}
+
+	const startDateHelper = (date) => {
+		let interval = 1000 * 60 * 60 * 24;
+		let start = Math.floor(date / interval) * interval
+		console.log(start)
+		// let startDat = new Date(date).getTime();
+		// let offset = new Date().getTimezoneOffset();
+		// startDat = (startDat / (24 * 3600 * 1000)) * (24 * 3600 * 1000);
+
+		// let startDatOff = startDat - offset + 1000;
+
+		// Use for displaying
+		//setStartDateOff(new Date(start));
+		setStartDate(new Date(start));
+	}
 
 	/**
 	 * Helper method to show each data point on the chart
@@ -24,85 +58,93 @@ function Transactions(props) {
 		setHoverData(e.target.category);
 	}
 
-	// Default for chart TODO: remove this and replace with real data after a server call
-	const options = {
-		title: {
-			text: 'My chart'
-		},
-		xAxis: {
-			type: 'datetime',
-			dateTimeLabelFormats: {
-				day: '%b %e'
-			}
-		},
-		series: [{
-			data: [100, 2, 3],
-			pointStart: startDate,
-			pointInterval: 24 * 3600 * 1000 // one day
-		}],
-		plotOptions: {
-			series: {
-				point: {
-					events: {
-						mouseOver: showHoverData
-					}
-				}
-			}
-		}
-	}
-
-	const [chartData, setChartData] = useState(options); // Obj containing chart info
 
 	/**
 	 * Helper function to calculate the difference between two dates
 	 */
 	const calcNumberDays = (end, start) => {
-		return ((endDate - startDate) / (24 * 3600 * 1000)) + 1;
+		let newEnd = new Date(end);
+		let newStart = new Date(start);
+		return Math.floor((newEnd.getTime() - newStart.getTime()) / (24 * 3600 * 1000));
 	}
 
 	/**
 	 * Sorts all the transactions by date and stores them in their own
 	 */
-	const sortByDay = () => {
-		let numDays = calcNumberDays(endDate, startDate);
+	const sortByDay = (transactionsList) => {
+		let numDays = calcNumberDays(endDate, startDate) + 1;
 		let daysArray = [];
 
+		// Populate the daysArray with the number of days between the start and end dates
 		for (let x = 0; x < numDays; x++) {
 			daysArray.push(0);
 		}
 
-		// for () {
+		console.log(transactionsList);
 
-		// }
+		// Loop over transactions and add their amount to to coresponding daysArray index
+		for (let x = 0; x < transactionsList.length; x++) {
+			// Add each transaction into its respective array index
+			let tmpObj = transactionsList[x];
+			let index = calcNumberDays(tmpObj.date, startDate);
+			daysArray[index] += tmpObj.amount;
+			console.log(new Date(tmpObj.date).getTime() + " " + startDate.getTime());
+			console.log(index);
+
+		}
+
+		let options = {
+			title: {
+				text: 'Total Spending'
+			},
+			xAxis: {
+				type: 'datetime',
+				dateTimeLabelFormats: {
+					day: '%b %e'
+				}
+			},
+			series: [{
+				name: "Daily Spending",
+				data: daysArray,
+				pointStart: startDate.getTime(),
+				pointInterval: 24 * 3600 * 1000 // one day
+			}],
+			plotOptions: {
+				series: {
+					point: {
+						events: {
+							mouseOver: showHoverData
+						}
+					}
+				}
+			}
+		}
+
+		setChartData(options);
+		setDayList(daysArray);
 	}
 
 	/**
 	 * Server call to get all transactions in a given time frame
 	 */
 	const getTransactions = () => {
-		// let tmpObj = {
-		//   name: transactionName,
-		//   amount: transactionAmount,
-		//   date: date,
-		//   category: transactionCate
-		// };
-		
+
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
-		let queryTwo = `&endYear=${startDate.getFullYear()}&endMonth=${startDate.getMonth()}&endDay=${startDate.getDay()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDay()}`;
 		let query = queryOne + queryTwo;
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
-				// handle success
-				console.log("Success");
-				console.log(response);
-
+				// handle success				
+				console.log(response.data)
+				setTransactions(response.data);
 				// Update the transaction state
-
+				sortByDay(response.data);
 
 			})
 			.catch((error) => {
 				console.log("Transaction call did not work");
+				console.log(error);
 			});
 	}
 
@@ -115,22 +157,23 @@ function Transactions(props) {
 
 	return (
 		<div >
-			<h3>Transactions Page</h3>
-			{/* <Row>
-				<Col sm={4} />
-				<Col sm={4}>
-
-				</Col>
-				<Col sm={4} />
-			</Row> */}
+			<h3 className="padTop">Transactions Page</h3>
 			<Row className="padTop">
 				<Col sm={1} />
-				<Col sm={6}>
-					<HighchartsReact
-						highcharts={Highcharts}
-						options={chartData}
-					/>
+				<Col sm={5}>
+					{dayList
+						?
+						<HighchartsReact
+							allowChartUpdate={true}
+							highcharts={Highcharts}
+							options={chartData}
+						/>
+						:
+						<div />
+					}
+
 				</Col>
+				<Col sm={1}/>
 				<Col sm={3} >
 					<Card>
 						<CardHeader>
@@ -143,27 +186,31 @@ function Transactions(props) {
 									<DatePicker
 										id="date"
 										selected={startDate}
-										onChange={d => setStartDate(d)}
+										onChange={d => setStartDate(new Date(d))}
 										maxDate={new Date()}
+										required={true}
 									/>
-								</Col>
-								<Col >
-									<p>to</p>
 								</Col>
 								<Col >
 									<p>End Date</p>
 									<DatePicker
 										id="date"
 										selected={endDate}
-										onChange={d => setEndDate(d)}
+										onChange={d => setEndDate(new Date(d))}
 										maxDate={new Date()}
+										required={true}
 									/>
 								</Col>
 							</Row>
-							<Row>
+							<Row className="padTop">
 								<Col sm={12}>
-									<Button onClick={getTransactions}>
-									</Button>
+									{startDate && endDate && endDate.getTime() > startDate.getTime()
+										?
+										<Button onClick={getTransactions}>Get Transactions</Button>
+										:
+										<Button onClick={getTransactions} disabled>Get Transactions</Button>
+									}
+
 								</Col>
 							</Row>
 
