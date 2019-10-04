@@ -29,16 +29,38 @@ class Retirement extends React.Component {
         super(props);
         this.state = {
             data: [],
+            addedAmount: 0,
+            addedDate: String,
+            uid: sessionStorage.getItem('user'),
         }
     }
 
 
     componentDidMount(){
-        
+        const test = {uid: this.state.uid};
+        axios.get("http://localhost:8080//Cheddar/Retirement", {
+            params: test,
+            }).then(res => {
+                console.log(res);
+            
+        //console.log(res);
+        });
     }
 
-    shouldComponentUpdate(nextProps,nextState){
-        
+    updateAddedAmount = (amount) => {
+        this.setState({
+            addedAmount: amount.target.value,
+        });
+    }
+
+    updateAddedDate = (date) => {
+        this.setState({
+            addedDate: date.target.value,
+        });
+    }
+
+    addContribution = () => {
+
     }
 
     render () {
@@ -50,11 +72,11 @@ class Retirement extends React.Component {
                 <Form>
                     <Form.Group controlId="formBasic">
                         <Form.Label>Invested Amount</Form.Label>
-                        <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
+                        <Form.Control as="input" type="number" defaultValue={this.state.addedAmount} onChange={(event)=>{this.updateAddedAmount(event)}}/>
                         <Form.Label>Date Invested</Form.Label>
-                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
+                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateAddedDate(event)}}/>
                     </Form.Group>
-                    <Button variant="primary" onClick={() => this.updateInvestment()}>
+                    <Button variant="primary" onClick={() => this.addContribution()}>
                         Submit
                     </Button>
                 </Form>
