@@ -68,6 +68,29 @@ export async function createSavings(uid, saving) {
     });
 }
 
+export async function getOneSavings(uid, savingsTitle){
+  const findClause = {
+    '_id': uid,
+    'savings.title': savingsTitle
+  };
+
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'savings': 1
+  };
+
+  return userModel.findOne(findClause)
+    .then((user) => {
+      if (user)
+        return Promise.resolve(user.savings);
+      else
+        return Promise.reject('UserError: User not found');
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export async function editSavings(uid, savingsTitle, changes) {
   let updateClause = {$set: {}};
 
