@@ -11,8 +11,24 @@
     max-width: 250px;
 }
 
+.assetButton {
+    background-color: #ed7734 !important;
+    border: 3px solid #b44e30;
+}
+
 .left {
     text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.divArea {
+    /* background-color: blue; */
+    height:calc(100vh - 56px);
+    width:1000px;
+    margin: auto;
 }
 
 .input {
