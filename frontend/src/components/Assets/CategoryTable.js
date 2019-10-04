@@ -51,7 +51,9 @@ class CategoryTable extends Component {
       <div>
         <Row>
           <h3>{this.state.category_name}</h3>
-          <Col md='8'/>
+        </Row>
+        <Row>
+          <Col md='10'/>
           <Button className='assetButton' onClick={this.openModal}>Add New Asset</Button>
         </Row>
         <div style={{height: '1em'}}/>
@@ -95,7 +97,7 @@ class CategoryTable extends Component {
               <tr key={i}>
                 <th scope='row'>{i+1}</th>
                 <td>{this.state.assets[i].asset_name}</td>
-                <td>{this.state.assets[i].asset_value}</td>
+                <td>${this.state.assets[i].asset_value}</td>
                 <td><Button color='danger' onClick={() => this.removeItem(this, i)}>-</Button></td>
               </tr>
             );

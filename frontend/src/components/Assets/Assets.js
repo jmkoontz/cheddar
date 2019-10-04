@@ -22,7 +22,7 @@ class Assets extends Component {
     super(props);
 
     this.state = {
-      categories: [],
+      category_names: [],
       modal: false,
 
     };
@@ -32,8 +32,7 @@ class Assets extends Component {
   addNewCategory = (ev) => {
     ev.preventDefault();
     let category_name = ev.target.category_name.value;
-    let name = {category_name: category_name};
-    this.state.categories.push(new CategoryTable(name));
+    this.state.category_names.push(category_name);
     this.closeModal();
     this.forceUpdate();
   };
@@ -85,10 +84,11 @@ class Assets extends Component {
         </div>
         <hr/>
 
-        {this.state.categories.map((table, i) => {
-          console.log(table);
+        {this.state.category_names.map((name, i) => {
           return (
-            
+            <div key={i}>
+              <CategoryTable category_name={name}/>
+            </div>
           );
         })}
 
