@@ -11,6 +11,10 @@
     max-width: 250px;
 }
 
+.left {
+    text-align: left;
+}
+
 .input {
     display: flex;
     justify-content: center;
