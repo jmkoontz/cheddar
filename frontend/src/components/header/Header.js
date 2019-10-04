@@ -24,6 +24,8 @@ class Header extends Component {
       tabValue = 5;
     } else if (!History.location.pathname.indexOf("/account-settings")) {
       tabValue = 6;
+    } else if (!History.location.pathname.indexOf("/assets")) {
+      tabValue = 8;
     }
 
     this.state = {
@@ -49,6 +51,8 @@ class Header extends Component {
       History.push("/account-settings");
     } else if (newValue === '7') {
       this.signOut();
+    } else if (newValue === '8') {
+      History.push("/assets");
     }
 
   };
@@ -66,6 +70,7 @@ class Header extends Component {
           <Nav className="mr-auto nav-container" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
             <Nav.Link eventKey={0}><span id={"icon-tab"}><img src={"Icon.png"} id={"icon"}/></span></Nav.Link>
             <Nav.Link eventKey={0}>Overview</Nav.Link>
+            <Nav.Link eventKey={8}>Assets</Nav.Link>
             <Nav.Link eventKey={1}>Budgets</Nav.Link>
             <Nav.Link eventKey={2}>Saving</Nav.Link>
             <Nav.Link eventKey={3}>Investments</Nav.Link>

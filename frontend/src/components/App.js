@@ -13,6 +13,7 @@ import firebase from '../firebase.js';
 import './App.css';
 import CreateAccount from "./Accounts/CreateAccount";
 import AccountSettings from "./Accounts/AccountSettings";
+import Assets from "./Assets/Assets";
 
 class App extends Component {
 
@@ -47,23 +48,6 @@ class App extends Component {
     }
   }
 
-  /*getUsername = () => {
-    let uid = sessionStorage.getItem('user');
-    let self = this;
-
-    TODO need to get username from Mongo. This next line gets it from firebase
-
-    firestore.collection('users').doc(uid).get().then((doc) => {
-      self.setState({
-        username: doc.data().username,
-      }, function () {
-        sessionStorage.setItem('username', this.state.username);
-      });
-    }).catch((error) => {
-      console.log('Error getting username: ', error);
-    });
-  };*/
-
   render() {
 
     if(this.state.uid !=  null) {
@@ -80,6 +64,7 @@ class App extends Component {
             <Route path="/debts" render={() => <Debts/>}/>
             <Route path="/transactions" render={() => <Transactions/>}/>
             <Route path="/account-settings" render={() => <AccountSettings/>}/>
+            <Route path="/assets" render={() => <Assets/>}/>
             <Route path="/" render={() => <Redirect to="/"/>}/>
           </Switch>
         </div>
