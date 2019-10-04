@@ -157,7 +157,7 @@ function Transactions(props) {
 
 	return (
 		<div >
-			<h3 className="padTop">Transactions Page</h3>
+			<h3>Transactions</h3>
 			<Row className="padTop">
 				<Col sm={1} />
 				<Col sm={5}>

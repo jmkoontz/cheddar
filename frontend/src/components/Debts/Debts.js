@@ -96,7 +96,7 @@ class Debts extends React.Component {
     const debts = this.state.debtList;
     return (
       <div className="BigDivArea">
-        <h3>Debts!</h3>
+        <h3>Debt Repayment Plan</h3>
         {(debts.length > 0 && debts[0])
           ? debts.map(plan => <DebtModel {...plan} />)
           : <p>Keep track of all the debts you may have here. Start by adding one below</p>}

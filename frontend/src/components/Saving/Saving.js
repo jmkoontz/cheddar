@@ -117,7 +117,7 @@ class Saving extends React.Component {
     const savings = this.state.savingsList
     return (
       <div className="BigDivArea">
-        <h3>Saving!</h3>
+        <h3>Savings Goals</h3>
           {(savings.length > 0 && savings[0])
             ? savings.map(plan => <SavingsPlan {...plan} />)
             : <p>You have no savings plans. Why don't you add one below</p>}
