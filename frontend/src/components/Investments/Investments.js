@@ -296,12 +296,12 @@ class Investments extends React.Component {
 
         
         return (
-            <div className="BigDivArea parent">
+            <div className="BigDivArea">
                 <h3>Track Investments</h3>
                 <div className="add-button-container">
                     <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
                 </div>
-                <div className="cardContainer visible-border">
+                <div className="cardContainer">
                     <CanvasJSChart options = {options}
                         // onRef = {ref => this.chart = ref} 
                     />
