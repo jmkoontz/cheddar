@@ -5,6 +5,10 @@
     max-width: 200px;
 }
 
+.removeCategory {
+    border: 3px solid #b44e30;
+}
+
 .deleteButton {
     border: 3px solid #b44e30;
     min-width: 250px;

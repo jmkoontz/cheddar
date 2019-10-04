@@ -6,13 +6,9 @@ import {
   Input,
   Form,
   Button,
-  Alert,
   Row,
   Col,
   Label,
-  Table,
-  InputGroup,
-  InputGroupAddon
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
@@ -27,12 +23,16 @@ class Assets extends Component {
       modal: false,
       child: null,
       assetValue: 0,
+
+      show1: true,
+      show2: true,
+      show3: true,
     };
   }
 
   addToAssetValue = (val) => {
     this.setState({
-      assetValue: this.state.assetValue + parseInt(val),
+      assetValue: this.state.assetValue += parseInt(val),
     })
   };
 
@@ -42,6 +42,43 @@ class Assets extends Component {
     this.state.category_names.push(category_name);
     this.closeModal();
     this.forceUpdate();
+  };
+
+  removeCategory = (cat_name) => {
+    let array = this.state.category_names;
+    console.log(array);
+    let i = 0;
+    this.state.category_names.map(name => {
+      if(name === cat_name){
+        array = array.filter(e => e !== cat_name);
+      }
+      i++;
+    });
+    this.setState({
+      category_names: array,
+    });
+    console.log(array);
+  };
+
+  hide1 = () => {
+    this.setState({
+      show1: false,
+      assetValue: this.state.assetValue -= 220000,
+    });
+  };
+
+  hide2 = () => {
+    this.setState({
+      show2: false,
+      assetValue: this.state.assetValue -= 11000,
+    });
+  };
+
+  hide3 = () => {
+    this.setState({
+      show3: false,
+      assetValue: this.state.assetValue -= 6000,
+    });
   };
 
   openModal = () => {
@@ -55,7 +92,6 @@ class Assets extends Component {
       modal: false,
     });
   };
-
 
   render(){
 
@@ -95,10 +131,31 @@ class Assets extends Component {
         </div>
         <hr/>
 
+        {this.state.show1
+        ?
+          <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.hide1} category_name={'Physical Assets'}/>
+          :
+          null
+        }
+
+        {this.state.show2
+          ?
+          <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.hide2} category_name={'Crypto'}/>
+          :
+          null
+        }
+
+        {this.state.show3
+          ?
+          <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.hide3} category_name={'Real-Life Currency'}/>
+          :
+          null
+        }
+
         {this.state.category_names.map((name, i) => {
           return (
             <div key={i}>
-              <CategoryTable addToAssetValue={this.addToAssetValue} category_name={name}/>
+              <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.removeCategory} category_name={name}/>
             </div>
           );
         })}

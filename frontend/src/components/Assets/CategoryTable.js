@@ -15,6 +15,80 @@ class CategoryTable extends Component {
       modal_visible: false,
       totalAssetValue: 0,
     };
+
+    this.checkIfExample();
+  }
+
+  checkIfExample(){
+    if(this.state.category_name === 'Crypto'){
+      let asset_name = 'Bitcoin';
+      let asset_value = '10000';
+      let asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+
+      asset_name = 'Ethereum';
+      asset_value = '1000';
+      asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+    }
+
+    if(this.state.category_name === 'Real-Life Currency'){
+      let asset_name = 'U.S. Dollars';
+      let asset_value = '3000';
+      let asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+
+      asset_name = 'Japanese Yen';
+      asset_value = '1000';
+      asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+
+      asset_name = 'Euros';
+      asset_value = '2000';
+      asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+    }
+
+    if(this.state.category_name === 'Physical Assets'){
+      let asset_name = 'House';
+      let asset_value = '140000';
+      let asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+
+      asset_name = 'Tesla';
+      asset_value = '80000';
+      asset = {
+        asset_name: asset_name,
+        asset_value: asset_value,
+      };
+      this.state.assets.push(asset);
+      this.props.addToAssetValue(asset_value);
+    }
+
   }
 
   addNewAsset = (ev) => {
@@ -54,7 +128,8 @@ class CategoryTable extends Component {
           <h3>{this.state.category_name}</h3>
         </Row>
         <Row>
-          <Col md='10'/>
+          <Button className='removeCategory' color='danger' onClick={() => this.props.removeCategory(this.state.category_name)}>Remove</Button>
+          <Col md='9'/>
           <Button className='assetButton' onClick={this.openModal}>Add New Asset</Button>
         </Row>
         <div style={{height: '1em'}}/>
