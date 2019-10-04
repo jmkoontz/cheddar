@@ -9,6 +9,7 @@ import {
   Alert,
   Row,
   Col,
+  Label,
   Table,
   InputGroup,
   InputGroupAddon
@@ -62,7 +63,9 @@ class Assets extends Component {
       <div className='divArea'>
         <div style={{height: '1em'}}/>
         <h3>Assets</h3>
-        <h3>{this.state.assetValue}</h3>
+        <Row>
+          <Label className='asset-label'>Total Asset Value: ${this.state.assetValue}</Label>
+        </Row>
         <hr/>
 
         <Modal isOpen={this.state.modal} toggle={this.closeModal}>

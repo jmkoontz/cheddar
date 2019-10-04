@@ -16,6 +16,12 @@
     border: 3px solid #b44e30;
 }
 
+.asset-label {
+    display: flex;
+    justify-content: left;
+    font-size: 30px;
+}
+
 .left {
     text-align: left;
 }
