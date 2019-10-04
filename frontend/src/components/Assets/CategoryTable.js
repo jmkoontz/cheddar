@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col, Table} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Input, Form, Button, Row, Col, Table} from 'reactstrap';
+import {InputGroup, InputGroupAddon} from 'reactstrap';
 import '../Accounts/SignIn.css'
 
 class CategoryTable extends Component {
@@ -9,61 +10,75 @@ class CategoryTable extends Component {
 
     this.state = {
       category_name: props.category_name,
-      assets: []
-    };
+      assets: [],
 
-    let asset1 = {
-      asset_name: 'Car',
-      asset_value: 1000,
+      modal_visible: false,
     };
-    let asset2 = {
-      asset_name: 'Car',
-      asset_value: 1000,
-    };
-
-    this.addNewAsset(asset1);
-    this.addNewAsset(asset2);
   }
 
-  addNewAsset = (asset) => {
+  componentDidMount() {
+    console.log('mounted');
+  }
+
+  addNewAsset = (ev) => {
+    ev.preventDefault();
+    let asset_name = ev.target.asset_name.value;
+    let asset_value = ev.target.amount.value;
+    let asset = {
+      asset_name: asset_name,
+      asset_value: asset_value,
+    };
     this.state.assets.push(asset);
+    this.closeModal();
+    this.forceUpdate();
   };
 
-  renderTable = () => {
-    let i = 0;
-    let j = 1;
-    let table = [];
-    let self = this;
-    this.state.assets.forEach(function() {
-      table.push(
-        <tr key={i}>
-          <th scope='row'>{j}</th>
-          <td>{self.state.assets[i].asset_name}</td>
-          <td>{self.state.assets[i].asset_value}</td>
-          <td>{self.getRemoveButton(i)}</td>
-        </tr>
-      );
-      i++;
-      j++;
-    });
-    return table;
+  removeItem = (ref, i) => {
+    ref.state.assets.splice(i, 1);
+    ref.forceUpdate();
   };
 
-  getRemoveButton(i){
-    return (
-      <Button color='danger'>-</Button>
-    );
+  openModal = () => {
+    this.setState({ modal_visible: true });
+  };
+
+  closeModal = () => {
+    this.setState({ modal_visible: false });
   };
 
   render (){
     return (
       <div>
         <Row>
-          <h3>Phyical Assets</h3>
+          <h3>{this.state.category_name}</h3>
           <Col md='8'/>
-          <Button className='assetButton'>Add New Asset</Button>
+          <Button className='assetButton' onClick={this.openModal}>Add New Asset</Button>
         </Row>
         <div style={{height: '1em'}}/>
+
+        <Modal isOpen={this.state.modal_visible} toggle={this.closeModal}>
+          <ModalHeader toggle={this.closeModal}> Add A New Asset to {this.state.category_name} </ModalHeader>
+          <ModalBody>
+            <Form onSubmit={this.addNewAsset}>
+              <Row>
+                <Col md='8'>
+                  <Input type='text' id='asset_name' placeholder='Asset Name'/>
+                </Col>
+                <Col md='4'>
+                  <InputGroup>
+                    <InputGroupAddon addonType='prepend'>$</InputGroupAddon>
+                    <Input type='number' id='amount' placeholder='Amount'/>
+                  </InputGroup>
+                </Col>
+              </Row>
+              <div style={{height: '1em'}}/>
+              <Row>
+                <Col md='3'/>
+                <Button className='signInButton' size='sm'>Add</Button>
+              </Row>
+            </Form>
+          </ModalBody>
+        </Modal>
 
         <Table dark>
           <thead>
@@ -75,9 +90,19 @@ class CategoryTable extends Component {
           </tr>
           </thead>
           <tbody>
-          {this.renderTable()}
+          {Object.keys(this.state.assets).map((key, i) => {
+            return (
+              <tr key={i}>
+                <th scope='row'>{i+1}</th>
+                <td>{this.state.assets[i].asset_name}</td>
+                <td>{this.state.assets[i].asset_value}</td>
+                <td><Button color='danger' onClick={() => this.removeItem(this, i)}>-</Button></td>
+              </tr>
+            );
+          })}
           </tbody>
         </Table>
+        <hr/>
       </div>
     );
   }
