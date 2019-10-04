@@ -93,7 +93,7 @@ function TransactionForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input id="amount" onChange={handleAmtChange} />
+                  <Input type="number" id="amount" onChange={handleAmtChange} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
