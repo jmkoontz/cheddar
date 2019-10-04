@@ -18,7 +18,7 @@ class Overview extends React.Component {
       <div className="BigDivArea">
         <h3>Financial Overview</h3>
 
-        <Button id={'events-button'} onClick={() => {this.eventListModal.current.open()}}>All Transactions</Button>
+        <Button id={'events-button'} onClick={() => {this.eventListModal.current.open()}}>All Expenses</Button>
         <EventListModal
           ref={this.eventListModal}
           onClose={() => {this.calendar.current.displayEvents()}}
