@@ -89,6 +89,6 @@ export const userSchema = new mongoose.Schema({
   savings: [savingsSchema],
   debts: [debtSchema],
   investments: allInvestmentsSchema,
-  retirment: retirementSchema
+  retirement: retirementSchema
 });
 
