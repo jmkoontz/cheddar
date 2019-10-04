@@ -24,6 +24,7 @@ app.options('/*', (req, res) => {
 });
 
 // run controllers
+retirementController(app);
 investmentsController(app);
 mainController(app);
 budgetController(app);
@@ -32,7 +33,7 @@ transactionController(app);
 calendarController(app);
 savingsController(app);
 debtController(app);
-retirementController(app);
+
 
 // listen to port
 let port = process.env.PORT;
