@@ -48,3 +48,7 @@
     align-items: center;
     justify-content: center;
 }
+
+.smallText {
+    font-size: 10px;
+}
