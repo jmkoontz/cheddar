@@ -191,6 +191,8 @@ function Budgets() {
 
 				console.log(response);
 				setModal(false);
+				setCategoryArr([]);
+				setButtonDisplay(false);
 				getBudgets();
 
 
