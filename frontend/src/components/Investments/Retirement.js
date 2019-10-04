@@ -31,16 +31,20 @@ class Retirement extends React.Component {
             data: [],
             addedAmount: 0,
             addedDate: String,
+            uid: sessionStorage.getItem('user'),
         }
     }
 
 
     componentDidMount(){
-        
-    }
-
-    shouldComponentUpdate(nextProps,nextState){
-        
+        const test = {uid: this.state.uid};
+        axios.get("http://localhost:8080//Cheddar/Retirement", {
+            params: test,
+            }).then(res => {
+                console.log(res);
+            
+        //console.log(res);
+        });
     }
 
     updateAddedAmount = (amount) => {
