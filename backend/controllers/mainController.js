@@ -17,8 +17,11 @@ export default (app) => {
       transactions: [],
       savings: [],
       debts: [],
-      investments: {}
-
+      investments: {},
+      retirement: {
+        total: 0,
+        history: [],
+      }
     };
 
     let data;

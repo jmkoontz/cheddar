@@ -36,6 +36,7 @@ class Investments extends React.Component {
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
             show: false,
+            show2: false,
             companies: {
                 "Amazon": {"id":"AMZN","tracked":false},
                 "Apple": {"id":"AAPL","tracked":false},
@@ -188,6 +189,12 @@ class Investments extends React.Component {
         });
     }
 
+    showModal2 = () => {
+        this.setState({
+            show2: !this.state.show2,
+        });
+    }
+
     showInfoModal = () => {
         this.setState({
             showInfo: !this.state.showInfo,
@@ -301,6 +308,7 @@ class Investments extends React.Component {
                 <h3>Track Investments</h3>
                 <div className="add-button-container">
                     <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                    <Button className="add-button" variant="primary" onClick={this.showModal2}>Tips</Button>
                 </div>
                 <div className="cardContainer">
                   { this.state.data.length > 0 ?
@@ -310,6 +318,59 @@ class Investments extends React.Component {
                     : <Loader/>
                   }
                 </div>
+
+                <Modal show={this.state.show2} onHide={this.showModal2} size="lg" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                    Stocks Tips
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                    1. Goals<br/>
+                        Make sure you have a long term goal in mind. Know why you are deciding to invest.
+                    </div>
+                    <div>
+                    2. Understand the risk<br/>
+                        It is very possible you may lose the money you invest. Investing in a more established
+                        and stable firm can be safer than a startup. However, nothing is guarunteed. Do not
+                        invest if you are not willing to lose it.
+                        </div>
+                    <div>
+                    3. Be rational and logical<br/>
+                        If you decide to buy or sell stock, make sure you are doing so on the basis of fact and
+                        not emotion. It can be exciting to gain money or upsetting when you lose, however
+                        it is important to be rational and make logical decisions.
+                        </div>
+                    <div>
+                    4. Stick to the basics<br/>
+                        When first starting out it will help to learn about different types of investments,
+                        definitions of metrics, and fundamental methods of stock selection and timing.
+                        </div>
+                    <div>
+                    5. Diversify risk<br/>
+                        Do not invest solely in one company. Be open to investing in various markets. When
+                        one market is not doing well, it is possible another is which can help balance out
+                        losses from the poorly performing markets.
+                        </div>
+                    <div>
+                    6. Avoid Leverage<br/>
+                        Do not invest money you do not have. Starting out, it can be dangerous when stocks
+                        decrease in a way that is unexpected. Avoid investing loaned money until you have
+                        become a well established investor.
+                        </div>
+                    <div>    
+                        <br/>
+                    Source: https://www.moneycrashers.com/stock-market-investing-tips-guide-checklist/
+
+                    Lewis, Michael, et al. “6 Stock Market Investing Tips &amp; Guide for Beginners - Checklist.
+                        ” Money Crashers, 10 July 2019, www.moneycrashers.com/stock-market-investing-tips
+                        -guide-checklist/.
+                        </div>
+                </Modal.Body>
+                
+                </Modal>
+
                 <Modal show={this.state.show} onHide={this.showModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
