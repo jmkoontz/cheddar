@@ -10,7 +10,7 @@ function TransactionForm(props) {
 
   // Handle drop down
   const [drop, setDrop] = useState(false); // Boolean to control dropdown
-  const [transactionCate, setTransactionCate] = useState("Select a Category"); // The category for a new transaction
+  const [transactionCate, setTransactionCate] = useState(""); // The category for a new transaction
   const [transactionName, setTransactionName] = useState(); // The name for a new transaction
   const [transactionAmount, setTransactionAmount] = useState(); // The amount for a new transaction
   const [date, setDate] = useState(new Date());
@@ -114,7 +114,7 @@ function TransactionForm(props) {
         </CardBody>
         <CardFooter>
               
-              {transactionCate === "Select a Category"
+              {transactionCate === ""
                 ?
                 <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
                 :
