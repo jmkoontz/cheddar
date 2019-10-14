@@ -175,9 +175,8 @@ function Budgets() {
 				tmpIncome = categoryArr[x].amount;
 			}
 		}
-		//console.log(index);
+
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);;
-		//console.log(removedIncomeArr)
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
@@ -203,6 +202,27 @@ function Budgets() {
 			});
 	};
 
+	 /**
+   * Makes the axios call to the backend to generate a new budget
+   */
+	const deleteBudget = (name) => {
+		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
+			).then(function (response) {
+
+				console.log(response);
+				setModal(false);
+				setCategoryArr([]);
+				setButtonDisplay(false);
+				setCurBudget();
+				getBudgets();
+
+			}).catch(function (error) {
+				//setErrMsg(error);
+				//setCreationAlert(true);
+				console.log(error);
+			});
+	}
+
 	useEffect(
 		() => {
 			getBudgets();
@@ -211,6 +231,7 @@ function Budgets() {
 	);
 
 	const formInfo = {
+		deleteBudget: deleteBudget,
 		createBudget: createBudget,
 		handleNameChange: handleNameChange,
 		handleCategoryChange: handleCategoryChange,

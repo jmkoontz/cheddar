@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import '../../css/Budgets.css';
+import DropDownHelper from './DropDownHelper';
 
 function FormBody(props) {
+
+  const [dropDownObj, setDropDownObj] = useState({hello: "wordl", name:"butt"});
 
   useEffect(
     () => {
@@ -65,6 +68,7 @@ function FormBody(props) {
           }
         </Col>
         <Col className="buttonFix">
+          {/* <DropDownHelper {...props} dropDownObj={dropDownObj}/> */}
           <Dropdown  isOpen={props.dropdown} toggle={() => props.toggleDropDown(!props.dropdown)}>
             <DropdownToggle caret>
               {props.selectedDrop}
@@ -77,7 +81,7 @@ function FormBody(props) {
               <DropdownItem onClick={() => props.setDropDown("Debt")}>Debt</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Housing")}>Housing</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Gas")}>Gas</DropdownItem>
-              <DropdownItem onClick={() => props.setDropDown("Utilies")}>Utilities</DropdownItem>
+              <DropdownItem onClick={() => props.setDropDown("Utilities")}>Utilities</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Other")}>Other</DropdownItem>
             </DropdownMenu>
           </Dropdown>

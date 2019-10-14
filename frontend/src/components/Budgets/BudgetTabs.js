@@ -60,11 +60,17 @@ function BudgetTabs(props) {
 										outerRadius={250}
 									/>
 								</div>
+
+								<Button className="padTop padRight" color="danger" onClick={() => { props.deleteBudget(item.name) }}>Delete</Button>
+
+								<Button className="padTop" color="primary">Edit</Button>
+
+
 							</Col>
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-									
+
 									{index === parseInt(props.tab) && props.curBudget
 										?
 										<RealSpending {...props} />
