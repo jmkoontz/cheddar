@@ -94,6 +94,7 @@ class Investments extends React.Component {
             enteredInvestment: 0,
             enteredInvestmentDate: "",
             newInvestment: {},
+            companyOptions: {},
         }
     }
 
@@ -114,6 +115,14 @@ class Investments extends React.Component {
                         companies: companies,
                         selectedCompanies: res.data.trackedCompanies,
                         investments: res.data.investments,
+                    },() => {
+                        var comps = this.state.selectedCompanies;
+        console.log(comps);
+        let i =0;
+        for(i = 0;i < comps.length; i++){
+            console.log(comps[i]);
+            this.getOptions(comps[i],"Weekly");
+        }
                     });
             //console.log(res);
         });
@@ -121,26 +130,37 @@ class Investments extends React.Component {
             if(this.state.frequency != "TIME_SERIES_DAILY_ADJUSTED"){
                 this.setState({frequency: "TIME_SERIES_DAILY_ADJUSTED"},
                     () =>{
-                        this.makeApiRequest();
+                        //this.makeApiRequest();
                     }
                 );
             }
             else{
-                this.makeApiRequest();
+                //this.makeApiRequest();
             }            
         }
         else if(this.state.defaultRate == "Weekly") {
             if(this.state.frequency != "TIME_SERIES_WEEKLY_ADJUSTED"){
                 this.setState({frequency: "TIME_SERIES_WEEKLY_ADJUSTED"},
                     () =>{
-                        this.makeApiRequest();
+                        //this.makeApiRequest();
                     }
                 );
             }
             else{
-                this.makeApiRequest();
+                //this.makeApiRequest();
             }       
         }
+        console.log("HERE");
+        var comps = this.state.selectedCompanies;
+        console.log(comps);
+        let i =0;
+        for(i = 0;i < comps.length; i++){
+            console.log(comps[i]);
+            this.getOptions(comps[i],"Weekly");
+        }
+        this.state.selectedCompanies.map((name,index)=>{
+            
+        });
     }
 
     shouldComponentUpdate(nextProps,nextState){
@@ -154,7 +174,8 @@ class Investments extends React.Component {
     }
 
     //This function makes an api request to the AlphaVantage API and sets state to contain datapoints for graph
-     makeApiRequest = () => {
+     /*makeApiRequest = () => {
+        this.getOptions("Amazon","Weekly");
         axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.company+"&apikey="+this.state.key)
             .then(res => {
                 try{
@@ -199,7 +220,7 @@ class Investments extends React.Component {
                     }
                 }
             });
-    }
+    }*/
 
     test = (param) => {
         var name = "";
@@ -221,7 +242,7 @@ class Investments extends React.Component {
             company: name,
             companyName: param,
         },() => {
-            this.makeApiRequest();
+            //this.makeApiRequest();
         });
         console.log(param);
     }
@@ -247,8 +268,10 @@ class Investments extends React.Component {
 
     addSelectedCompany = (company) => {
         var originalCompanies = this.state.companies;
-        var companies = this.state.selectedCompanies;
-        
+        var companies = this.state.selectedCompanies;        
+
+        this.getOptions(company,"Weekly");
+
         if(originalCompanies[company]["tracked"] == true){
             originalCompanies[company]["tracked"] = false;
             if(companies.includes(company)){
@@ -334,6 +357,37 @@ class Investments extends React.Component {
         
     }
 
+    getOptions = async (companyName,frequency) => {
+        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key);
+        console.log("TESTING");
+        console.log(res);
+        var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
+        var points = [];
+        var i = 0;
+        for(i=0;i<52;i++){
+            points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
+        }
+        var dataArr = []
+        dataArr.push({type: "line", dataPoints: points});
+        console.log(dataArr);
+        const options = {
+            title: {
+                text: "Weekly "+companyName+" Closings for 1 Year"
+            },
+            axisX: {
+                valueFormatString: "MM/DD/YY",
+                title: "Date",
+            },
+            data: dataArr,
+        }
+        var companyOptions = this.state.companyOptions;
+        console.log(companyName);
+        console.log(options);
+        companyOptions[companyName] = options;
+        this.setState({
+            companyOptions: companyOptions,
+        });
+    }
     
 
     render () {
@@ -368,11 +422,23 @@ class Investments extends React.Component {
                     <Container fluid="true">
                         <Row>
                             <Col className="card">
-                                { this.state.data.length > 0 ?
-                                    <CanvasJSChart options={options}
-                                    // onRef = {ref => this.chart = ref}
-                                    />
-                                    : <Loader/>
+                                { 
+                                    this.state.selectedCompanies.map((name,index)=>{
+                                    /*console.log("RENDERING");
+                                    console.log(name);
+                                    console.log(this.state.companyOptions);
+                                    console.log(this.state.companyOptions[name]);*/
+                                        if(this.state.companyOptions[name] !== undefined){
+                                            return(
+                                                <Row key={"row"+index}>
+                                                    <CanvasJSChart key={"test"+index} options={this.state.companyOptions[name]}
+                                                    // onRef = {ref => this.chart = ref}
+                                                    />
+                                                </Row>
+                                            )
+                                        }
+                                    })
+                                    
                                 }
                                 <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
                             </Col>
@@ -438,11 +504,6 @@ class Investments extends React.Component {
                         </Form>
                     </Modal.Body>
                 </Modal>
-                <DropdownButton id="dropdown-basic-button" title={this.state.companyName}>
-                    {this.state.selectedCompanies.map((name,index)=>{
-                        return (<Dropdown.Item key={this.state.companies[name]+index} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
-                    })}
-                </DropdownButton>
             </div>
         );
     }
