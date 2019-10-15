@@ -5,11 +5,16 @@ import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
+import Collapsible from 'react-collapsible';
+import '../../css/Collapsible.css';
 
 const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont}) => (
-    <div><br/>
-     <h3>{title}</h3>
-     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
+    <div>
+     <Collapsible trigger={title}
+     triggerOpenedClassName="Collapsible__trigger--active"
+     easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
+      <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
+     </Collapsible>
     </div>
 )
 
@@ -121,6 +126,7 @@ class Saving extends React.Component {
           {(savings.length > 0 && savings[0])
             ? savings.map(plan => <SavingsPlan {...plan} />)
             : <p>You have no savings plans. Why don't you add one below</p>}
+        <br/>
          <span className="input-group-btn">
               <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
         </span>
