@@ -1,29 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { Table } from 'reactstrap';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 
 import '../../css/Budgets.css';
 
 function TransactionTable(props) {
-  const [transactions, setTransactions] = useState(); // All the transactions in an array
-  const [loadingTransactions, setLoadingTransactions] = useState(true); // State to check if transactions are received yet
-  const [sortKey, setSortKey] = useState('date');
-  const [sortNameAsc, setSortNameAsc] = useState(false);
-  const [sortAmountAsc, setSortAmountAsc] = useState(false);
-  const [sortDateAsc, setSortDateAsc] = useState(false);
-  const [sortCategoryAsc, setSortCategoryAsc] = useState(false);
-
+  const [transactions, setTransactions] = useState(); // array of all transactions
+  const [loadingTransactions, setLoadingTransactions] = useState(true); // state to check if transactions are received yet
+  const [sortKey, setSortKey] = useState('date'); // field the table is sorted by
+  const [sortNameAsc, setSortNameAsc] = useState(false);  // if name should be in ascending order
+  const [sortAmountAsc, setSortAmountAsc] = useState(false);  // if amount should be in ascending order
+  const [sortDateAsc, setSortDateAsc] = useState(false);  // if date should be in ascending order
+  const [sortCategoryAsc, setSortCategoryAsc] = useState(false);  // if category should be in ascending order
 
 	useEffect(
 		() => {
       getTransactions();
 		},
-		[props.curBudget]
+		[props]
 	);
 
+  // get all transactions for a budget
   const getTransactions = () => {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
 			.then((response) => {
+        // format the date for display
         for (let i in response.data) {
           let date = new Date(response.data[i].date);
           response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
@@ -37,20 +40,21 @@ function TransactionTable(props) {
 			});
 	};
 
+  // sort the transactions table by a particular field
   const sortTransactions = (key) => {
     let sortAsc = '';
     if (key === 'name') {
+      sortAsc = !sortNameAsc;
       setSortNameAsc(!sortNameAsc);
-      sortAsc = sortNameAsc;
     } else if (key === 'amount') {
+      sortAsc = !sortAmountAsc;
       setSortAmountAsc(!sortAmountAsc);
-      sortAsc = sortAmountAsc;
     } else if (key === 'date') {
+      sortAsc = !sortDateAsc;
       setSortDateAsc(!sortDateAsc);
-      sortAsc = sortDateAsc;
     } else if (key === 'category') {
+      sortAsc = !sortCategoryAsc;
       setSortCategoryAsc(!sortCategoryAsc);
-      sortAsc = sortCategoryAsc;
     }
 
     setSortKey(key);
@@ -74,10 +78,22 @@ function TransactionTable(props) {
         <thead>
           <tr align="left">
             <th className="poundSymbol">#</th>
-            <th className="tableHeader" onClick={() => sortTransactions('name')}>Name</th>
-            <th className="tableHeader" onClick={() => sortTransactions('amount')}>Amount</th>
-            <th className="tableHeader" onClick={() => sortTransactions('date')}>Date</th>
-            <th className="tableHeader" onClick={() => sortTransactions('category')}>Category</th>
+            <th className="tableHeader" onClick={() => sortTransactions('name')}>Name{' '}
+              <span hidden={sortKey !== 'name' || !sortNameAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
+              <span hidden={sortKey !== 'name' || sortNameAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+            </th>
+            <th className="tableHeader" onClick={() => sortTransactions('amount')}>Amount{' '}
+              <span hidden={sortKey !== 'amount' || !sortAmountAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
+              <span hidden={sortKey !== 'amount' || sortAmountAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+            </th>
+            <th className="tableHeader" onClick={() => sortTransactions('date')}>Date{' '}
+              <span hidden={sortKey !== 'date' || !sortDateAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
+              <span hidden={sortKey !== 'date' || sortDateAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+            </th>
+            <th className="tableHeader" onClick={() => sortTransactions('category')}>Category{' '}
+              <span hidden={sortKey !== 'category' || !sortCategoryAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
+              <span hidden={sortKey !== 'category' || sortCategoryAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+            </th>
           </tr>
         </thead>
         <tbody>
