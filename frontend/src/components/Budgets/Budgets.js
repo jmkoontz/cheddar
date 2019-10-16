@@ -41,6 +41,9 @@ function Budgets() {
 	const closeModal = () => {
 		setModal(false);
 		setCreationAlert(false);
+		setCategoryArr([]);
+		setPickedCategory("Select a Budget Type");
+		setBudgetName("");
 	}
 
   /**
@@ -51,32 +54,27 @@ function Budgets() {
 		setCategoryArr(categoryArr.filter((s, sidx) => index !== sidx));
 	}
 
-  /**
-   * Handles user input from the modal form and updates the state
-   * @param {*} index
-   */
-	const handleCategoryChange = (event) => {
-		let newObj = {
-			"name": categoryArr[event.target.id].name,
-			"amount": parseInt(event.target.value),
-			"transactions": []
-		};
-		let arr = categoryArr;
+  // /**
+  //  * Handles user input from the modal form and updates the state
+  //  * @param {*} index
+  //  */
+	// const handleCategoryChange = (event) => {
+	// 	let newObj = {
+	// 		"name": categoryArr[event.target.id].name,
+	// 		"amount": parseInt(event.target.value),
+	// 		"transactions": []
+	// 	};
+	// 	let arr = categoryArr;
 
-		for (let x = 0; x < arr.length; x++) {
-			if (x === parseInt(event.target.id)) {
-				arr[x] = newObj;
-			}
-		}
-		setCategoryArr(arr);
-	}
+	// 	for (let x = 0; x < arr.length; x++) {
+	// 		if (x === parseInt(event.target.id)) {
+	// 			arr[x] = newObj;
+	// 		}
+	// 	}
+	// 	setCategoryArr(arr);
+	// }
 
-  /**
-   * Helper method to handle user changes to name
-   */
-	const handleNameChange = (event) => {
-		setBudgetName(event.target.value);
-	}
+ 
 
 
   /**
@@ -119,6 +117,22 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
+	}
+
+	/**
+	 * Helper function which opens the modal to edit a budget
+	 */
+	const openEditModal = () => {
+		setModal(true); 
+		setEditModal(true);
+		setPickedCategory(curBudget.type);
+		setBudgetName(curBudget.name);
+		let tmpIncome ={
+			name: "Income",
+			amount: curBudget.income
+		}
+		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
+
 	}
 
 	// Server calls below here
@@ -239,29 +253,34 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
-		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
-		{
-			name: budgetName,
-			type: pickedCategory,
-			income: tmpIncome,
-			timeFrame: curBudget.timeframe,
-			favorite: false,
-			budgetCategories: removedIncomeArr
-		}).then(function (response) {
+		console.log(budgetName);
+		console.log(pickedCategory);
+		console.log(tmpIncome);
+		console.log(curBudget.timeFrame);
+		console.log(removedIncomeArr);
+		// axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
+		// {
+		// 	name: budgetName,
+		// 	type: pickedCategory,
+		// 	income: tmpIncome,
+		// 	timeFrame: curBudget.timeFrame,
+		// 	favorite: curBudget.favorite,
+		// 	budgetCategories: removedIncomeArr
+		// }).then(function (response) {
 
-			console.log(response);
-			setEditModal(false);
-			setModal(false);
-			setCategoryArr([]);
-			setButtonDisplay(false);
-			setCurBudget();
-			getBudgets();
+		// 	console.log(response);
+		// 	setEditModal(false);
+		// 	setModal(false);
+		// 	setCategoryArr([]);
+		// 	setButtonDisplay(false);
+		// 	setCurBudget();
+		// 	getBudgets();
 
-		}).catch(function (error) {
-			//setErrMsg(error);
-			//setCreationAlert(true);
-			console.log(error);
-		});
+		// }).catch(function (error) {
+		// 	//setErrMsg(error);
+		// 	//setCreationAlert(true);
+		// 	console.log(error);
+		// });
 	}
 
 	useEffect(
@@ -275,8 +294,10 @@ function Budgets() {
 		editBudget: editBudget,
 		deleteBudget: deleteBudget,
 		createBudget: createBudget,
-		handleNameChange: handleNameChange,
-		handleCategoryChange: handleCategoryChange,
+		//handleNameChange: handleNameChange,
+		//handleCategoryChange: handleCategoryChange,
+		budgetName: budgetName,
+		setBudgetName: setBudgetName,
 		removeCategory: removeCategory,
 		resetDropDown: resetDropDown,
 		toggleDropDown: toggleDropDown,
@@ -295,7 +316,9 @@ function Budgets() {
 		setNewData: setNewData,
 		setButtonDisplay: setButtonDisplay,
 		pickedCategory: pickedCategory,
-		setEditModal: setEditModal
+		editModal: editModal,
+		setEditModal: setEditModal,
+		openEditModal: openEditModal,
 
 	};
 
@@ -309,7 +332,12 @@ function Budgets() {
 			}
 
 			<Modal isOpen={modal} toggle={() => setModal(false)}>
+				{editModal
+				?
+				<ModalHeader toggle={() => {setModal(false); setEditModal(false);}}>Edit a Budget</ModalHeader>
+				:
 				<ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
+				}
 				<ModalBody>
 					<Row>
 
@@ -367,13 +395,13 @@ function Budgets() {
 					</ModalFooter>
 					:
 					<ModalFooter>
-						{editBudget
+						{editModal
 							?
 							<Button type="submit" color="primary" onClick={editBudget}>Submit Changes</Button>
 							:
 							<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
 						}
-						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
+						<Button color="secondary" onClick={() => {closeModal(); setEditModal(false);}}>Cancel</Button>
 					</ModalFooter>
 				}
 
