@@ -20,7 +20,6 @@ function FixedAmount(props) {
     let tmpObj = {
       name: "Income",
       amount: monthlyIncome,
-      preset: true
     }
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
@@ -51,7 +50,7 @@ function FixedAmount(props) {
 
   return (
     <div>
-      {!dataEnter
+       {!props.editModal && !dataEnter
         ?
         <div>
           <Row className="addSpace">
