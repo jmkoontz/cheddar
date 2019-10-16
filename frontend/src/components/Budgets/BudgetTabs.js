@@ -9,7 +9,6 @@ function BudgetTabs(props) {
 
 	const [deleteModal, setDeleteModal] = useState(false);
 
-	//props.openEditModal
 	useEffect(
 		() => {
 
