@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from 'reactstrap';
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
 import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
+
+	const [deleteModal, setDeleteModal] = useState(false);
 
 	useEffect(
 		() => {
@@ -61,10 +63,9 @@ function BudgetTabs(props) {
 									/>
 								</div>
 
-								<Button className="padTop padRight" color="danger" onClick={() => { props.deleteBudget(item.name)}}>Delete</Button>
+								<Button className="padTop padRight" color="danger" onClick={() => {setDeleteModal(true)}}>Delete</Button>
 
-								<Button className="padTop" color="primary" onClick={() => { props.setModal(true); props.setEditModal(true)}}>Edit</Button>
-
+								<Button className="padTop" color="primary" onClick={props.openEditModal}>Edit</Button>
 
 							</Col>
 							<Col sm={5}>
@@ -81,9 +82,20 @@ function BudgetTabs(props) {
 							</Col>
 							<Col sm={1} />
 						</Row>
+						<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
+							<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
+							<ModalBody>
+								Are you sure you want to delete the budget '{item.name}'?
+        			</ModalBody>
+							<ModalFooter>
+								<Button color="danger" onClick={() => {props.deleteBudget(item.name)}}>Delete Budget</Button>
+								<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
+							</ModalFooter>
+						</Modal>
 					</TabPane>
 				)}
 			</TabContent>
+
 
 		</div>
 	);
