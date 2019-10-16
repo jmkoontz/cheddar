@@ -34,18 +34,6 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  app.get('/Cheddar/test', async (req, res) => {
-    let data;
-    try {
-      console.log('it worked');
-      data = 'Hello there';
-    } catch (err) {
-      data = {error: parseError(err)};
-    }
-
-    buildResponse(res, data);
-  });
-
   // get a user
   app.get('/Cheddar/:uid', async (req, res) => {
     let data;
