@@ -3,6 +3,7 @@ import { Button } from 'reactstrap';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
+import TransactionTable from './TransactionTable';
 import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
@@ -75,7 +76,7 @@ function BudgetTabs(props) {
 
 								<Button className="padTop" color="primary" onClick={props.openEditModal}>Edit</Button>
 
-								
+
 
 							</Col>
 							<Col sm={5}>
@@ -91,6 +92,18 @@ function BudgetTabs(props) {
 								</div>
 							</Col>
 							<Col sm={1} />
+						</Row>
+						<Row className="padTop" />
+						<Row>
+							<Col sm={1}/>
+							<Col sm={10}>
+								{index === parseInt(props.tab) && props.curBudget
+									?
+									<TransactionTable {...props} />
+									:
+									<p>Loading...</p>
+								}
+							</Col>
 						</Row>
 						<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
 							<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
