@@ -51,7 +51,7 @@ function StudentLoan(props) {
 
   return (
     <div>
-      {!dataEnter
+      {!props.editModal && !dataEnter
         ?
         <div>
           <Row className="addSpace">
