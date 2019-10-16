@@ -20,7 +20,6 @@ function StudentLoan(props) {
     let tmpObj = {
       name: "Loan",
       amount: monthlyPayment,
-      preset: true
     }
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
