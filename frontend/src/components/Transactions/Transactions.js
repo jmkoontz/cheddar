@@ -217,8 +217,8 @@ function Transactions(props) {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
 			.then(function (response) {
 				// handle success
-				console.log(response.data)
-				setBudgetList(response.data);
+
+				setBudgetList([...response.data,{name:"All Budgets"}]);
 				setLoading(false);
 			})
 			.catch((error) => {
