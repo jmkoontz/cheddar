@@ -32,10 +32,12 @@ export default (app) => {
   // edit budget
   app.put('/Cheddar/Budgets/:uid/:budgetName', async (req, res) => {
     let changes = {
-      name: req.query.name,
-      type: req.query.type,
-      income: req.query.income,
-      timeFrame: req.query.timeFrame
+      name: req.body.name,
+      type: req.body.type,
+      income: req.body.income,
+      timeFrame: req.body.timeFrame,
+      favorite: req.body.favorite,
+      budgetCategories: req.body.budgetCategories
     };
 
     let data;

@@ -21,6 +21,7 @@ function Budgets() {
 	const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
 	const [categoryArr, setCategoryArr] = useState([]);
 	const [buttonDisplay, setButtonDisplay] = useState(false); // Tells the modal to display the button
+	const [editModal, setEditModal] = useState(false); // Boolean to say if I'm editing the budget
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
@@ -40,6 +41,9 @@ function Budgets() {
 	const closeModal = () => {
 		setModal(false);
 		setCreationAlert(false);
+		setCategoryArr([]);
+		setPickedCategory("Select a Budget Type");
+		setBudgetName("");
 	}
 
   /**
@@ -49,34 +53,6 @@ function Budgets() {
 	const removeCategory = (index) => {
 		setCategoryArr(categoryArr.filter((s, sidx) => index !== sidx));
 	}
-
-  /**
-   * Handles user input from the modal form and updates the state
-   * @param {*} index
-   */
-	const handleCategoryChange = (event) => {
-		let newObj = {
-			"name": categoryArr[event.target.id].name,
-			"amount": parseInt(event.target.value),
-			"transactions": []
-		};
-		let arr = categoryArr;
-
-		for (let x = 0; x < arr.length; x++) {
-			if (x === parseInt(event.target.id)) {
-				arr[x] = newObj;
-			}
-		}
-		setCategoryArr(arr);
-	}
-
-  /**
-   * Helper method to handle user changes to name
-   */
-	const handleNameChange = (event) => {
-		setBudgetName(event.target.value);
-	}
-
 
   /**
    * Helper method to reset the drop down menu text and add a new expense to the category array
@@ -118,6 +94,22 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
+	}
+
+	/**
+	 * Helper function which opens the modal to edit a budget
+	 */
+	const openEditModal = () => {
+		setModal(true); 
+		setEditModal(true);
+		setPickedCategory(curBudget.type);
+		setBudgetName(curBudget.name);
+		let tmpIncome ={
+			name: "Income",
+			amount: curBudget.income
+		}
+		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
+
 	}
 
 	// Server calls below here
@@ -176,7 +168,7 @@ function Budgets() {
 			}
 		}
 
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);;
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
@@ -202,25 +194,73 @@ function Budgets() {
 			});
 	};
 
-	 /**
-   * Makes the axios call to the backend to generate a new budget
-   */
+	/**
+	* Makes the axios call to the backend to delete a budget
+	*/
 	const deleteBudget = (name) => {
 		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
-			).then(function (response) {
+		).then(function (response) {
 
-				console.log(response);
-				setModal(false);
-				setCategoryArr([]);
-				setButtonDisplay(false);
-				setCurBudget();
-				getBudgets();
+			//console.log(response);
+			setModal(false);
+			setCategoryArr([]);
+			setButtonDisplay(false);
+			setCurBudget();
+			getBudgets();
 
-			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
-			});
+		}).catch(function (error) {
+			//setErrMsg(error);
+			//setCreationAlert(true);
+			console.log(error);
+		});
+	}
+
+	/**
+   * Makes the axios call to the backend to edit a budget
+   */
+	const editBudget = () => {
+
+		let tmpName;
+		if (budgetName === curBudget.name) {
+			tmpName = "";
+		} else {
+			tmpName = budgetName;
+		}
+
+		let tmpIncome;
+		let index = 0;
+		for (let x = 0; x < categoryArr.length; x++) {
+			if (categoryArr[x].name === "Income") {
+				index = x;
+				tmpIncome = categoryArr[x].amount;
+			}
+		}
+
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+
+		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
+		{
+			name: tmpName,
+			type: pickedCategory,
+			income: tmpIncome,
+			timeFrame: curBudget.timeFrame,
+			favorite: curBudget.favorite,
+			budgetCategories: removedIncomeArr
+		}).then(function (response) {
+
+			console.log(response);
+			setEditModal(false);
+			setModal(false);
+			setCategoryArr([]);
+			setButtonDisplay(false);
+			setCurBudget();
+			getBudgets();
+
+		}).catch(function (error) {
+			//setErrMsg(error);
+			//setCreationAlert(true);
+			console.log(error);
+		});
 	}
 
 	useEffect(
@@ -231,10 +271,13 @@ function Budgets() {
 	);
 
 	const formInfo = {
+		editBudget: editBudget,
 		deleteBudget: deleteBudget,
 		createBudget: createBudget,
-		handleNameChange: handleNameChange,
-		handleCategoryChange: handleCategoryChange,
+		//handleNameChange: handleNameChange,
+		//handleCategoryChange: handleCategoryChange,
+		budgetName: budgetName,
+		setBudgetName: setBudgetName,
 		removeCategory: removeCategory,
 		resetDropDown: resetDropDown,
 		toggleDropDown: toggleDropDown,
@@ -252,7 +295,10 @@ function Budgets() {
 		newData: newData,
 		setNewData: setNewData,
 		setButtonDisplay: setButtonDisplay,
-		pickedCategory: pickedCategory
+		pickedCategory: pickedCategory,
+		editModal: editModal,
+		setEditModal: setEditModal,
+		openEditModal: openEditModal,
 
 	};
 
@@ -266,7 +312,12 @@ function Budgets() {
 			}
 
 			<Modal isOpen={modal} toggle={() => setModal(false)}>
+				{editModal
+				?
+				<ModalHeader toggle={() => {setModal(false); setEditModal(false);}}>Edit a Budget</ModalHeader>
+				:
 				<ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
+				}
 				<ModalBody>
 					<Row>
 
@@ -306,9 +357,9 @@ function Budgets() {
 											?
 											<FixedAmount {...formInfo} />
 											:
-												<div>
-													{/* Other categories will go here */}
-												</div>
+											<div>
+												{/* Other categories will go here */}
+											</div>
 								}
 
 
@@ -324,8 +375,13 @@ function Budgets() {
 					</ModalFooter>
 					:
 					<ModalFooter>
-						<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
-						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
+						{editModal
+							?
+							<Button type="submit" color="primary" onClick={editBudget}>Submit Changes</Button>
+							:
+							<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
+						}
+						<Button color="secondary" onClick={() => {closeModal(); setEditModal(false);}}>Cancel</Button>
 					</ModalFooter>
 				}
 
