@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import db from './config/db';
-import mainController from './controllers/mainController';
+import userController from './controllers/userController';
 import budgetController from './controllers/budgetController';
 import investmentsController from './controllers/investmentsController';
 import transactionController from './controllers/transactionController';
@@ -26,7 +26,7 @@ app.options('/*', (req, res) => {
 // run controllers
 retirementController(app);
 investmentsController(app);
-mainController(app);
+userController(app);
 budgetController(app);
 
 transactionController(app);

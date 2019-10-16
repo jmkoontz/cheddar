@@ -3,6 +3,7 @@ import { Button } from 'reactstrap';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
+import TransactionTable from './TransactionTable';
 import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
@@ -80,6 +81,18 @@ function BudgetTabs(props) {
 								</div>
 							</Col>
 							<Col sm={1} />
+						</Row>
+						<Row className="padTop" />
+						<Row>
+							<Col sm={1}/>
+							<Col sm={10}>
+								{index === parseInt(props.tab) && props.curBudget
+									?
+									<TransactionTable {...props} />
+									:
+									<p>Loading...</p>
+								}
+							</Col>
 						</Row>
 					</TabPane>
 				)}
