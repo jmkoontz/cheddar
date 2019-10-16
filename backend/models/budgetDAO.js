@@ -138,6 +138,9 @@ export async function editBudget(uid, budgetName, changes) {
   if (changes.timeFrame)
     updateClause.$set['budgets.$.timeFrame'] = changes.timeFrame;
 
+  if (changes.budgetCategories)
+    updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
+
   return userModel.findOneAndUpdate(
     findClause,
     updateClause,
