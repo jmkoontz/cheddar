@@ -61,9 +61,9 @@ function BudgetTabs(props) {
 									/>
 								</div>
 
-								<Button className="padTop padRight" color="danger" onClick={() => { props.deleteBudget(item.name) }}>Delete</Button>
+								<Button className="padTop padRight" color="danger" onClick={() => { props.deleteBudget(item.name)}}>Delete</Button>
 
-								<Button className="padTop" color="primary">Edit</Button>
+								<Button className="padTop" color="primary" onClick={() => { props.setModal(true); props.setEditModal(true)}}>Edit</Button>
 
 
 							</Col>
