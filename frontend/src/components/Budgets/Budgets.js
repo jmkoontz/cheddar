@@ -21,6 +21,7 @@ function Budgets() {
 	const [selectedDrop, setDropDown] = useState("Select a Category"); // Holds current value of the new category to add
 	const [categoryArr, setCategoryArr] = useState([]);
 	const [buttonDisplay, setButtonDisplay] = useState(false); // Tells the modal to display the button
+	const [editModal, setEditModal] = useState(false); // Boolean to say if I'm editing the budget
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
@@ -176,7 +177,7 @@ function Budgets() {
 			}
 		}
 
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);;
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
@@ -202,25 +203,65 @@ function Budgets() {
 			});
 	};
 
-	 /**
-   * Makes the axios call to the backend to generate a new budget
-   */
+	/**
+	* Makes the axios call to the backend to delete a budget
+	*/
 	const deleteBudget = (name) => {
 		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
-			).then(function (response) {
+		).then(function (response) {
 
-				console.log(response);
-				setModal(false);
-				setCategoryArr([]);
-				setButtonDisplay(false);
-				setCurBudget();
-				getBudgets();
+			//console.log(response);
+			setModal(false);
+			setCategoryArr([]);
+			setButtonDisplay(false);
+			setCurBudget();
+			getBudgets();
 
-			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
-			});
+		}).catch(function (error) {
+			//setErrMsg(error);
+			//setCreationAlert(true);
+			console.log(error);
+		});
+	}
+
+	/**
+   * Makes the axios call to the backend to edit a budget
+   */
+	const editBudget = () => {
+		let tmpIncome;
+		let index = 0;
+		for (let x = 0; x < categoryArr.length; x++) {
+			if (categoryArr[x].name === "Income") {
+				index = x;
+				tmpIncome = categoryArr[x].amount;
+			}
+		}
+
+		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+
+		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
+		{
+			name: budgetName,
+			type: pickedCategory,
+			income: tmpIncome,
+			timeFrame: curBudget.timeframe,
+			favorite: false,
+			budgetCategories: removedIncomeArr
+		}).then(function (response) {
+
+			console.log(response);
+			setEditModal(false);
+			setModal(false);
+			setCategoryArr([]);
+			setButtonDisplay(false);
+			setCurBudget();
+			getBudgets();
+
+		}).catch(function (error) {
+			//setErrMsg(error);
+			//setCreationAlert(true);
+			console.log(error);
+		});
 	}
 
 	useEffect(
@@ -231,6 +272,7 @@ function Budgets() {
 	);
 
 	const formInfo = {
+		editBudget: editBudget,
 		deleteBudget: deleteBudget,
 		createBudget: createBudget,
 		handleNameChange: handleNameChange,
@@ -252,7 +294,8 @@ function Budgets() {
 		newData: newData,
 		setNewData: setNewData,
 		setButtonDisplay: setButtonDisplay,
-		pickedCategory: pickedCategory
+		pickedCategory: pickedCategory,
+		setEditModal: setEditModal
 
 	};
 
@@ -306,9 +349,9 @@ function Budgets() {
 											?
 											<FixedAmount {...formInfo} />
 											:
-												<div>
-													{/* Other categories will go here */}
-												</div>
+											<div>
+												{/* Other categories will go here */}
+											</div>
 								}
 
 
@@ -324,7 +367,12 @@ function Budgets() {
 					</ModalFooter>
 					:
 					<ModalFooter>
-						<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
+						{editBudget
+							?
+							<Button type="submit" color="primary" onClick={editBudget}>Submit Changes</Button>
+							:
+							<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
+						}
 						<Button color="secondary" onClick={() => closeModal()}>Cancel</Button>
 					</ModalFooter>
 				}
