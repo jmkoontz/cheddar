@@ -15,7 +15,6 @@ function FormBody(props) {
      * @param {*} index
      */
   const handleCategoryChange = (event) => {
-    console.log(localCategories);
     let newObj = localCategories[event.target.id];
 
     // Null check
@@ -35,8 +34,6 @@ function FormBody(props) {
         arr[x] = localCategories[x];
       }
     }
-    console.log(newObj);
-    console.log(arr);
     setLocalCategories(arr);
     props.setCategoryArr(arr);
   }

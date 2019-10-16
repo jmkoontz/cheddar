@@ -108,7 +108,7 @@ export async function createBudget(uid, budget) {
 export async function editBudget(uid, budgetName, changes) {
   let updateClause = {$set: {}};
 
-  if (changes.name) {
+  if (changes.name !== "") {
     // get names of budgets
     let budgetNames = [];
     try {

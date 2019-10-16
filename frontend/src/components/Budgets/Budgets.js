@@ -242,6 +242,14 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
+
+		let tmpName;
+		if (budgetName === curBudget.name) {
+			tmpName = "";
+		} else {
+			tmpName = budgetName;
+		}
+
 		let tmpIncome;
 		let index = 0;
 		for (let x = 0; x < categoryArr.length; x++) {
@@ -253,34 +261,29 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
-		console.log(budgetName);
-		console.log(pickedCategory);
-		console.log(tmpIncome);
-		console.log(curBudget.timeFrame);
-		console.log(removedIncomeArr);
-		// axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
-		// {
-		// 	name: budgetName,
-		// 	type: pickedCategory,
-		// 	income: tmpIncome,
-		// 	timeFrame: curBudget.timeFrame,
-		// 	favorite: curBudget.favorite,
-		// 	budgetCategories: removedIncomeArr
-		// }).then(function (response) {
+		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
+		{
+			name: tmpName,
+			type: pickedCategory,
+			income: tmpIncome,
+			timeFrame: curBudget.timeFrame,
+			favorite: curBudget.favorite,
+			budgetCategories: removedIncomeArr
+		}).then(function (response) {
 
-		// 	console.log(response);
-		// 	setEditModal(false);
-		// 	setModal(false);
-		// 	setCategoryArr([]);
-		// 	setButtonDisplay(false);
-		// 	setCurBudget();
-		// 	getBudgets();
+			console.log(response);
+			setEditModal(false);
+			setModal(false);
+			setCategoryArr([]);
+			setButtonDisplay(false);
+			setCurBudget();
+			getBudgets();
 
-		// }).catch(function (error) {
-		// 	//setErrMsg(error);
-		// 	//setCreationAlert(true);
-		// 	console.log(error);
-		// });
+		}).catch(function (error) {
+			//setErrMsg(error);
+			//setCreationAlert(true);
+			console.log(error);
+		});
 	}
 
 	useEffect(
