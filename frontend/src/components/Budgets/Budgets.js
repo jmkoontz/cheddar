@@ -54,29 +54,6 @@ function Budgets() {
 		setCategoryArr(categoryArr.filter((s, sidx) => index !== sidx));
 	}
 
-  // /**
-  //  * Handles user input from the modal form and updates the state
-  //  * @param {*} index
-  //  */
-	// const handleCategoryChange = (event) => {
-	// 	let newObj = {
-	// 		"name": categoryArr[event.target.id].name,
-	// 		"amount": parseInt(event.target.value),
-	// 		"transactions": []
-	// 	};
-	// 	let arr = categoryArr;
-
-	// 	for (let x = 0; x < arr.length; x++) {
-	// 		if (x === parseInt(event.target.id)) {
-	// 			arr[x] = newObj;
-	// 		}
-	// 	}
-	// 	setCategoryArr(arr);
-	// }
-
- 
-
-
   /**
    * Helper method to reset the drop down menu text and add a new expense to the category array
    */

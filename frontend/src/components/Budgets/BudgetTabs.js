@@ -7,7 +7,15 @@ import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
 
-	const [deleteModal, setDeleteModal] = useState(false);
+	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
+	const [favorite, setFavorite] = useState(false);	// Sets the user's favorite budget
+
+	/**
+	 * Server call to set a new favorite budget
+	 */
+	const setNewFavorite = (name) => {
+		setFavorite(true);
+	}
 
 	useEffect(
 		() => {
@@ -18,7 +26,7 @@ function BudgetTabs(props) {
 
 	return (
 		<div>
-			<Row className="padTop">
+			<Row >
 				<Col sm={3} />
 				<Col sm={6}>
 					<h3 className={"addSpace"}>Select a Budget</h3>
@@ -66,6 +74,8 @@ function BudgetTabs(props) {
 								<Button className="padTop padRight" color="danger" onClick={() => {setDeleteModal(true)}}>Delete</Button>
 
 								<Button className="padTop" color="primary" onClick={props.openEditModal}>Edit</Button>
+
+								
 
 							</Col>
 							<Col sm={5}>
