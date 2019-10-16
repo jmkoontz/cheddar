@@ -8,7 +8,7 @@ function FormBody(props) {
 
   const [dropDownObj, setDropDownObj] = useState({ hello: "wordl", name: "butt" });
   const [localCategories, setLocalCategories] = useState(props.categoryArr);  // Holds a local copy of the category array
-  const [budName, setBudName]= useState(props.budgetName);
+  const [budName, setBudName] = useState(props.budgetName);
 
   /**
      * Handles user input from the modal form and updates the state
@@ -23,7 +23,7 @@ function FormBody(props) {
     } else {
       newObj.amount = 0;
     }
-    
+
 
     let arr = [];
 
@@ -38,13 +38,13 @@ function FormBody(props) {
     props.setCategoryArr(arr);
   }
 
-   /**
-   * Helper method to handle user changes to name
-   */
-	const handleNameChange = (event) => {
+  /**
+  * Helper method to handle user changes to name
+  */
+  const handleNameChange = (event) => {
     setBudName(event.target.value);
-		props.setBudgetName(event.target.value);
-	}
+    props.setBudgetName(event.target.value);
+  }
 
   useEffect(
     () => {
@@ -61,7 +61,7 @@ function FormBody(props) {
       <Form onSubmit={props.createBudget}>
         <FormGroup>
           <Label for="name">Name</Label>
-          <Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" value={budName}/>
+          <Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" value={budName} />
         </FormGroup>
 
         {localCategories.map((item, index) =>
@@ -69,26 +69,16 @@ function FormBody(props) {
             <Label for={"" + index}>{item.name}</Label>
             <Row>
               <Col sm={10}>
-                {item.preset === true
-                  ?
-                  <Input
-                    onChange={handleCategoryChange}
-                    type="text"
-                    id={index}
-                    placeholder="Amount"
-                    required="required"
-                    value={item.amount}
-                  />
-                  :
-                  <Input
-                    onChange={handleCategoryChange}
-                    type="text"
-                    id={index}
-                    placeholder="Amount"
-                    required="required"
-                    value={item.amount}
-                  />
-                }
+
+                <Input
+                  onChange={handleCategoryChange}
+                  type="text"
+                  id={index}
+                  placeholder="Amount"
+                  required="required"
+                  value={item.amount}
+                />
+
               </Col>
               <Col sm={2}>
                 <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
