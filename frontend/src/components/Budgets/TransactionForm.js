@@ -42,7 +42,10 @@ function TransactionForm(props) {
 
         // Update the transaction state
         props.getTransactions();
-        
+        setTransactionName('');
+        setTransactionCate('');
+        setTransactionAmount('');
+        setDate(new Date());
       })
       .catch((error) => {
         console.log("Transaction call did not work");
@@ -87,13 +90,13 @@ function TransactionForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} />
+                  <Input id="name" value={transactionName} onChange={handleNChange} />
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input type="number" id="amount" onChange={handleAmtChange} />
+                  <Input type="number" value={transactionAmount} id="amount" onChange={handleAmtChange} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
@@ -109,18 +112,18 @@ function TransactionForm(props) {
 
               </Col>
             </Row>
-            
+
           </Form>
         </CardBody>
         <CardFooter>
-              
+
               {transactionCate === ""
                 ?
                 <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
                 :
                 <Button onClick={createTransaction} color="primary" >Submit</Button>
               }
-              
+
             </CardFooter>
       </Card>
     </div>

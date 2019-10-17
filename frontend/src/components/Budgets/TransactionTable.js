@@ -22,9 +22,14 @@ function TransactionTable(props) {
 
 	useEffect(
 		() => {
-      getTransactions();
+      // getTransactions();
+      console.log(props.transactions);
+      // let tmp = ;
+      setTransactions(JSON.parse(JSON.stringify(props.transactions)));
+      // console.log(transactions);
+      console.log('update has occurred')
 		},
-		[props]
+		[props.transactions]
 	);
 
   // toggle visibility of table
@@ -34,6 +39,13 @@ function TransactionTable(props) {
 
   // switch between displaying all transactions and transactions from one category
   const switchMode = (category) => {
+    // reset any sorting
+    setSortKey('date');
+    setSortNameAsc(false);
+    setSortAmountAsc(false);
+    setSortDateAsc(false);
+    setSortCategoryAsc(false);
+
     if (mode === 'all') {
       const categoryTransactions = allTransactions.filter((t) => t.category === category);
       setMode('category');
@@ -45,24 +57,24 @@ function TransactionTable(props) {
     }
   }
 
-  // get all transactions for a budget
-  const getTransactions = () => {
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
-			.then((response) => {
-        // format the date for display
-        for (let i in response.data) {
-          let date = new Date(response.data[i].date);
-          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-        }
-
-				setTransactions(response.data);
-        setAllTransactions(response.data);
-        setLoadingTransactions(false);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
+  // // get all transactions for a budget
+  // const getTransactions = () => {
+	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
+	// 		.then((response) => {
+  //       // format the date for display
+  //       for (let i in response.data) {
+  //         let date = new Date(response.data[i].date);
+  //         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+  //       }
+  //
+	// 			setTransactions(response.data);
+  //       setAllTransactions(response.data);
+  //       setLoadingTransactions(false);
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log(error);
+	// 		});
+	// };
 
   // sort the transactions table by a particular field
   const sortTransactions = (key) => {
@@ -135,11 +147,11 @@ function TransactionTable(props) {
             </tr>
           </thead>
           <tbody>
-            {!loadingTransactions && transactions.map((key, index) => {
+            {transactions && transactions.map((key, index) => {
               return <tr key={transactions[index]._id} align="left">
                 <td scope="row" align="center">{index + 1}</td>
                 <td>{transactions[index].name}</td>
-                <td>${transactions[index].amount}</td>
+                <td>${transactions[index].amount.toFixed(2)}</td>
                 <td>{transactions[index].shortDate}</td>
                 <td>{transactions[index].category}</td>
               </tr>
