@@ -59,7 +59,11 @@ function RealSpending(props) {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
 			.then(function (response) {
 				// handle success
+<<<<<<< HEAD
 				//console.log(response.data)
+=======
+				console.log(response.data)
+>>>>>>> 21b01a8faecf8674d271f5ac17ec052078e57bf3
 				setTransactions(response.data);
 				categorizeData(response.data);
 			})
