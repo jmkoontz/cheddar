@@ -8,7 +8,7 @@ function RealSpending(props) {
 
 	// Transaction Info
 	const [transactions, setTransactions] = useState(); // All the transactions in an array
-	const [loadingTransactions, setLoadingTransactions] = useState(false); // State to check if transactions are received yet 
+	const [loadingTransactions, setLoadingTransactions] = useState(false); // State to check if transactions are received yet
 	const [categoryObjs, setCategoryObjs] = useState([]);	// Array of the category objects for Progress bars
 
 
@@ -16,6 +16,7 @@ function RealSpending(props) {
 	 * Generate category objects with respective transaction data inside
 	 */
 	const categorizeData = (transacts) => {
+		console.log(transacts)
 		// Create the category objects
 		let arrayOfObjects = [];
 		let categories = props.curBudget.budgetCategories;
@@ -54,26 +55,30 @@ function RealSpending(props) {
 	/**
 	 * Server call to get all the transaction data for a budget the database
 	 */
-	const getTransactions = () => {
-		setLoadingTransactions(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
-			.then(function (response) {
-				// handle success
-				//console.log(response.data)
-				setTransactions(response.data);
-				categorizeData(response.data);
-			})
-			.catch((error) => {
-				console.log("Transaction call did not work");
-			});
-	};
+	// const getTransactions = () => {
+	// 	setLoadingTransactions(true);
+	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
+	// 		.then(function (response) {
+	// 			// handle success
+	// 			console.log(response.data)
+	// 			setTransactions(response.data);
+	// 			categorizeData(response.data);
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log("Transaction call did not work");
+	// 		});
+	// };
 
 	useEffect(
 		() => {
 			//console.log("fetching transactions");
-			getTransactions();
+			console.log('real spending: updating')
+			console.log(props.transactions);
+			if (props.transactions)
+				categorizeData(props.transactions);
+			// getTransactions();
 		},
-		[props.budgetList]
+		[props]
 	);
 
 	return (
@@ -85,7 +90,7 @@ function RealSpending(props) {
 				<div> {/** Loop thru budget categories prop and compare the amount with the objects  */}
 					{categoryObjs.map((item, index) =>
 						<div className="padTop" key={index}>
-							<p>{item.name}: ${item.spent} / ${item.allocated}</p>
+							<p>{item.name}: ${item.spent.toFixed(2)} / ${item.allocated.toFixed(2)}</p>
 							<Progress multi className="barShadow">
 								{item.percentUsed > 100
 									?
@@ -101,7 +106,7 @@ function RealSpending(props) {
 						</div>
 					)}
 
-					<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs} getTransactions={getTransactions} />
+					<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs} />
 
 				</div>
 			}

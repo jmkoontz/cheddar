@@ -118,7 +118,7 @@ export async function editBudget(uid, budgetName, changes) {
     }
 
     // protect against duplicate budget names
-    if (budgetNames.includes(changes.name))
+    if (changes.name !== budgetName && budgetNames.includes(changes.name))
       return Promise.reject('UserError: Budget with name \"' + changes.name + '\" already exists');
 
     updateClause.$set['budgets.$.name'] = changes.name;
