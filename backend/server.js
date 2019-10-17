@@ -2,13 +2,14 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import db from './config/db';
-import mainController from './controllers/mainController';
+import userController from './controllers/userController';
 import budgetController from './controllers/budgetController';
 import investmentsController from './controllers/investmentsController';
 import transactionController from './controllers/transactionController';
 import calendarController from './controllers/calendarController';
 import savingsController from './controllers/savingsController';
 import debtController from './controllers/debtController';
+import retirementController from './controllers/retirementController';
 
 const app = express();
 
@@ -23,14 +24,16 @@ app.options('/*', (req, res) => {
 });
 
 // run controllers
+retirementController(app);
 investmentsController(app);
-mainController(app);
+userController(app);
 budgetController(app);
 
 transactionController(app);
 calendarController(app);
 savingsController(app);
 debtController(app);
+
 
 // listen to port
 let port = process.env.PORT;

@@ -108,7 +108,7 @@ export async function createBudget(uid, budget) {
 export async function editBudget(uid, budgetName, changes) {
   let updateClause = {$set: {}};
 
-  if (changes.name) {
+  if (changes.name !== "") {
     // get names of budgets
     let budgetNames = [];
     try {
@@ -137,6 +137,9 @@ export async function editBudget(uid, budgetName, changes) {
 
   if (changes.timeFrame)
     updateClause.$set['budgets.$.timeFrame'] = changes.timeFrame;
+
+  if (changes.budgetCategories)
+    updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
 
   return userModel.findOneAndUpdate(
     findClause,

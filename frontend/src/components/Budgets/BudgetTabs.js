@@ -1,11 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from 'reactstrap';
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
+import TransactionTable from './TransactionTable';
 import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
+
+	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
+	const [favorite, setFavorite] = useState(false);	// Sets the user's favorite budget
+
+	/**
+	 * Server call to set a new favorite budget
+	 */
+	const setNewFavorite = (name) => {
+		setFavorite(true);
+	}
 
 	useEffect(
 		() => {
@@ -16,7 +27,7 @@ function BudgetTabs(props) {
 
 	return (
 		<div>
-			<Row className="padTop">
+			<Row >
 				<Col sm={3} />
 				<Col sm={6}>
 					<h3 className={"addSpace"}>Select a Budget</h3>
@@ -60,11 +71,18 @@ function BudgetTabs(props) {
 										outerRadius={250}
 									/>
 								</div>
+
+								<Button className="padTop padRight" color="danger" onClick={() => {setDeleteModal(true)}}>Delete</Button>
+
+								<Button className="padTop" color="primary" onClick={props.openEditModal}>Edit</Button>
+
+
+
 							</Col>
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-									
+
 									{index === parseInt(props.tab) && props.curBudget
 										?
 										<RealSpending {...props} />
@@ -75,9 +93,32 @@ function BudgetTabs(props) {
 							</Col>
 							<Col sm={1} />
 						</Row>
+						<Row className="padTop" />
+						<Row>
+							<Col sm={1}/>
+							<Col sm={10}>
+								{index === parseInt(props.tab) && props.curBudget
+									?
+									<TransactionTable {...props} />
+									:
+									<p>Loading...</p>
+								}
+							</Col>
+						</Row>
+						<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
+							<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
+							<ModalBody>
+								Are you sure you want to delete the budget '{item.name}'?
+        			</ModalBody>
+							<ModalFooter>
+								<Button color="danger" onClick={() => {props.deleteBudget(item.name)}}>Delete Budget</Button>
+								<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
+							</ModalFooter>
+						</Modal>
 					</TabPane>
 				)}
 			</TabContent>
+
 
 		</div>
 	);

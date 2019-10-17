@@ -7,10 +7,10 @@ import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
 
 const DebtModel = ({category, nickname, initial, currBalance, interestRate}) => (
-  <div>
-    {nickname && <h2>{nickname}</h2>}
+  <div><br/>
+    {nickname && <h3>{nickname}</h3>}
     <h3>{category}</h3>
-    <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p><br/>
+    <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p>
   </div>
 )
 

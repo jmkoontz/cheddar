@@ -4,16 +4,20 @@ import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from '
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
-import '../../css/Budgets.css';
+import '../../css/Transactions.css';
 
-function TransactionForm(props) {
+function SelectBudgetForm(props) {
 
+  const [userID, setUID] = useState(sessionStorage.getItem('user'));
   // Handle drop down
   const [drop, setDrop] = useState(false); // Boolean to control dropdown
-  const [transactionCate, setTransactionCate] = useState(""); // The category for a new transaction
+  const [transactionCategory, setTransactionCategory] = useState(""); // The category for a new transaction
   const [transactionName, setTransactionName] = useState(); // The name for a new transaction
   const [transactionAmount, setTransactionAmount] = useState(); // The amount for a new transaction
   const [date, setDate] = useState(new Date());
+  // Budgets
+  const [budget, setBudget] = useState(null);
+  const [budgetList, setBudgetList] = useState([]);
 
 
   /**
@@ -31,7 +35,7 @@ function TransactionForm(props) {
   }
 
   const createTransaction = () => {
-    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
+    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budget.name}/${transactionCategory}`,
       {
         name: transactionName,
         amount: transactionAmount,
@@ -42,7 +46,7 @@ function TransactionForm(props) {
 
         // Update the transaction state
         props.getTransactions();
-        
+
       })
       .catch((error) => {
         console.log("Transaction call did not work");
@@ -73,13 +77,18 @@ function TransactionForm(props) {
                   <Row>
                     <Dropdown id="category" isOpen={drop} toggle={() => setDrop(!drop)}>
                       <DropdownToggle caret>
-                        {transactionCate}
+                        {transactionCategory}
                       </DropdownToggle>
-                      <DropdownMenu>
-                        {props.curBudget.budgetCategories.map((item, index) =>
-                          <DropdownItem key={index} onClick={() => setTransactionCate(item.name)}>{item.name}</DropdownItem>
-                        )}
-                      </DropdownMenu>
+                      {budget != null
+                        ?
+                        <DropdownMenu>
+                          {budget.budgetCategories.map((item, index) =>
+                            <DropdownItem key={index} onClick={() => setTransactionCategory(item.name)}>{item.name}</DropdownItem>
+                          )}
+                        </DropdownMenu>
+                        :
+                        <div />
+                      }
                     </Dropdown>
                   </Row>
                 </FormGroup>
@@ -109,23 +118,23 @@ function TransactionForm(props) {
 
               </Col>
             </Row>
-            
+
           </Form>
         </CardBody>
         <CardFooter>
-              
-              {transactionCate === ""
-                ?
-                <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
-                :
-                <Button onClick={createTransaction} color="primary" >Submit</Button>
-              }
-              
-            </CardFooter>
+
+          {transactionCategory === ""
+            ?
+            <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
+            :
+            <Button onClick={createTransaction} color="primary" >Submit</Button>
+          }
+
+        </CardFooter>
       </Card>
     </div>
   );
 
 };
 
-export default TransactionForm;
+export default SelectBudgetForm;

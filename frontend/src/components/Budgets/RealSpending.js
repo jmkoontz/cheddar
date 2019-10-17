@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Progress, Row, Col, Form, FormGroup, Label, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Toast, ToastBody, ToastHeader } from 'reactstrap';
+import { Progress } from 'reactstrap';
 import axios from 'axios';
 import TransactionForm from './TransactionForm';
 import '../../css/Budgets.css';
@@ -51,8 +51,6 @@ function RealSpending(props) {
 
 	}
 
-	
-
 	/**
 	 * Server call to get all the transaction data for a budget the database
 	 */
@@ -61,6 +59,7 @@ function RealSpending(props) {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
 			.then(function (response) {
 				// handle success
+				console.log(response.data)
 				setTransactions(response.data);
 				categorizeData(response.data);
 			})

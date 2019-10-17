@@ -20,7 +20,6 @@ function StudentLoan(props) {
     let tmpObj = {
       name: "Loan",
       amount: monthlyPayment,
-      preset: true
     }
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
@@ -51,15 +50,15 @@ function StudentLoan(props) {
 
   return (
     <div>
-      {!dataEnter
+      {!props.editModal && !dataEnter
         ?
         <div>
           <Row className="addSpace">
             <Col>
               <Label for="loan">Loan Amount</Label>
-              <Input onChange={handleAmountChange} name="loan" id="loan" placeholder="Ex: 10000" />
+              <Input onChange={handleAmountChange} type="number" name="loan" id="loan" placeholder="Ex: 10000" />
               <Label for="timeframe">Timeframe of Loan</Label>
-              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of months" />
+              <Input onChange={handleTimeChange} type="number" name="timeframe" id="timeframe" placeholder="Enter number of months" />
             </Col>
           </Row>
           <Row>
