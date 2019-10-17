@@ -41,6 +41,7 @@ function TransactionForm(props) {
         console.log("Success");
 
         props.getTransactions();
+<<<<<<< HEAD
         // let newTrans = {
         //   name: transactionName,
         //   amount: parseInt(transactionAmount),
@@ -57,6 +58,12 @@ function TransactionForm(props) {
         // setTransactionName("");
         // setTransactionAmount();
         
+=======
+        setTransactionName('');
+        setTransactionCate('');
+        setTransactionAmount('');
+        setDate(new Date());
+>>>>>>> 3ea9a039475a11e44ec6b9e83fa074ec642acaa9
       })
       .catch((error) => {
         console.log("Transaction call did not work");
@@ -101,13 +108,13 @@ function TransactionForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} />
+                  <Input id="name" value={transactionName} onChange={handleNChange} />
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input type="number" id="amount" onChange={handleAmtChange} />
+                  <Input type="number" value={transactionAmount} id="amount" onChange={handleAmtChange} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
@@ -128,6 +135,7 @@ function TransactionForm(props) {
         </CardBody>
         <CardFooter>
 
+<<<<<<< HEAD
           {transactionCate === ""
             ?
             <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
@@ -136,6 +144,16 @@ function TransactionForm(props) {
           }
 
         </CardFooter>
+=======
+              {transactionCate === ""
+                ?
+                <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
+                :
+                <Button onClick={createTransaction} color="primary" >Submit</Button>
+              }
+
+            </CardFooter>
+>>>>>>> 3ea9a039475a11e44ec6b9e83fa074ec642acaa9
       </Card>
     </div>
   );

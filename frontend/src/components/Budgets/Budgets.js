@@ -100,7 +100,7 @@ function Budgets() {
 	 * Helper function which opens the modal to edit a budget
 	 */
 	const openEditModal = () => {
-		setModal(true); 
+		setModal(true);
 		setEditModal(true);
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
@@ -122,7 +122,6 @@ function Budgets() {
 			.then(function (response) {
 				// handle success
 				setBudgetList(response.data);
-				
 
 				let flag = false;
 				for (let x = 0; x < response.data.length; x++) {
@@ -137,7 +136,6 @@ function Budgets() {
 				if (!flag) {
 					setFirstBudget(response.data[0], "0");
 				}
-
 				setLoading(false);
 			})
 			.catch((error) => {
