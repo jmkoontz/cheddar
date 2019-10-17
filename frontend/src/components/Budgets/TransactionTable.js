@@ -34,6 +34,13 @@ function TransactionTable(props) {
 
   // switch between displaying all transactions and transactions from one category
   const switchMode = (category) => {
+    // reset any sorting
+    setSortKey('date');
+    setSortNameAsc(false);
+    setSortAmountAsc(false);
+    setSortDateAsc(false);
+    setSortCategoryAsc(false);
+
     if (mode === 'all') {
       const categoryTransactions = allTransactions.filter((t) => t.category === category);
       setMode('category');
