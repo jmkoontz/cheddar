@@ -122,7 +122,7 @@ function Budgets() {
 			.then(function (response) {
 				// handle success
 				setBudgetList(response.data);
-				setLoading(false);
+				
 
 				let flag = false;
 				for (let x = 0; x < response.data.length; x++) {
@@ -137,6 +137,8 @@ function Budgets() {
 				if (!flag) {
 					setFirstBudget(response.data[0], "0");
 				}
+
+				setLoading(false);
 			})
 			.catch((error) => {
 				console.log("Didn't get those budgets sir");
