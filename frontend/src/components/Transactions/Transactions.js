@@ -2,51 +2,43 @@ import React, { useState, useEffect } from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 // import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
-import { Button, Row, Col, Card, CardHeader, CardFooter, CardBody, CardTitle, CardText } from 'reactstrap';
-import DatePicker from "react-datepicker";
+import { Row, Col } from 'reactstrap';
+import SelectBudgetForm from './SelectBudgetForm';
+import DateFinder from "./DateFinder";
 import axios from 'axios';
 import '../../css/Transactions.css';
+
 
 function Transactions(props) {
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
+	// Transactions and date states
+	const [budgetList, setBudgetList] = useState([]);	// List of budgets
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState(); // Time the backend understand
-	//const [endDateOff, setEndDateOff] = useState(); // With UTC offset, for displaying
 	const [startDate, setStartDate] = useState(); // Time the backend understand
-	//const [startDateOff, setStartDateOff] = useState();// With UTC offset, for displaying
+	// Chart states
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of each day's spending
 	const [chartData, setChartData] = useState(); // Obj containing chart info
+	const [totalChartData, setTotalChartData] = useState();	// Obj containing total chart data
+	// Error states
 	const [error, setError] = useState(); // Error message
+	// Utility states
+	const [loading, setLoading] = useState(false); // Stops page from loading is a server call is running
+
 
 	const endDateHelper = (date) => {
 		let interval = 1000 * 60 * 60 * 24;
 		let end = Math.floor(date / interval) * interval
-		console.log(end)
-		// let endDat = new Date(date).getTime();
-		// let offset = new Date().getTimezoneOffset();
-		// endDat = (endDat / (24 * 3600 * 1000)) * (24 * 3600 * 1000);
 
-		// let endDatOff = endDat - offset + 1000;
-
-		// Use for displaying
-		//setEndDateOff(new Date(end));
 		setEndDate(new Date(end));
 	}
 
 	const startDateHelper = (date) => {
 		let interval = 1000 * 60 * 60 * 24;
 		let start = Math.floor(date / interval) * interval
-		console.log(start)
-		// let startDat = new Date(date).getTime();
-		// let offset = new Date().getTimezoneOffset();
-		// startDat = (startDat / (24 * 3600 * 1000)) * (24 * 3600 * 1000);
 
-		// let startDatOff = startDat - offset + 1000;
-
-		// Use for displaying
-		//setStartDateOff(new Date(start));
 		setStartDate(new Date(start));
 	}
 
@@ -74,13 +66,14 @@ function Transactions(props) {
 	const sortByDay = (transactionsList) => {
 		let numDays = calcNumberDays(endDate, startDate) + 1;
 		let daysArray = [];
+		let totalDaysArray = [];
+		let runningTotal = 0;	// Variable for the total
 
 		// Populate the daysArray with the number of days between the start and end dates
 		for (let x = 0; x < numDays; x++) {
 			daysArray.push(0);
+			totalDaysArray.push(0);
 		}
-
-		console.log(transactionsList);
 
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
@@ -88,14 +81,17 @@ function Transactions(props) {
 			let tmpObj = transactionsList[x];
 			let index = calcNumberDays(tmpObj.date, startDate);
 			daysArray[index] += tmpObj.amount;
-			console.log(new Date(tmpObj.date).getTime() + " " + startDate.getTime());
-			console.log(index);
 
 		}
 
-		let options = {
+		for (let y = 0; y < daysArray.length; y++) {
+			runningTotal += daysArray[y];
+			totalDaysArray[y] = runningTotal;
+		}
+
+		let dailyOptions = {
 			title: {
-				text: 'Total Spending'
+				text: 'Daily Spending'
 			},
 			xAxis: {
 				type: 'datetime',
@@ -103,12 +99,21 @@ function Transactions(props) {
 					day: '%b %e'
 				}
 			},
+			yAxis: {
+				title: {
+					text: 'Money Spent'
+				}
+			},
 			series: [{
 				name: "Daily Spending",
 				data: daysArray,
 				pointStart: startDate.getTime(),
-				pointInterval: 24 * 3600 * 1000 // one day
+				pointInterval: 24 * 3600 * 1000, // one day
+				animation: {
+					duration: 2000
+				}
 			}],
+
 			plotOptions: {
 				series: {
 					point: {
@@ -120,7 +125,45 @@ function Transactions(props) {
 			}
 		}
 
-		setChartData(options);
+		let totalOptions = {
+			title: {
+				text: 'Total Spending'
+			},
+			xAxis: {
+				type: 'datetime',
+				dateTimeLabelFormats: {
+					day: '%b %e'
+				}
+			},
+			yAxis: {
+				title: {
+					text: 'Money Spent'
+				}
+			},
+			series: [{
+				name: "Total Spending",
+				data: totalDaysArray,
+				color: 'green',
+				pointStart: startDate.getTime(),
+				pointInterval: 24 * 3600 * 1000, // one day
+				animation: {
+					duration: 2000
+				}
+			}],
+
+			plotOptions: {
+				series: {
+					point: {
+						events: {
+							mouseOver: showHoverData
+						}
+					}
+				}
+			}
+		}
+
+		setChartData(dailyOptions);
+		setTotalChartData(totalOptions)
 		setDayList(daysArray);
 	}
 
@@ -129,8 +172,8 @@ function Transactions(props) {
 	 */
 	const getTransactions = () => {
 
-		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDay()}`;
-		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDay()}`;
+		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()}`;
 		let query = queryOne + queryTwo;
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
@@ -146,18 +189,72 @@ function Transactions(props) {
 				console.log("Transaction call did not work");
 				console.log(error);
 			});
-	}
+	};
+
+	/**
+ 	* Server call to get all the transaction data for a specific budget in the database
+ 	*/
+	const getBudgetTransactions = (name) => {
+		
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
+			.then(function (response) {
+				// handle success
+				console.log(response)
+				setTransactions(response.data);
+				// Update the transaction state
+				sortByDay(response.data);
+			})
+			.catch((error) => {
+				console.log("Transaction call did not work");
+			});
+	};
+
+	/**
+	 * Server call to get all Budgets
+	 */
+	const getBudgets = () => {
+		setLoading(true);
+		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+			.then(function (response) {
+				// handle success
+
+				setBudgetList([...response.data,{name:"All Budgets"}]);
+				setLoading(false);
+			})
+			.catch((error) => {
+				console.log("Didn't get those budgets sir");
+				//TODO: error handling for budgets failing to load
+				// if (error.response && error.response.data) {
+				//   console.log(error.response.data.error);
+				//   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
+				//     //self.createIt();
+				//   }
+				// } else {
+				//   console.log(error);
+				// }
+			});
+	};
 
 	useEffect(
 		() => {
-
+			getBudgets();
 		},
 		[]
 	);
 
+	const propData = {
+		getBudgetTransactions: getBudgetTransactions,
+		getTransactions: getTransactions,
+		startDate: startDate,
+		setStartDate: setStartDate,
+		endDate: endDate,
+		setEndDate: setEndDate,
+		budgetList: budgetList
+	}
+
 	return (
 		<div >
-			<h3>Transactions</h3>
+			<h3 className="addSpace">Transactions</h3>
 			<Row className="padTop">
 				<Col sm={1} />
 				<Col sm={5}>
@@ -171,52 +268,33 @@ function Transactions(props) {
 						:
 						<div />
 					}
+				</Col>
+				<Col sm={1} />
+				<Col sm={4} >
+					<DateFinder {...propData} />
+				</Col>
+				<Col sm={1} />
+			</Row>
+			<Row>
+				<Col sm={1} />
+				<Col sm={5}>
+					{dayList
+						?
+						<HighchartsReact
+							allowChartUpdate={true}
+							highcharts={Highcharts}
+							options={totalChartData}
+						/>
+						:
+						<div />
+					}
 
 				</Col>
-				<Col sm={1}/>
-				<Col sm={3} >
-					<Card>
-						<CardHeader>
-							Enter Date Range
-						</CardHeader>
-						<CardBody>
-							<Row>
-								<Col >
-									<p>Start Date</p>
-									<DatePicker
-										id="date"
-										selected={startDate}
-										onChange={d => setStartDate(new Date(d))}
-										maxDate={new Date()}
-										required={true}
-									/>
-								</Col>
-								<Col >
-									<p>End Date</p>
-									<DatePicker
-										id="date"
-										selected={endDate}
-										onChange={d => setEndDate(new Date(d))}
-										maxDate={new Date()}
-										required={true}
-									/>
-								</Col>
-							</Row>
-							<Row className="padTop">
-								<Col sm={12}>
-									{startDate && endDate && endDate.getTime() > startDate.getTime()
-										?
-										<Button onClick={getTransactions}>Get Transactions</Button>
-										:
-										<Button onClick={getTransactions} disabled>Get Transactions</Button>
-									}
-
-								</Col>
-							</Row>
-
-						</CardBody>
-					</Card>
+				<Col sm={1} />
+				<Col sm={4} >
+					<SelectBudgetForm {...propData} />
 				</Col>
+				<Col sm={1} />
 			</Row>
 
 		</div>

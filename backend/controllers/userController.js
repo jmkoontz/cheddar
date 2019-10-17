@@ -17,25 +17,16 @@ export default (app) => {
       transactions: [],
       savings: [],
       debts: [],
-      investments: {}
-
+      investments: {},
+      retirement: {
+        total: 0,
+        history: [],
+      }
     };
 
     let data;
     try {
       data = await createUser(user);
-    } catch (err) {
-      data = {error: parseError(err)};
-    }
-
-    buildResponse(res, data);
-  });
-
-  app.get('/Cheddar/test', async (req, res) => {
-    let data;
-    try {
-      console.log('it worked');
-      data = 'Hello there';
     } catch (err) {
       data = {error: parseError(err)};
     }

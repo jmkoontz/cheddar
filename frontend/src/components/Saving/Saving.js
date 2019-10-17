@@ -7,9 +7,9 @@ import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
 
 const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont}) => (
-    <div>
+    <div><br/>
      <h3>{title}</h3>
-     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p><br/>
+     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
     </div>
 )
 
