@@ -40,8 +40,22 @@ function TransactionForm(props) {
         // handle success
         console.log("Success");
 
-        // Update the transaction state
         props.getTransactions();
+        // let newTrans = {
+        //   name: transactionName,
+        //   amount: parseInt(transactionAmount),
+        //   date: date
+        // }
+
+        // let newArr = props.transactions;
+        // newArr.push(newTrans);
+        // console.log(newArr)
+        // // Update the transaction state
+        // props.setTransactions(JSON.parse(JSON.stringify(newArr)));
+        // props.categorizeData(JSON.parse(JSON.stringify(newArr)));
+        // setTransactionCate();
+        // setTransactionName("");
+        // setTransactionAmount();
         
       })
       .catch((error) => {
@@ -109,19 +123,19 @@ function TransactionForm(props) {
 
               </Col>
             </Row>
-            
+
           </Form>
         </CardBody>
         <CardFooter>
-              
-              {transactionCate === ""
-                ?
-                <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
-                :
-                <Button onClick={createTransaction} color="primary" >Submit</Button>
-              }
-              
-            </CardFooter>
+
+          {transactionCate === ""
+            ?
+            <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
+            :
+            <Button onClick={createTransaction} color="primary" >Submit</Button>
+          }
+
+        </CardFooter>
       </Card>
     </div>
   );
