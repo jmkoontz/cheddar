@@ -50,11 +50,7 @@ function DateFinder(props) {
             <p>Start Date</p>
             <DatePicker
               id="date"
-<<<<<<< HEAD
               selected={props.startDate}
-=======
-              selected={localStart}
->>>>>>> 21b01a8faecf8674d271f5ac17ec052078e57bf3
               onChange={d => setStart(new Date(d))}
               maxDate={new Date()}
               required={true}
@@ -64,11 +60,7 @@ function DateFinder(props) {
             <p>End Date</p>
             <DatePicker
               id="date"
-<<<<<<< HEAD
               selected={props.endDate}
-=======
-              selected={localEnd}
->>>>>>> 21b01a8faecf8674d271f5ac17ec052078e57bf3
               onChange={d => setEnd(new Date(d))}
               maxDate={new Date()}
               required={true}
@@ -97,11 +89,7 @@ function DateFinder(props) {
             </Dropdown>
           </Col>
           <Col sm={6}>
-<<<<<<< HEAD
             {props.startDate && props.endDate && props.endDate.getTime() > props.startDate.getTime()
-=======
-            {localStart && localEnd && localEnd.getTime() > localStart.getTime()
->>>>>>> 21b01a8faecf8674d271f5ac17ec052078e57bf3
               ?
               <Button onClick={handleFetch}>Get Transactions</Button>
               :
