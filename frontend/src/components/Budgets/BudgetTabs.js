@@ -4,6 +4,7 @@ import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeade
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
 import TransactionTable from './TransactionTable';
+import axios from 'axios';
 import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
@@ -18,9 +19,30 @@ function BudgetTabs(props) {
 		setFavorite(true);
 	}
 
+	const [transactions, setTransactions] = useState();
+	// get all transactions for a budget
+  const getTransactions = () => {
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
+			.then((response) => {
+        // format the date for display
+        for (let i in response.data) {
+          let date = new Date(response.data[i].date);
+          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        }
+
+				setTransactions(response.data);
+        // setAllTransactions(response.data);
+        // setLoadingTransactions(false);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
 	useEffect(
 		() => {
-
+			getTransactions();
+			console.log('budgetTabs: getting transactions')
 		},
 		[props]
 	);
@@ -85,7 +107,7 @@ function BudgetTabs(props) {
 
 									{index === parseInt(props.tab) && props.curBudget
 										?
-										<RealSpending {...props} />
+										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}/>
 										:
 										<p>Loading...</p>
 									}
@@ -97,9 +119,9 @@ function BudgetTabs(props) {
 						<Row>
 							<Col sm={1}/>
 							<Col sm={10}>
-								{index === parseInt(props.tab) && props.curBudget
+								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
-									<TransactionTable {...props} />
+									<TransactionTable transactions={transactions} />
 									:
 									<p>Loading...</p>
 								}
