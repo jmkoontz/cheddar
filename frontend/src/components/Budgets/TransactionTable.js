@@ -9,7 +9,6 @@ import '../../css/Budgets.css';
 function TransactionTable(props) {
   const [transactions, setTransactions] = useState(); // array of transactions to display
   const [allTransactions, setAllTransactions] = useState(); // array of all transactions
-  const [loadingTransactions, setLoadingTransactions] = useState(true); // state to check if transactions are received yet
   const [sortKey, setSortKey] = useState('date'); // field the table is sorted by
   const [sortNameAsc, setSortNameAsc] = useState(false);  // if name should be in ascending order
   const [sortAmountAsc, setSortAmountAsc] = useState(false);  // if amount should be in ascending order
@@ -22,12 +21,11 @@ function TransactionTable(props) {
 
 	useEffect(
 		() => {
-      // getTransactions();
-      console.log(props.transactions);
-      // let tmp = ;
-      setTransactions(JSON.parse(JSON.stringify(props.transactions)));
-      // console.log(transactions);
-      console.log('update has occurred')
+      if (props.transactions) {
+        setTransactions(props.transactions);
+        setAllTransactions(props.transactions);
+        // sortTransactions(sortKey);
+      }
 		},
 		[props.transactions]
 	);
@@ -56,25 +54,6 @@ function TransactionTable(props) {
       setTransactions(allTransactions);
     }
   }
-
-  // // get all transactions for a budget
-  // const getTransactions = () => {
-	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
-	// 		.then((response) => {
-  //       // format the date for display
-  //       for (let i in response.data) {
-  //         let date = new Date(response.data[i].date);
-  //         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-  //       }
-  //
-	// 			setTransactions(response.data);
-  //       setAllTransactions(response.data);
-  //       setLoadingTransactions(false);
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log(error);
-	// 		});
-	// };
 
   // sort the transactions table by a particular field
   const sortTransactions = (key) => {
