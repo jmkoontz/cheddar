@@ -11,6 +11,8 @@ function BudgetTabs(props) {
 
 	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
 	const [favorite, setFavorite] = useState(false);	// Sets the user's favorite budget
+	const [transactions, setTransactions] = useState();
+	const [spendingByCategory, setSpendingByCategory] = useState();	// categories and spending
 
 	/**
 	 * Server call to set a new favorite budget
@@ -19,7 +21,6 @@ function BudgetTabs(props) {
 		setFavorite(true);
 	}
 
-	const [transactions, setTransactions] = useState();
 	// get all transactions for a budget
   const getTransactions = () => {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
@@ -31,18 +32,49 @@ function BudgetTabs(props) {
         }
 
 				setTransactions(response.data);
-        // setAllTransactions(response.data);
-        // setLoadingTransactions(false);
+				categorizeData(response.data);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	};
 
+	const categorizeData = (transacts) => {
+		// Create the category objects
+		let arrayOfObjects = [];
+		let categories = props.curBudget.budgetCategories;
+
+		for (let x = 0; x < categories.length; x++) {
+			// Generate a new category object
+			let newCateObj = {
+				name: categories[x].name,
+				allocated: categories[x].amount,
+				spent: 0,
+				percentUsed: 0,
+				transactions: []
+			};
+
+			arrayOfObjects = [...arrayOfObjects, newCateObj];
+		}
+
+		for (let x = 0; x < transacts.length; x++) {
+			for (let y = 0; y < arrayOfObjects.length; y++) {
+				if (transacts[x].category === arrayOfObjects[y].name) {
+					// Accumulate spendings and transcation array
+					let item = arrayOfObjects[y];
+					item.spent += transacts[x].amount;
+					item.percentUsed = (item.spent / item.allocated) * 100;
+					item.transactions = [...item.transactions, transacts[x]];
+				}
+			}
+		}
+
+		setSpendingByCategory(arrayOfObjects);
+	};
+
 	useEffect(
 		() => {
 			getTransactions();
-			console.log('budgetTabs: getting transactions')
 		},
 		[props]
 	);
@@ -62,7 +94,7 @@ function BudgetTabs(props) {
 					<Nav tabs>
 						{props.budgetList.map((item, index) =>
 							<div key={index}>
-								<NavItem >
+								<NavItem>
 									<NavLink onClick={() => props.setNewTab(index.toString())}>
 										{item.name}
 									</NavLink>
@@ -77,7 +109,6 @@ function BudgetTabs(props) {
 				<Col sm={3} />
 			</Row>
 			<TabContent className="padTop" activeTab={props.tab}>
-
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
 						<Row>
@@ -85,27 +116,21 @@ function BudgetTabs(props) {
 							<Col sm={5}>
 								<span className="label" id="title">{item.name}</span>
 								<div className="padTop">
-									<Pie
-										data={item.budgetCategories}
-										width={500}
-										height={500}
-										innerRadius={150}
-										outerRadius={250}
-									/>
+									{index === parseInt(props.tab) && props.curBudget && spendingByCategory
+										?
+										<Pie data={item.budgetCategories} transactions={transactions}
+												spendingByCategory={spendingByCategory} />
+										:
+										<p>Loading...</p>
+									}
 								</div>
-
 								<Button className="padTop padRight" color="danger" onClick={() => {setDeleteModal(true)}}>Delete</Button>
-
 								<Button className="padTop" color="primary" onClick={props.openEditModal}>Edit</Button>
-
-
-
 							</Col>
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
-
-									{index === parseInt(props.tab) && props.curBudget
+									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
 										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}/>
 										:
@@ -140,8 +165,6 @@ function BudgetTabs(props) {
 					</TabPane>
 				)}
 			</TabContent>
-
-
 		</div>
 	);
 }
