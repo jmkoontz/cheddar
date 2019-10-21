@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Progress } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
@@ -8,12 +8,19 @@ import axios from 'axios';
 import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
 
-const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont}) => (
+const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont, currSaved}) => (
     <div>
      <Collapsible trigger={title}
      triggerOpenedClassName="Collapsible__trigger--active"
+     triggerWhenOpen={<Button outline color="secondary" onClick={() => History.push({pathname: "/editsavings", data: {title}})} type="button">Edit</Button>}
+     lazyRender
      easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
-      <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
+      <h3>{title}</h3>
+      <p>Save ${goalAmount.toLocaleString()} by {goalMonth} {goalYear}</p>
+      {(currSaved / goalAmount) < 1
+        ? <Progress animated value={(currSaved / goalAmount) * 100}>${currSaved.toLocaleString()}</Progress>
+        : <Progress animated color="success" value={(currSaved / goalAmount) * 100}>${currSaved.toLocaleString()}</Progress>
+      }
      </Collapsible>
     </div>
 )
@@ -87,7 +94,8 @@ class Saving extends React.Component {
         goalAmount: this.state.goalAmount,
         goalYear: this.state.year,
         goalMonth: this.state.month,
-        monthlyContribution: this.state.monthlyContribution
+        monthlyContribution: this.state.monthlyContribution,
+        currSaved: 0
       })
       .then((response) => {
         console.log(response);
@@ -146,7 +154,7 @@ class Saving extends React.Component {
                 <option value="Choose a category">Choose a category</option>
                 <option value="Pay off Debts">Pay off Credit Card Debt</option>
                 <option value="Pay off Loans">Pay off Loans</option>
-                <option value="Save for Emeregency">Save for Emeregency</option>
+                <option value="Save for Emergency">Save for Emeregency</option>
                 <option value="Save for a Trip">Save for a Trip</option>
                 <option value="Save for a Purchase">Save for a Purchase</option>
                 <option value="Other">Other</option>

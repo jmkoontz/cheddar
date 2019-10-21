@@ -36,7 +36,8 @@ export default (app) => {
       goalAmount: req.body.goalAmount,
       goalYear: req.body.goalYear,
       goalMonth: req.body.goalMonth,
-      monthlyContribution: req.body.monthlyContribution
+      monthlyContribution: req.body.monthlyContribution,
+      currSaved: 0
     };
 
     let data;
@@ -56,7 +57,8 @@ export default (app) => {
       goalAmount: req.body.goalAmount,
       goalYear: req.body.goalYear,
       goalMonth: req.body.goalMonth,
-      monthlyContribution: req.body.monthlyContribution
+      monthlyContribution: req.body.monthlyContribution,
+      currSaved: req.body.currSaved
     };
 
     let data;
