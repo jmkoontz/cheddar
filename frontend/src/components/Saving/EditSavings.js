@@ -6,7 +6,7 @@ import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
 
-class CreateSavings extends React.Component {
+class EditSavings extends React.Component {
   constructor(props){
     super(props);
     this.state = {userID: sessionStorage.getItem('user'), savings: '', title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: '', year: (new Date()).getFullYear()}, monthlyCont: ''};
@@ -29,7 +29,8 @@ class CreateSavings extends React.Component {
   }
 
   componentDidMount(){
-    const {match:{params}} = this.props;
+
+    /*const {match:{params}} = this.props;
 
     axios.get(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/`)
       .then((response) => {
@@ -44,7 +45,7 @@ class CreateSavings extends React.Component {
       })
       .catch((error) => {
         console.error("Error getting Savings\n" + error);
-      });
+      });*/
   }
 
   render () {
@@ -106,4 +107,4 @@ class CreateSavings extends React.Component {
   }
 }
 
-export default CreateSavings;
+export default EditSavings;
