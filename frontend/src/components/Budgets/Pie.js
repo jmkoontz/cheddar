@@ -6,16 +6,8 @@ import drilldown from 'highcharts/modules/drilldown.js';
 drilldown(Highcharts);
 
 const Pie = props => {
+  const [key, setKey] = useState(0);  // used to destroy old chart when data updates
   const [chartData, setChartData] = useState();
-  const [drilledDown, setDrilledDown] = useState(false);
-  const [index, setIndex] = useState(-1);
-
-  const getCategoryIndex = (category) => {
-      for (let i in props.spendingByCategory) {
-        if (props.spendingByCategory[i].name === category)
-          return i;
-      }
-  };
 
   const buildChart = () => {
     let options = {
@@ -23,19 +15,12 @@ const Pie = props => {
         type: 'pie',
         events: {
           drilldown: function(e) {
-            console.log('drilling down')
-            console.log(e)
             props.setTableMode('category');
             props.setTableCategory(e.seriesOptions.name);
-            setDrilledDown(true);
-            setIndex(getCategoryIndex(e.seriesOptions.name));
           },
-          drillup: function(e) {
-            console.log('drilling up')
+          drillup: function() {
             props.setTableMode('all');
             props.setTableCategory('');
-            setDrilledDown(false);
-            setIndex(-1);
           }
         }
       },
@@ -69,10 +54,15 @@ const Pie = props => {
       }
     };
 
+    loadData(options);
+  };
+
+  const loadData = (options) => {
     let totalSpending = 0;
     for (let i in props.spendingByCategory)
       totalSpending += props.spendingByCategory[i].spent;
 
+    options.series[0].data = [];
     for (let i in props.spendingByCategory) {
       const slice = {
         name: props.spendingByCategory[i].name,
@@ -101,19 +91,18 @@ const Pie = props => {
       options.drilldown.series.push(drilldown);
     }
 
-    if (drilledDown) {
-      console.log('drilled down, resetting')
-      console.log(options);
-      // options.series[0].data[0].firePointEvent('click');
-    }
-
     setChartData(options);
   };
 
   useEffect(
     () => {
       if (props.spendingByCategory && props.spendingByCategory.length) {
-        console.log('spending updated')
+        if (chartData) {
+          props.setTableMode('all');
+          props.setTableCategory('');
+          setKey(key + 1);  // destroy old chart
+        }
+
         buildChart();
       }
     },
@@ -122,7 +111,7 @@ const Pie = props => {
 
   return (
     <div>
-      <HighchartsReact allowChartUpdate={true} highcharts={Highcharts} options={chartData} />
+      <HighchartsReact key={key} allowChartUpdate={true} highcharts={Highcharts} options={chartData} />
     </div>
   );
 };
