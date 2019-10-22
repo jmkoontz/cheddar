@@ -9,7 +9,6 @@ import '../../css/Budgets.css';
 function TransactionTable(props) {
   const [transactions, setTransactions] = useState(); // array of transactions to display
   const [allTransactions, setAllTransactions] = useState(); // array of all transactions
-  const [loadingTransactions, setLoadingTransactions] = useState(true); // state to check if transactions are received yet
   const [sortKey, setSortKey] = useState('date'); // field the table is sorted by
   const [sortNameAsc, setSortNameAsc] = useState(false);  // if name should be in ascending order
   const [sortAmountAsc, setSortAmountAsc] = useState(false);  // if amount should be in ascending order
@@ -17,20 +16,25 @@ function TransactionTable(props) {
   const [sortCategoryAsc, setSortCategoryAsc] = useState(false);  // if category should be in ascending order
 
   const [collapse, setCollapse] = useState(false);  // controls whether table is visible
-  const [mode, setMode] = useState('all');  // display all transactions or just one category
-  const [category, setCategory] = useState(); // category to display transactions for
+  const [mode, setMode] = useState();  // display all transactions or just one category
 
 	useEffect(
 		() => {
-      // getTransactions();
-      console.log(props.transactions);
-      // let tmp = ;
-      setTransactions(JSON.parse(JSON.stringify(props.transactions)));
-      // console.log(transactions);
-      console.log('update has occurred')
+      if (props.transactions) {
+        setTransactions(props.transactions);
+        setAllTransactions(props.transactions);
+      }
 		},
-		[props.transactions]
+		[props]
 	);
+
+  useEffect(
+    () => {
+      if (props.tableMode === 'all' || props.tableCategory !== '')
+        switchMode(props.tableMode, props.tableCategory);
+    },
+    [props.tableMode, props.tableCategory]
+  );
 
   // toggle visibility of table
   const toggle = () => {
@@ -38,7 +42,10 @@ function TransactionTable(props) {
   };
 
   // switch between displaying all transactions and transactions from one category
-  const switchMode = (category) => {
+  const switchMode = (newMode, category) => {
+    if (newMode === mode)
+      return;
+
     // reset any sorting
     setSortKey('date');
     setSortNameAsc(false);
@@ -46,35 +53,15 @@ function TransactionTable(props) {
     setSortDateAsc(false);
     setSortCategoryAsc(false);
 
-    if (mode === 'all') {
+    if (newMode === 'category') {
       const categoryTransactions = allTransactions.filter((t) => t.category === category);
       setMode('category');
-      setCategory(category);  // TODO maybe not needed
       setTransactions(categoryTransactions);
-    } else if (mode === 'category') {
+    } else if (newMode === 'all') {
       setMode('all');
       setTransactions(allTransactions);
     }
-  }
-
-  // // get all transactions for a budget
-  // const getTransactions = () => {
-	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
-	// 		.then((response) => {
-  //       // format the date for display
-  //       for (let i in response.data) {
-  //         let date = new Date(response.data[i].date);
-  //         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-  //       }
-  //
-	// 			setTransactions(response.data);
-  //       setAllTransactions(response.data);
-  //       setLoadingTransactions(false);
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log(error);
-	// 		});
-	// };
+  };
 
   // sort the transactions table by a particular field
   const sortTransactions = (key) => {
@@ -106,7 +93,7 @@ function TransactionTable(props) {
     });
 
     setTransactions(tmp);
-  }
+  };
 
 	return (
     <div>
@@ -116,12 +103,7 @@ function TransactionTable(props) {
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
         </Col>
-        <Col sm="3">
-          <Button onClick={() => switchMode('Entertainment')} className="tableButton">
-            {mode === 'all' ? 'View One Category' : 'View All Transactions'}
-          </Button>
-        </Col>
-        <Col sm="6"/>
+        <Col sm="9"/>
       </Row>
       <Collapse isOpen={collapse}>
         <Table striped size="sm">
