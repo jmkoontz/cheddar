@@ -14,6 +14,9 @@ function BudgetTabs(props) {
 	const [transactions, setTransactions] = useState();
 	const [spendingByCategory, setSpendingByCategory] = useState();	// categories and spending
 
+	const [tableMode, setTableMode] = useState('all');  // display all transactions or just one category
+  const [tableCategory, setTableCategory] = useState(''); // category to display transactions for
+
 	/**
 	 * Server call to set a new favorite budget
 	 */
@@ -119,7 +122,8 @@ function BudgetTabs(props) {
 									{index === parseInt(props.tab) && props.curBudget && spendingByCategory
 										?
 										<Pie data={item.budgetCategories} transactions={transactions}
-												spendingByCategory={spendingByCategory} />
+												spendingByCategory={spendingByCategory} setTableMode={setTableMode}
+												setTableCategory={setTableCategory} />
 										:
 										<p>Loading...</p>
 									}
@@ -140,13 +144,13 @@ function BudgetTabs(props) {
 							</Col>
 							<Col sm={1} />
 						</Row>
-						<Row className="padTop" />
 						<Row>
 							<Col sm={1}/>
 							<Col sm={10}>
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
-									<TransactionTable transactions={transactions} />
+									<TransactionTable transactions={transactions} tableMode={tableMode}
+									 	tableCategory={tableCategory} />
 									:
 									<p>Loading...</p>
 								}

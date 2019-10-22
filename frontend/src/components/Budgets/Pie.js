@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import drilldown from 'highcharts/modules/drilldown.js';
@@ -7,12 +7,37 @@ drilldown(Highcharts);
 
 const Pie = props => {
   const [chartData, setChartData] = useState();
-  const [totalValue, setTotalValue] = useState();
+  const [drilledDown, setDrilledDown] = useState(false);
+  const [index, setIndex] = useState(-1);
 
-  const setOptions = () => {
+  const getCategoryIndex = (category) => {
+      for (let i in props.spendingByCategory) {
+        if (props.spendingByCategory[i].name === category)
+          return i;
+      }
+  };
+
+  const buildChart = () => {
     let options = {
       chart: {
-        type: 'pie'
+        type: 'pie',
+        events: {
+          drilldown: function(e) {
+            console.log('drilling down')
+            console.log(e)
+            props.setTableMode('category');
+            props.setTableCategory(e.seriesOptions.name);
+            setDrilledDown(true);
+            setIndex(getCategoryIndex(e.seriesOptions.name));
+          },
+          drillup: function(e) {
+            console.log('drilling up')
+            props.setTableMode('all');
+            props.setTableCategory('');
+            setDrilledDown(false);
+            setIndex(-1);
+          }
+        }
       },
       title: {
         text: ''
@@ -76,13 +101,21 @@ const Pie = props => {
       options.drilldown.series.push(drilldown);
     }
 
+    if (drilledDown) {
+      console.log('drilled down, resetting')
+      console.log(options);
+      // options.series[0].data[0].firePointEvent('click');
+    }
+
     setChartData(options);
   };
 
   useEffect(
     () => {
-      if (props.spendingByCategory && props.spendingByCategory.length)
-        setOptions();
+      if (props.spendingByCategory && props.spendingByCategory.length) {
+        console.log('spending updated')
+        buildChart();
+      }
     },
     [props.spendingByCategory]
   );
