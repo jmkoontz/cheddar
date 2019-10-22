@@ -16,7 +16,6 @@ function RealSpending(props) {
 	 * Generate category objects with respective transaction data inside
 	 */
 	const categorizeData = (transacts) => {
-		console.log(transacts)
 		// Create the category objects
 		let arrayOfObjects = [];
 		let categories = props.curBudget.budgetCategories;
