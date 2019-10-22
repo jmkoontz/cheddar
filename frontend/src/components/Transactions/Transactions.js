@@ -179,7 +179,7 @@ function Transactions() {
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
 				// handle success				
-				console.log(response.data)
+				//console.log(response.data)
 				setTransactions(response.data);
 				// Update the transaction state
 				sortByDay(response.data);
@@ -199,7 +199,7 @@ function Transactions() {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
 			.then(function (response) {
 				// handle success
-				console.log(response)
+				//console.log(response)
 				setTransactions(response.data);
 				// Update the transaction state
 				sortByDay(response.data);
