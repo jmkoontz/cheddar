@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-// import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
 import SelectBudgetForm from './SelectBudgetForm';
 import DateFinder from "./DateFinder";
@@ -9,7 +8,7 @@ import axios from 'axios';
 import '../../css/Transactions.css';
 
 
-function Transactions(props) {
+function Transactions() {
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	// Transactions and date states
@@ -17,7 +16,7 @@ function Transactions(props) {
 	const [budgetList, setBudgetList] = useState([]);	// List of budgets
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState(); // Time the backend understand
-	const [startDate, setStartDate] = useState(); // Time the backend understand
+	const [startDate, setStartDate] = useState(); // Time the backend understand     new Date((new Date()).getTime() - (24 * 3600 * 1000))
 	// Chart states
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of each day's spending
@@ -206,33 +205,33 @@ function Transactions(props) {
 				sortByDay(response.data);
 			})
 			.catch((error) => {
-				console.log("Transaction call did not work");
+				console.log("Transaction call did not work  " + error);
 			});
 	};
 
-	/**
-	 * Server call to get all transactions for a given budget
-	 */
-	const [allTransactions, setAllTransactions] = useState();
+	// /**
+	//  * Server call to get all transactions for a given budget
+	//  */
+	// const [allTransactions, setAllTransactions] = useState();
 
-	// get all transactions for a budget
-  const getTransactions = (name) => {
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
-			.then((response) => {
-        // format the date for display
-        for (let i in response.data) {
-          let date = new Date(response.data[i].date);
-          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-        }
+	// // get all transactions for a budget
+  // const getTransactions = (name) => {
+	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
+	// 		.then((response) => {
+  //       // format the date for display
+  //       for (let i in response.data) {
+  //         let date = new Date(response.data[i].date);
+  //         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+  //       }
 
-				setAllTransactions(response.data);
-        // setAllTransactions(response.data);
-        // setLoadingTransactions(false);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
+	// 			setAllTransactions(response.data);
+  //       // setAllTransactions(response.data);
+  //       // setLoadingTransactions(false);
+	// 		})
+	// 		.catch((error) => {
+	// 			console.log(error);
+	// 		});
+	// };
 
 	/**
 	 * Server call to get all Budgets
@@ -277,8 +276,8 @@ function Transactions(props) {
 		setEndDate: setEndDate,
 		budgetList: budgetList,
 		rawBudgetList: rawBudgetList,
-		setAllTransactions: setAllTransactions,
-		allTransactions: allTransactions
+		// setAllTransactions: setAllTransactions,
+		// allTransactions: allTransactions
 	}
 
 	return (

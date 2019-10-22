@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Row, Col, Card, CardHeader, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button, Row, Col, Card, CardHeader, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Label } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import axios from 'axios';
 import '../../css/Transactions.css';
@@ -68,11 +68,10 @@ function DateFinder(props) {
           </Col>
         </Row>
         <Row className="padTop">
-          <Col sm={3}>
-            <p>Select a Budget:</p>
-          </Col>
-          <Col sm={3}>
-            <Dropdown isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
+          
+          <Col sm={6}>
+            <Label for="budgetName">Select a Budget</Label>
+            <Dropdown id="budgetName" isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
               <DropdownToggle caret>
                 {selectedBudget}
               </DropdownToggle>

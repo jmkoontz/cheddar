@@ -49,10 +49,10 @@ function SelectBudgetForm(props) {
 
         // Update the transaction state
         props.getBudgetTransactions(budgetName);
-        setTransactionName('');
-        setTransactionCategory('');
-        setTransactionAmount('');
-        setDate(new Date());
+        // setTransactionName('');
+        // setTransactionCategory('');
+        // setTransactionAmount('');
+        // setDate(new Date());
 
       })
       .catch((error) => {
@@ -63,7 +63,6 @@ function SelectBudgetForm(props) {
   useEffect(
     () => {
       setBudgetList(props.rawBudgetList);
-      console.log(props.rawBudgetList);
     },
     [props]
   );
@@ -77,7 +76,7 @@ function SelectBudgetForm(props) {
         <CardBody >
           <Form className="textLeft">
             <Row>
-              <Col sm={4}>
+              <Col sm={6}>
                 <Label for="budgetName">Budget</Label>
                 <Dropdown id="budgetName" isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
                   <DropdownToggle caret>
@@ -90,7 +89,7 @@ function SelectBudgetForm(props) {
                   </DropdownMenu>
                 </Dropdown>
               </Col>
-              <Col sm={4}>
+              <Col sm={6}>
                 <FormGroup>
                   <Row>
                     <Label for="category">Category</Label>
