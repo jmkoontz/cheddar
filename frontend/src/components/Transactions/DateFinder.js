@@ -33,7 +33,7 @@ function DateFinder(props) {
   const handleFetch = () => {
 
     if (selectedBudget === "All Budgets") {
-      props.getTransactions();
+      props.getTimeTransactions();
     } else {
       props.getBudgetTransactions(selectedBudget)
     }
@@ -91,9 +91,9 @@ function DateFinder(props) {
           <Col sm={6}>
             {props.startDate && props.endDate && props.endDate.getTime() > props.startDate.getTime()
               ?
-              <Button onClick={handleFetch}>Get Transactions</Button>
+              <Button color="primary" onClick={handleFetch}>Get Transactions</Button>
               :
-              <Button disabled>Get Transactions</Button>
+              <Button color="primary" disabled>Get Transactions</Button>
             }
 
           </Col>

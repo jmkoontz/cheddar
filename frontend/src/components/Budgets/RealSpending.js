@@ -16,7 +16,6 @@ function RealSpending(props) {
 	 * Generate category objects with respective transaction data inside
 	 */
 	const categorizeData = (transacts) => {
-		console.log(transacts)
 		// Create the category objects
 		let arrayOfObjects = [];
 		let categories = props.curBudget.budgetCategories;
@@ -72,8 +71,8 @@ function RealSpending(props) {
 	useEffect(
 		() => {
 			//console.log("fetching transactions");
-			console.log('real spending: updating')
-			console.log(props.transactions);
+			// console.log('real spending: updating')
+			// console.log(props.transactions);
 			if (props.transactions)
 				categorizeData(props.transactions);
 			// getTransactions();
