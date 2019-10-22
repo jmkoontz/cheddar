@@ -13,6 +13,7 @@ function Transactions(props) {
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	// Transactions and date states
+	const [rawBudgetList, setRawBudgetList] = useState([]);	// list of budgets minus "all budgets"
 	const [budgetList, setBudgetList] = useState([]);	// List of budgets
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState(); // Time the backend understand
@@ -170,7 +171,7 @@ function Transactions(props) {
 	/**
 	 * Server call to get all transactions in a given time frame
 	 */
-	const getTransactions = () => {
+	const getTimeTransactions = () => {
 
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()}`;
@@ -195,7 +196,7 @@ function Transactions(props) {
  	* Server call to get all the transaction data for a specific budget in the database
  	*/
 	const getBudgetTransactions = (name) => {
-		
+
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
 			.then(function (response) {
 				// handle success
@@ -210,6 +211,30 @@ function Transactions(props) {
 	};
 
 	/**
+	 * Server call to get all transactions for a given budget
+	 */
+	const [allTransactions, setAllTransactions] = useState();
+
+	// get all transactions for a budget
+  const getTransactions = (name) => {
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
+			.then((response) => {
+        // format the date for display
+        for (let i in response.data) {
+          let date = new Date(response.data[i].date);
+          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        }
+
+				setAllTransactions(response.data);
+        // setAllTransactions(response.data);
+        // setLoadingTransactions(false);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	/**
 	 * Server call to get all Budgets
 	 */
 	const getBudgets = () => {
@@ -218,7 +243,8 @@ function Transactions(props) {
 			.then(function (response) {
 				// handle success
 
-				setBudgetList([...response.data,{name:"All Budgets"}]);
+				setBudgetList([...response.data, { name: "All Budgets" }]);
+				setRawBudgetList(response.data);
 				setLoading(false);
 			})
 			.catch((error) => {
@@ -244,12 +270,15 @@ function Transactions(props) {
 
 	const propData = {
 		getBudgetTransactions: getBudgetTransactions,
-		getTransactions: getTransactions,
+		getTimeTransactions: getTimeTransactions,
 		startDate: startDate,
 		setStartDate: setStartDate,
 		endDate: endDate,
 		setEndDate: setEndDate,
-		budgetList: budgetList
+		budgetList: budgetList,
+		rawBudgetList: rawBudgetList,
+		setAllTransactions: setAllTransactions,
+		allTransactions: allTransactions
 	}
 
 	return (
@@ -292,7 +321,13 @@ function Transactions(props) {
 				</Col>
 				<Col sm={1} />
 				<Col sm={4} >
-					<SelectBudgetForm {...propData} />
+					{!loading
+						?
+						<SelectBudgetForm {...propData} />
+						:
+						<div/>
+					}
+
 				</Col>
 				<Col sm={1} />
 			</Row>
