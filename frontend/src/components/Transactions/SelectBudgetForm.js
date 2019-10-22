@@ -37,22 +37,21 @@ function SelectBudgetForm(props) {
   }
 
   const createTransaction = () => {
-    console.log(userID + " " + budgetName + " " + transactionCategory)
+    
     axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budgetName}/${transactionCategory}`,
       {
         name: transactionName,
         amount: transactionAmount,
         date: date
       }).then(function (response) {
-        // handle success
-        console.log("Success");
 
         // Update the transaction state
+        setTransactionName("");
+        setTransactionCategory("");
+        setTransactionAmount("");
+        setDate(new Date());
         props.getBudgetTransactions(budgetName);
-        // setTransactionName('');
-        // setTransactionCategory('');
-        // setTransactionAmount('');
-        // setDate(new Date());
+
 
       })
       .catch((error) => {
@@ -121,13 +120,13 @@ function SelectBudgetForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} />
+                  <Input id="name" onChange={handleNChange} value={transactionName}/>
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input type="number" id="amount" onChange={handleAmtChange} />
+                  <Input type="number" id="amount" onChange={handleAmtChange} value={transactionAmount}/>
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
