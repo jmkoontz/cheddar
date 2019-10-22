@@ -11,12 +11,14 @@ function SelectBudgetForm(props) {
   const [userID, setUID] = useState(sessionStorage.getItem('user'));
   // Handle drop down
   const [drop, setDrop] = useState(false); // Boolean to control dropdown
-  const [transactionCategory, setTransactionCategory] = useState(""); // The category for a new transaction
-  const [transactionName, setTransactionName] = useState(); // The name for a new transaction
-  const [transactionAmount, setTransactionAmount] = useState(); // The amount for a new transaction
+  const [budgetDrop, setBudgetDrop] = useState(false) // Boolean for budget selection drop down
+  const [transactionCategory, setTransactionCategory] = useState("Select a Category"); // The category for a new transaction
+  const [transactionName, setTransactionName] = useState(""); // The name for a new transaction
+  const [transactionAmount, setTransactionAmount] = useState(""); // The amount for a new transaction
+  const [budgetName, setBudgetName] = useState("Select a Budget"); // Holds the current budget to call for new transaction
+  const [budget, setBudget] = useState(null); // Budget for a new transaction
   const [date, setDate] = useState(new Date());
   // Budgets
-  const [budget, setBudget] = useState(null);
   const [budgetList, setBudgetList] = useState([]);
 
 
@@ -35,17 +37,21 @@ function SelectBudgetForm(props) {
   }
 
   const createTransaction = () => {
-    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budget.name}/${transactionCategory}`,
+    
+    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budgetName}/${transactionCategory}`,
       {
         name: transactionName,
         amount: transactionAmount,
         date: date
       }).then(function (response) {
-        // handle success
-        console.log("Success");
 
         // Update the transaction state
-        props.getTransactions();
+        setTransactionName("");
+        setTransactionCategory("");
+        setTransactionAmount("");
+        setDate(new Date());
+        props.getBudgetTransactions(budgetName);
+
 
       })
       .catch((error) => {
@@ -55,7 +61,7 @@ function SelectBudgetForm(props) {
 
   useEffect(
     () => {
-
+      setBudgetList(props.rawBudgetList);
     },
     [props]
   );
@@ -69,40 +75,58 @@ function SelectBudgetForm(props) {
         <CardBody >
           <Form className="textLeft">
             <Row>
-              <Col sm={3}>
+              <Col sm={6}>
+                <Label for="budgetName">Budget</Label>
+                <Dropdown id="budgetName" isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
+                  <DropdownToggle caret>
+                    {budgetName}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {props.rawBudgetList.length > 0 && props.rawBudgetList.map((item, index) =>
+                      <DropdownItem key={index} onClick={() => { setBudgetName(item.name); setBudget(item); }}>{item.name}</DropdownItem>
+                    )}
+                  </DropdownMenu>
+                </Dropdown>
+              </Col>
+              <Col sm={6}>
                 <FormGroup>
                   <Row>
                     <Label for="category">Category</Label>
                   </Row>
                   <Row>
                     <Dropdown id="category" isOpen={drop} toggle={() => setDrop(!drop)}>
-                      <DropdownToggle caret>
-                        {transactionCategory}
-                      </DropdownToggle>
-                      {budget != null
+                      {budget
                         ?
-                        <DropdownMenu>
-                          {budget.budgetCategories.map((item, index) =>
-                            <DropdownItem key={index} onClick={() => setTransactionCategory(item.name)}>{item.name}</DropdownItem>
-                          )}
-                        </DropdownMenu>
+                        <div >
+                          <DropdownToggle caret>
+                            {transactionCategory}
+                          </DropdownToggle>
+                          <DropdownMenu>
+                            {props.rawBudgetList.length > 0 && budget.budgetCategories.map((item, index) =>
+                              <DropdownItem key={index} onClick={() => setTransactionCategory(item.name)}>{item.name}</DropdownItem>
+                            )}
+                          </DropdownMenu>
+                        </div>
                         :
-                        <div />
+                        <DropdownToggle >Please Select a Budget</DropdownToggle>
                       }
+
                     </Dropdown>
                   </Row>
                 </FormGroup>
               </Col>
+            </Row>
+            <Row>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} />
+                  <Input id="name" onChange={handleNChange} value={transactionName}/>
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input type="number" id="amount" onChange={handleAmtChange} />
+                  <Input type="number" id="amount" onChange={handleAmtChange} value={transactionAmount}/>
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
@@ -123,7 +147,7 @@ function SelectBudgetForm(props) {
         </CardBody>
         <CardFooter>
 
-          {transactionCategory === ""
+          {transactionCategory === "Select a Category" || transactionName === "" || budgetName === "Select a Budget" ||  transactionAmount === "" || budget === null
             ?
             <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
             :
@@ -132,7 +156,7 @@ function SelectBudgetForm(props) {
 
         </CardFooter>
       </Card>
-    </div>
+    </div >
   );
 
 };
