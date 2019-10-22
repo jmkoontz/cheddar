@@ -40,7 +40,6 @@ function TransactionForm(props) {
         // handle success
         console.log("Success");
 
-        // Update the transaction state
         props.getTransactions();
         setTransactionName('');
         setTransactionCate('');
@@ -117,14 +116,14 @@ function TransactionForm(props) {
         </CardBody>
         <CardFooter>
 
-              {transactionCate === ""
-                ?
-                <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
-                :
-                <Button onClick={createTransaction} color="primary" >Submit</Button>
-              }
+          {transactionCate === ""
+            ?
+            <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
+            :
+            <Button onClick={createTransaction} color="primary" >Submit</Button>
+          }
 
-            </CardFooter>
+        </CardFooter>
       </Card>
     </div>
   );

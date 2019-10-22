@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Row, Col, Card, CardHeader, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Button, Row, Col, Card, CardHeader, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Label } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import axios from 'axios';
 import '../../css/Transactions.css';
@@ -33,7 +33,7 @@ function DateFinder(props) {
   const handleFetch = () => {
 
     if (selectedBudget === "All Budgets") {
-      props.getTransactions();
+      props.getTimeTransactions();
     } else {
       props.getBudgetTransactions(selectedBudget)
     }
@@ -50,7 +50,7 @@ function DateFinder(props) {
             <p>Start Date</p>
             <DatePicker
               id="date"
-              selected={localStart}
+              selected={props.startDate}
               onChange={d => setStart(new Date(d))}
               maxDate={new Date()}
               required={true}
@@ -60,7 +60,7 @@ function DateFinder(props) {
             <p>End Date</p>
             <DatePicker
               id="date"
-              selected={localEnd}
+              selected={props.endDate}
               onChange={d => setEnd(new Date(d))}
               maxDate={new Date()}
               required={true}
@@ -68,11 +68,10 @@ function DateFinder(props) {
           </Col>
         </Row>
         <Row className="padTop">
-          <Col sm={3}>
-            <p>Select a Budget:</p>
-          </Col>
-          <Col sm={3}>
-            <Dropdown isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
+          
+          <Col sm={6}>
+            <Label for="budgetName">Select a Budget</Label>
+            <Dropdown id="budgetName" isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
               <DropdownToggle caret>
                 {selectedBudget}
               </DropdownToggle>
@@ -89,11 +88,11 @@ function DateFinder(props) {
             </Dropdown>
           </Col>
           <Col sm={6}>
-            {localStart && localEnd && localEnd.getTime() > localStart.getTime()
+            {props.startDate && props.endDate && props.endDate.getTime() > props.startDate.getTime()
               ?
-              <Button onClick={handleFetch}>Get Transactions</Button>
+              <Button color="primary" onClick={handleFetch}>Get Transactions</Button>
               :
-              <Button disabled>Get Transactions</Button>
+              <Button color="primary" disabled>Get Transactions</Button>
             }
 
           </Col>
