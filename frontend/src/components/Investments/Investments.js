@@ -423,6 +423,7 @@ class Investments extends React.Component {
                         <Row>
                             <Col className="card">
                                 { 
+                                    (Object.keys(this.state.companyOptions).length > 0 && this.state.selectedCompanies.length >0) > 0 ? 
                                     this.state.selectedCompanies.map((name,index)=>{
                                     /*console.log("RENDERING");
                                     console.log(name);
@@ -430,17 +431,18 @@ class Investments extends React.Component {
                                     console.log(this.state.companyOptions[name]);*/
                                         if(this.state.companyOptions[name] !== undefined){
                                             return(
-                                                <Row key={"row"+index}>
+                                                <Row className="card" key={"row"+index}>
                                                     <CanvasJSChart key={"test"+index} options={this.state.companyOptions[name]}
                                                     // onRef = {ref => this.chart = ref}
                                                     />
+                                                    <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
                                                 </Row>
                                             )
                                         }
                                     })
-                                    
+                                    : <Loader/>
                                 }
-                                <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
+                                
                             </Col>
                             <Col className="card">
                                 Growth Graph Here
