@@ -1,5 +1,5 @@
 .card {
-    margin: 5px;
+    margin-bottom: 15px;
 }
 
 .cardContainer {
@@ -13,6 +13,7 @@
 .parent {
     width:100%;
 }
+
 
 
 
