@@ -468,17 +468,19 @@ class Investments extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         <Form>
-                            <Form.Group controlId="formBasicCheckbox">
                                 {
                                     Object.keys(this.state.companies).map((name) => {
                                         var checkedd = false;
                                         if(this.state.companies[name]["tracked"] == true){
                                             checkedd = true;
                                         }
-                                        return (<Form.Check key={name+this.state.companies[name]["id"]} type="checkbox" label={name} checked={checkedd} onChange={() => this.addSelectedCompany(name)}/>)
+                                        return (
+                                            <Form.Row key={name+"row"}>
+                                                <Form.Check key={name+this.state.companies[name]["id"]} type="checkbox" label={name} checked={checkedd} onChange={() => this.addSelectedCompany(name)}/>
+                                            </Form.Row>        
+                                        )
                                     })
                                 }
-                            </Form.Group>
                             <Button variant="primary" onClick={this.showModal}>
                                 Submit
                             </Button>
@@ -499,6 +501,8 @@ class Investments extends React.Component {
                                 <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
                                 <Form.Label>Date Invested</Form.Label>
                                 <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
+                                <Form.Label>Favorite</Form.Label>
+                                <Form.Control as="input" type="checkbox" onChange={console.log("Favorite Checked/Unchecked")/*(event)=>{this.updateInvestmentDate(event)}*/}/>
                             </Form.Group>
                             <Button variant="primary" onClick={() => this.updateInvestment()}>
                                 Submit
@@ -511,67 +515,4 @@ class Investments extends React.Component {
     }
 }
 
-export default Investments;
-
-/*
-<Container>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-    </Row>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-        </Col>
-    </Row>
-</Container>
-
-
-
-
-
-<Modal show={this.state.show} onHide={this.showModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Modal heading
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicCheckbox">
-                        {Object.keys(this.state.companies).map((name)=>{
-                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
-                        })}
-                    </Form.Group>
-                    <Button variant="primary" type="submit" onClick={this.showModal}>
-                        Submit
-                    </Button>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.showModal}>Close</Button>
-                </Modal.Footer>
-                </Modal>
-*/
+export default Investments; 
