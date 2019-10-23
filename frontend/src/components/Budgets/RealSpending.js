@@ -3,6 +3,7 @@ import { Progress } from 'reactstrap';
 import axios from 'axios';
 import TransactionForm from './TransactionForm';
 import '../../css/Budgets.css';
+import { destroyObjectProperties } from "highcharts";
 
 function RealSpending(props) {
 
@@ -73,8 +74,11 @@ function RealSpending(props) {
 			//console.log("fetching transactions");
 			// console.log('real spending: updating')
 			// console.log(props.transactions);
-			if (props.transactions)
-				categorizeData(props.transactions);
+			if (props.spendingByCategory && props.spendingByCategory.length) {
+				console.log(props.spendingByCategory);
+				setCategoryObjs(props.spendingByCategory);
+				console.log("updating spendingByCategory");
+			}
 			// getTransactions();
 		},
 		[props]
@@ -82,12 +86,12 @@ function RealSpending(props) {
 
 	return (
 		<div>
-			{loadingTransactions
+			{props.spendingByCategory && props.spendingByCategory.length
 				?
 				<p>Loading...</p>
 				:
 				<div> {/** Loop thru budget categories prop and compare the amount with the objects  */}
-					{categoryObjs.map((item, index) =>
+					{props.spendingByCategory && props.spendingByCategory.length && props.spendingByCategory.map((item, index) =>
 						<div className="padTop" key={index}>
 							<p>{item.name}: ${item.spent.toFixed(2)} / ${item.allocated.toFixed(2)}</p>
 							<Progress multi className="barShadow">
