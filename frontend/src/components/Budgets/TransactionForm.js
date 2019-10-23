@@ -108,10 +108,8 @@ function TransactionForm(props) {
                     maxDate={new Date()}
                   />
                 </FormGroup>
-
               </Col>
             </Row>
-
           </Form>
         </CardBody>
         <CardFooter>
