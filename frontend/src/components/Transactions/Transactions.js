@@ -206,9 +206,13 @@ function Transactions() {
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
 				// handle success				
-				//console.log(response.data)
-				setTransactions(response.data);
+				for (let i in response.data) {
+          let date = new Date(response.data[i].date);
+          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+				}
+				console.log(response.data)
 				// Update the transaction state
+				setTransactions(response.data);
 				sortByDay(response.data, "");
 
 			})
@@ -226,38 +230,19 @@ function Transactions() {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
 			.then(function (response) {
 				// handle success
-				setTransactions(response.data);
+				for (let i in response.data) {
+          let date = new Date(response.data[i].date);
+          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+				}
+
 				// Update the transaction state
+				setTransactions(response.data);
 				sortByDay(response.data, name);
 			})
 			.catch((error) => {
 				console.log("Transaction call did not work  " + error);
 			});
 	};
-
-	// /**
-	//  * Server call to get all transactions for a given budget
-	//  */
-	// const [allTransactions, setAllTransactions] = useState();
-
-	// // get all transactions for a budget
-	// const getTransactions = (name) => {
-	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
-	// 		.then((response) => {
-	//       // format the date for display
-	//       for (let i in response.data) {
-	//         let date = new Date(response.data[i].date);
-	//         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-	//       }
-
-	// 			setAllTransactions(response.data);
-	//       // setAllTransactions(response.data);
-	//       // setLoadingTransactions(false);
-	// 		})
-	// 		.catch((error) => {
-	// 			console.log(error);
-	// 		});
-	// };
 
 	/**
 	 * Server call to get all Budgets
@@ -358,9 +343,10 @@ function Transactions() {
 			</Row>
 			<Row>
 				<Col sm={1} />
-				<Col >
+				<Col sm={10}>
 					<TransactionTable transactions={transactions} />
 				</Col>
+				<Col sm={1} />
 			</Row>
 
 		</div>
