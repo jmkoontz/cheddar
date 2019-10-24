@@ -136,7 +136,8 @@ function BudgetTabs(props) {
 								<div className="addSpace">
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
-										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions} spendingByCategory={spendingByCategory}/>
+										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions} spendingByCategory={spendingByCategory}
+												setSpendingByCategory={setSpendingByCategory}/>
 										:
 										<p>Loading...</p>
 									}
