@@ -217,7 +217,6 @@ function Transactions() {
           let date = new Date(response.data[i].date);
           response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
 				}
-				console.log(response.data)
 				// Update the transaction state
 				setTransactions(response.data);
 				sortByDay(response.data, "");
