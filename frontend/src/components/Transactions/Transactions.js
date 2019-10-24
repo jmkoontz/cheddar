@@ -4,6 +4,7 @@ import HighchartsReact from 'highcharts-react-official';
 import { Row, Col } from 'reactstrap';
 import SelectBudgetForm from './SelectBudgetForm';
 import DateFinder from "./DateFinder";
+import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
 import '../../css/Transactions.css';
 
@@ -27,21 +28,6 @@ function Transactions() {
 	// Utility states
 	const [loading, setLoading] = useState(false); // Stops page from loading is a server call is running
 
-
-	const endDateHelper = (date) => {
-		let interval = 1000 * 60 * 60 * 24;
-		let end = Math.floor(date / interval) * interval
-
-		setEndDate(new Date(end));
-	}
-
-	const startDateHelper = (date) => {
-		let interval = 1000 * 60 * 60 * 24;
-		let start = Math.floor(date / interval) * interval
-
-		setStartDate(new Date(start));
-	}
-
 	/**
 	 * Helper method to show each data point on the chart
 	 * @param {Object} e 
@@ -63,16 +49,28 @@ function Transactions() {
 	/**
 	 * Sorts all the transactions by date and stores them in their own
 	 */
-	const sortByDay = (transactionsList) => {
+	const sortByDay = (transactionsList, name) => {
 		let numDays = calcNumberDays(endDate, startDate) + 1;
-		let daysArray = [];
-		let totalDaysArray = [];
+		let daysArray = [];	// Number of days array
+		let totalDaysArray = [];	// Total spending line
+		let incomeLine = [];	// Red line for the income you have
 		let runningTotal = 0;	// Variable for the total
+		let income;
+
+		for (let x = 0; x < budgetList.length; x++) {
+			if (budgetList[x].name === name) {
+				income = (budgetList[x].income);
+			}
+		}
 
 		// Populate the daysArray with the number of days between the start and end dates
 		for (let x = 0; x < numDays; x++) {
 			daysArray.push(0);
 			totalDaysArray.push(0);
+			if (income) {
+				incomeLine.push(income);
+			}
+
 		}
 
 		// Loop over transactions and add their amount to to coresponding daysArray index
@@ -80,13 +78,29 @@ function Transactions() {
 			// Add each transaction into its respective array index
 			let tmpObj = transactionsList[x];
 			let index = calcNumberDays(tmpObj.date, startDate);
-			daysArray[index] += tmpObj.amount;
+			if (index >= 0 && index < numDays && tmpObj.amount >= 0) {
+				daysArray[index] += tmpObj.amount;
+			}
 
 		}
 
 		for (let y = 0; y < daysArray.length; y++) {
 			runningTotal += daysArray[y];
 			totalDaysArray[y] = runningTotal;
+		}
+
+		// Adds a zone into the max spending graph
+		let zone = [{
+			color: 'green'
+		}];
+
+		if (name != "") {
+			zone = [{
+				value: income,
+				color: 'green'
+			}, {
+				color: '#a40000'
+			}];
 		}
 
 		let dailyOptions = {
@@ -148,8 +162,21 @@ function Transactions() {
 				pointInterval: 24 * 3600 * 1000, // one day
 				animation: {
 					duration: 2000
-				}
-			}],
+				},
+				zones: zone
+			},
+			{
+				name: "Max Spending",
+				data: incomeLine,
+				color: 'red',
+				pointStart: startDate.getTime(),
+				pointInterval: 24 * 3600 * 1000, // one day
+				animation: {
+					duration: 2000
+				},
+				dashStyle: 'longdash'
+			}
+			],
 
 			plotOptions: {
 				series: {
@@ -182,7 +209,7 @@ function Transactions() {
 				//console.log(response.data)
 				setTransactions(response.data);
 				// Update the transaction state
-				sortByDay(response.data);
+				sortByDay(response.data, "");
 
 			})
 			.catch((error) => {
@@ -199,10 +226,9 @@ function Transactions() {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
 			.then(function (response) {
 				// handle success
-				//console.log(response)
 				setTransactions(response.data);
 				// Update the transaction state
-				sortByDay(response.data);
+				sortByDay(response.data, name);
 			})
 			.catch((error) => {
 				console.log("Transaction call did not work  " + error);
@@ -215,18 +241,18 @@ function Transactions() {
 	// const [allTransactions, setAllTransactions] = useState();
 
 	// // get all transactions for a budget
-  // const getTransactions = (name) => {
+	// const getTransactions = (name) => {
 	// 	axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
 	// 		.then((response) => {
-  //       // format the date for display
-  //       for (let i in response.data) {
-  //         let date = new Date(response.data[i].date);
-  //         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-  //       }
+	//       // format the date for display
+	//       for (let i in response.data) {
+	//         let date = new Date(response.data[i].date);
+	//         response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+	//       }
 
 	// 			setAllTransactions(response.data);
-  //       // setAllTransactions(response.data);
-  //       // setLoadingTransactions(false);
+	//       // setAllTransactions(response.data);
+	//       // setLoadingTransactions(false);
 	// 		})
 	// 		.catch((error) => {
 	// 			console.log(error);
@@ -324,11 +350,17 @@ function Transactions() {
 						?
 						<SelectBudgetForm {...propData} />
 						:
-						<div/>
+						<div />
 					}
 
 				</Col>
 				<Col sm={1} />
+			</Row>
+			<Row>
+				<Col sm={1} />
+				<Col >
+					<TransactionTable transactions={transactions} />
+				</Col>
 			</Row>
 
 		</div>
