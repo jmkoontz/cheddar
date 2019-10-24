@@ -68,10 +68,10 @@ export async function createSavings(uid, saving) {
     });
 }
 
-export async function getOneSavings(uid, savingsTitle){
+export async function getOneSavings(uid, savingsId){
   const findClause = {
     '_id': uid,
-    'savings.title': savingsTitle
+    'savings._id': savingsId
   };
 
   const returnClause = {
@@ -79,7 +79,7 @@ export async function getOneSavings(uid, savingsTitle){
     'savings': 1
   };
 
-  return userModel.findOne(findClause)
+  return userModel.findOne(findClause, returnClause)
     .then((user) => {
       if (user)
         return Promise.resolve(user.savings);

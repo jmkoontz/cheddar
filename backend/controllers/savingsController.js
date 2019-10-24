@@ -17,10 +17,10 @@ export default (app) => {
   });
 
   //find one savings
-  app.get('Cheddar/Savings/Saving/:uid/:savingsTitle', async (req, res) => {
+  app.get('Cheddar/Savings/:uid/Saving/:savingsId', async (req, res) => {
     let data;
     try {
-      data = await getOneSavings(req.params.uid, req.params.savingsTitle);
+      data = await getOneSavings(req.params.uid, req.params.savingsId);
     } catch (err) {
       data = {error: parseError(err)};
     }

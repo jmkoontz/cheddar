@@ -59,7 +59,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/" render={() => <Overview/>}/>
             <Route path="/budgets" render={() => <Budgets/>}/>
-            <Route path="/editsavings" render={() => <EditSavings/>}/>
+            <Route path="/editsavings/:id" component={EditSavings}/>
             <Route path="/saving" render={() => <Saving/>}/>
             <Route path="/investments" render={() => <Investments/>}/>
             <Route path="/retirement" render={() => <Retirement/>}/>
