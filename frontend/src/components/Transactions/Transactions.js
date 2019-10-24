@@ -15,6 +15,7 @@ function Transactions() {
 	// Transactions and date states
 	const [rawBudgetList, setRawBudgetList] = useState([]);	// list of budgets minus "all budgets"
 	const [budgetList, setBudgetList] = useState([]);	// List of budgets
+	const [currentBudget, setCurrentBudget] = useState();	// Currently selected Budget
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState(); // Time the backend understand
 	const [startDate, setStartDate] = useState(); // Time the backend understand     new Date((new Date()).getTime() - (24 * 3600 * 1000))
@@ -56,6 +57,8 @@ function Transactions() {
 		let incomeLine = [];	// Red line for the income you have
 		let runningTotal = 0;	// Variable for the total
 		let income;
+		let totalTitle = "Total Spending";
+		let dailyTitle = "Daily Spending";
 
 		for (let x = 0; x < budgetList.length; x++) {
 			if (budgetList[x].name === name) {
@@ -94,7 +97,10 @@ function Transactions() {
 			color: 'green'
 		}];
 
+		// Set zone based on name
 		if (name != "") {
+			totalTitle = "Total Spending for \'" + name + "\'";
+			dailyTitle = "Daily Spending for \'" + name + "\'"
 			zone = [{
 				value: income,
 				color: 'green'
@@ -103,9 +109,10 @@ function Transactions() {
 			}];
 		}
 
+
 		let dailyOptions = {
 			title: {
-				text: 'Daily Spending'
+				text: dailyTitle
 			},
 			xAxis: {
 				type: 'datetime',
@@ -141,7 +148,7 @@ function Transactions() {
 
 		let totalOptions = {
 			title: {
-				text: 'Total Spending'
+				text: totalTitle
 			},
 			xAxis: {
 				type: 'datetime',
@@ -231,6 +238,10 @@ function Transactions() {
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
+					// Get current budget
+					if (response.data[i].name === name) {
+						setCurrentBudget(response.data[i]);
+					}
           let date = new Date(response.data[i].date);
           response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
 				}
