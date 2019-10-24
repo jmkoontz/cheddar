@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Collapse, Button, Row, Col } from 'reactstrap';
+import { Table, Collapse, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios';
-
 import '../../css/Budgets.css';
 
 function TransactionTable(props) {
@@ -18,15 +17,20 @@ function TransactionTable(props) {
   const [collapse, setCollapse] = useState(false);  // controls whether table is visible
   const [mode, setMode] = useState();  // display all transactions or just one category
 
-	useEffect(
-		() => {
+  const [deleteMode, setDeleteMode] = useState(); // Tells the modal to load deletion info
+  const [editMode, setEditMode] = useState(); // Tells the modal to load edit info
+  const [selectedTransaction, setSelectedTransaction] = useState() // Transaction to be changed
+  const [modal, setModal] = useState() // Sets modal to open
+
+  useEffect(
+    () => {
       if (props.transactions) {
         setTransactions(props.transactions);
         setAllTransactions(props.transactions);
       }
-		},
-		[props]
-	);
+    },
+    [props]
+  );
 
   useEffect(
     () => {
@@ -85,17 +89,69 @@ function TransactionTable(props) {
     let tmp = JSON.parse(JSON.stringify(transactions));
     tmp.sort((a, b) => {
       if (a[key] < b[key])
-         return sortAsc ? -1 : 1;
+        return sortAsc ? -1 : 1;
       else if (a[key] > b[key])
-         return sortAsc ? 1 : -1;
+        return sortAsc ? 1 : -1;
       else
-         return 0;
+        return 0;
     });
 
     setTransactions(tmp);
   };
 
-	return (
+  // edit button handler
+  const editHandler = () => {
+    setEditMode(!editMode); 
+    setModal(!modal);
+  }
+
+  // deletion button handler
+  const deleteHandler = () => {
+    setDeleteMode(!deleteMode); 
+    setModal(!modal);
+  }
+
+  // server call to edit a transaction
+  const editTransaction = (index) => {
+
+    console.log("edit me")
+    // axios.put(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${transactions[index]._id}`)
+    // 	.then((response) => {
+    //     // format the date for display
+    //     for (let i in response.data) {
+    //       let date = new Date(response.data[i].date);
+    //       response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+    //     }
+
+    // 		setTransactions(response.data);
+    // 		categorizeData(response.data);
+    // 	})
+    // 	.catch((error) => {
+    // 		console.log(error);
+    // 	});
+  }
+
+  // server call to delete a transaction
+  const deleteTransaction = (index) => {
+
+    console.log("delete me")
+    // axios.delete(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${transactions[index]._id}`)
+    // 	.then((response) => {
+    //     // format the date for display
+    //     for (let i in response.data) {
+    //       let date = new Date(response.data[i].date);
+    //       response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+    //     }
+
+    // 		setTransactions(response.data);
+    // 		categorizeData(response.data);
+    // 	})
+    // 	.catch((error) => {
+    // 		console.log(error);
+    // 	});
+  }
+
+  return (
     <div>
       <Row>
         <Col sm="3">
@@ -103,7 +159,7 @@ function TransactionTable(props) {
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
         </Col>
-        <Col sm="9"/>
+        <Col sm="9" />
       </Row>
       <Collapse isOpen={collapse}>
         <Table striped size="sm">
@@ -111,38 +167,79 @@ function TransactionTable(props) {
             <tr align="left">
               <th className="poundSymbol">#</th>
               <th className="tableHeader" onClick={() => sortTransactions('name')}>Name{' '}
-                <span hidden={sortKey !== 'name' || !sortNameAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
-                <span hidden={sortKey !== 'name' || sortNameAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+                <span hidden={sortKey !== 'name' || !sortNameAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
+                <span hidden={sortKey !== 'name' || sortNameAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
               <th className="tableHeader" onClick={() => sortTransactions('amount')}>Amount{' '}
-                <span hidden={sortKey !== 'amount' || !sortAmountAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
-                <span hidden={sortKey !== 'amount' || sortAmountAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+                <span hidden={sortKey !== 'amount' || !sortAmountAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
+                <span hidden={sortKey !== 'amount' || sortAmountAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
               <th className="tableHeader" onClick={() => sortTransactions('date')}>Date{' '}
-                <span hidden={sortKey !== 'date' || !sortDateAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
-                <span hidden={sortKey !== 'date' || sortDateAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+                <span hidden={sortKey !== 'date' || !sortDateAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
+                <span hidden={sortKey !== 'date' || sortDateAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
               <th className="tableHeader" onClick={() => sortTransactions('category')}>Category{' '}
-                <span hidden={sortKey !== 'category' || !sortCategoryAsc}><FontAwesomeIcon icon={faCaretUp}/></span>
-                <span hidden={sortKey !== 'category' || sortCategoryAsc}><FontAwesomeIcon icon={faCaretDown}/></span>
+                <span hidden={sortKey !== 'category' || !sortCategoryAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
+                <span hidden={sortKey !== 'category' || sortCategoryAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
+              <th className="tableHeader" >Edit{' '}</th>
+
+              <th className="tableHeader" >Delete{' '}</th>
             </tr>
           </thead>
           <tbody>
             {transactions && transactions.map((key, index) => {
-              return <tr key={transactions[index]._id} align="left">
-                <td scope="row" align="center">{index + 1}</td>
-                <td>{transactions[index].name}</td>
-                <td>${transactions[index].amount.toFixed(2)}</td>
-                <td>{transactions[index].shortDate}</td>
-                <td>{transactions[index].category}</td>
-              </tr>
-            })}
+              if (editMode && selectedTransaction && selectedTransaction._id === transactions[index]._id) {
+                return <tr key={transactions[index]._id} align="left">
+                  <td scope="row" align="center">{index + 1}</td>
+                  <td><input value={transactions[index].name} /></td>
+                  <td><input value={"$" + transactions[index].amount.toFixed(2)} /></td>
+                  <td>{transactions[index].shortDate}</td>
+                  <td>{transactions[index].category}</td>
+                  <td>
+                    <Button color="primary" onClick={() => editHandler(index)}>Edit</Button>
+                  </td>
+                  <td>
+                    <Button color="danger" onClick={() => { setDeleteMode(true); setModal(!modal) }}>Delete</Button>
+                  </td>
+                </tr>
+              } else {
+                return <tr key={transactions[index]._id} align="left">
+                  <td scope="row" align="center">{index + 1}</td>
+                  <td>{transactions[index].name}</td>
+                  <td>${transactions[index].amount.toFixed(2)}</td>
+                  <td>{transactions[index].shortDate}</td>
+                  <td>{transactions[index].category}</td>
+                  <td>
+                    <Button color="primary" onClick={() => editHandler(index)}>Edit</Button>
+                  </td>
+                  <td>
+                    <Button color="danger" onClick={() => { setDeleteMode(true); setModal(!modal) }}>Delete</Button>
+                  </td>
+                </tr>
+              }
+            }
+            )}
           </tbody>
         </Table>
       </Collapse>
-    </div>
-	);
+      <Modal isOpen={modal} toggle={() => setModal(!modal)}>
+        {editMode
+          ?
+          <ModalHeader toggle={() => { setEditMode(true); setModal(!modal) }}>Edit Transaction</ModalHeader>
+          :
+          <ModalHeader toggle={() => { setDeleteMode(true); setModal(!modal) }}>Delete Transaction</ModalHeader>
+        }
+        <ModalBody>
+          Are you sure you want to delete this transaction?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => deleteTransaction()}>Delete Transaction</Button>{' '}
+          <Button color="secondary" onClick={() => { setDeleteMode(false); setEditMode(false); setModal(!modal) }}>Cancel</Button>
+        </ModalFooter>
+      </Modal>
+    </div >
+  );
 }
 
 export default TransactionTable;
