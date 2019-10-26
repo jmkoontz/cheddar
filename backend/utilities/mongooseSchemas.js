@@ -40,7 +40,8 @@ export const savingsSchema = new mongoose.Schema({
   goalAmount: Number,
   goalYear: Number,
   goalMonth: String,
-  monthlyContribution: Number
+  monthlyContribution: Number,
+  currSaved: Number
 });
 
 export const debtSchema = new mongoose.Schema({
@@ -91,4 +92,3 @@ export const userSchema = new mongoose.Schema({
   investments: allInvestmentsSchema,
   retirement: retirementSchema
 });
-
