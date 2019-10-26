@@ -53,6 +53,9 @@ export async function editDebt(uid, debtID, changes) {
     'debts._id': debtID
   };
 
+  if(changes.category)
+    updateClause.$set['debts.$.category'] = changes.category;
+
   if (changes.nickname)
     updateClause.$set['debts.$.nickname'] = changes.nickname;
 
