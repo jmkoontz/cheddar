@@ -14,9 +14,20 @@
     width:100%;
 }
 
+.col-color {
+    background-color: coral;
+}
 
+.color {
+    background-color: coral;
+}
+.row-color {
+    background-color: coral;
+}
 
-
+.container-color {
+    background-color: coral;
+}
 
 .add-button-container {
     width: 100%;

@@ -20,6 +20,7 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
+import Graphs from "./Graphs";
 
 const tips = (
     <Modal.Body>
@@ -115,14 +116,6 @@ class Investments extends React.Component {
                         companies: companies,
                         selectedCompanies: res.data.trackedCompanies,
                         investments: res.data.investments,
-                    },() => {
-                        var comps = this.state.selectedCompanies;
-        console.log(comps);
-        let i =0;
-        for(i = 0;i < comps.length; i++){
-            console.log(comps[i]);
-            this.getOptions(comps[i],"Weekly");
-        }
                     });
             //console.log(res);
         });
@@ -150,17 +143,6 @@ class Investments extends React.Component {
                 //this.makeApiRequest();
             }       
         }
-        console.log("HERE");
-        var comps = this.state.selectedCompanies;
-        console.log(comps);
-        let i =0;
-        for(i = 0;i < comps.length; i++){
-            console.log(comps[i]);
-            this.getOptions(comps[i],"Weekly");
-        }
-        this.state.selectedCompanies.map((name,index)=>{
-            
-        });
     }
 
     shouldComponentUpdate(nextProps,nextState){
@@ -260,17 +242,24 @@ class Investments extends React.Component {
         });
     }
 
-    showInfoModal = () => {
+    showInfoModal = (name) => {
+        if(name === undefined){
+            this.setState({
+                showInfo: !this.state.showInfo,
+            });
+        }
+        else{
         this.setState({
             showInfo: !this.state.showInfo,
+            companyName: name,
         });
+    }
     }
 
     addSelectedCompany = (company) => {
         var originalCompanies = this.state.companies;
         var companies = this.state.selectedCompanies;        
 
-        this.getOptions(company,"Weekly");
 
         if(originalCompanies[company]["tracked"] == true){
             originalCompanies[company]["tracked"] = false;
@@ -357,37 +346,6 @@ class Investments extends React.Component {
         
     }
 
-    getOptions = async (companyName,frequency) => {
-        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key);
-        console.log("TESTING");
-        console.log(res);
-        var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
-        var points = [];
-        var i = 0;
-        for(i=0;i<52;i++){
-            points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
-        }
-        var dataArr = []
-        dataArr.push({type: "line", dataPoints: points});
-        console.log(dataArr);
-        const options = {
-            title: {
-                text: "Weekly "+companyName+" Closings for 1 Year"
-            },
-            axisX: {
-                valueFormatString: "MM/DD/YY",
-                title: "Date",
-            },
-            data: dataArr,
-        }
-        var companyOptions = this.state.companyOptions;
-        console.log(companyName);
-        console.log(options);
-        companyOptions[companyName] = options;
-        this.setState({
-            companyOptions: companyOptions,
-        });
-    }
     
 
     render () {
@@ -418,30 +376,22 @@ class Investments extends React.Component {
                     </Row>
                 </Container>
 
+
                 <div className="cardContainer">
                     <Container fluid="true">
                         <Row>
                             <Col className="card">
-                                { 
-                                    (Object.keys(this.state.companyOptions).length > 0 && this.state.selectedCompanies.length >0) > 0 ? 
-                                    this.state.selectedCompanies.map((name,index)=>{
-                                    /*console.log("RENDERING");
-                                    console.log(name);
-                                    console.log(this.state.companyOptions);
-                                    console.log(this.state.companyOptions[name]);*/
-                                        if(this.state.companyOptions[name] !== undefined){
-                                            return(
-                                                <Row className="card" key={"row"+index}>
-                                                    <CanvasJSChart key={"test"+index} options={this.state.companyOptions[name]}
-                                                    // onRef = {ref => this.chart = ref}
-                                                    />
-                                                    <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
-                                                </Row>
-                                            )
-                                        }
-                                    })
-                                    : <Loader/>
-                                }
+                            {
+                                this.state.selectedCompanies.map((name,index)=>{
+                                    return(
+                                        <div>
+                                        <Graphs key={name+"Graph"} companyName={name} companyOptions={this.state.companyOptions}/>
+                                        <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
+                                        </div>
+                                    )
+                                })
+                            }
+                            
                                 
                             </Col>
                             <Col className="card">
