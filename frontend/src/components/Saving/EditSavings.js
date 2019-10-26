@@ -9,7 +9,7 @@ import axios from 'axios';
 class EditSavings extends React.Component {
   constructor(props){
     super(props);
-    this.state = {userID: sessionStorage.getItem('user'), title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: '', year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: true, validCont: true, validCat: true, validTitle: true};
+    this.state = {userID: sessionStorage.getItem('user'), savingsId: '', title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: '', year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: true, validCont: true, validCat: true, validTitle: true};
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -43,8 +43,25 @@ class EditSavings extends React.Component {
   }
 
   handleSubmit(event){
-    alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
-    event.preventDefault();
+    //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
+    axios.put(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/${this.state.savingsId}`,
+      {
+        title: this.state.title,
+        category: this.state.category,
+        goalAmount: this.state.goalAmount,
+        goalYear: this.state.year,
+        goalMonth: this.state.month,
+        monthlyContribution: this.state.monthlyContribution
+      })
+      .then((response) => {
+        console.log(response);
+        event.preventDefault();
+        alert("Savings plan successfully updated")
+        History.push("/saving")
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   componentDidMount(){
@@ -62,7 +79,7 @@ class EditSavings extends React.Component {
         for(let i in response.data){
           if(response.data[i]._id == id){
             console.log(response.data[i]);
-            this.setState({title: response.data[i].title, category: response.data[i].category, goalAmount: response.data[i].goalAmount, month: response.data[i].goalMonth, year: response.data[i].goalYear, monthlyContribution: response.data[i].monthlyContribution})
+            this.setState({savingsId: response.data[i]._id, title: response.data[i].title, category: response.data[i].category, goalAmount: response.data[i].goalAmount, month: response.data[i].goalMonth, year: response.data[i].goalYear, monthlyContribution: response.data[i].monthlyContribution})
           }
         }
         //console.log(this.state.savingsList)
@@ -85,10 +102,11 @@ class EditSavings extends React.Component {
         </label><br/>
         <select name="category" value={this.state.category} onChange={this.handleChange}>
           <option value="Choose a category">Choose a category</option>
-          <option value="Pay off Debts">Pay off Credit Card Debt</option>
+          <option value="Pay off Credit Card Debt">Pay off Credit Card Debt</option>
           <option value="Pay off Loans">Pay off Loans</option>
-          <option value="Save for Emeregency">Save for Emeregency</option>
+          <option value="Save for Emergency">Save for Emeregency</option>
           <option value="Save for a Trip">Save for a Trip</option>
+          <option value="Save for a Purchase">Save for a Purchase</option>
           <option value="Other">Other</option>
         </select>
         <br/>

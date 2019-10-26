@@ -91,12 +91,12 @@ export async function getOneSavings(uid, savingsId){
     });
 }
 
-export async function editSavings(uid, savingsTitle, changes) {
+export async function editSavings(uid, savingsId, changes) {
   let updateClause = {$set: {}};
 
   const findClause = {
     '_id': uid,
-    'savings.title': savingsTitle
+    'savings._id': savingsId
   };
 
   if (changes.title)
