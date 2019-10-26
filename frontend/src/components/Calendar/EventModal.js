@@ -84,8 +84,8 @@ class EventModal extends React.Component {
         <Modal.Header closeButton>
           {
             this.props.isNew ?
-              <Modal.Title>Add Transaction</Modal.Title>
-              : <Modal.Title>Edit Transaction</Modal.Title>
+              <Modal.Title>Add Expense</Modal.Title>
+              : <Modal.Title>Edit Expense</Modal.Title>
           }
         </Modal.Header>
 
