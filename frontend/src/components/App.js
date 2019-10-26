@@ -4,6 +4,7 @@ import Header from './header/Header';
 import Overview from './Overview/Overview';
 import Budgets from './Budgets/Budgets';
 import EditSavings from './Saving/EditSavings'
+import EditDebts from './Debts/EditDebts'
 import Saving from './Saving/Saving';
 import Investments from './Investments/Investments';
 import Retirement from './Investments/Retirement';
@@ -60,6 +61,7 @@ class App extends Component {
             <Route exact path="/" render={() => <Overview/>}/>
             <Route path="/budgets" render={() => <Budgets/>}/>
             <Route path="/editsavings/:id" component={EditSavings}/>
+            <Route path="/editdebts/:id" component={EditDebts}/>
             <Route path="/saving" render={() => <Saving/>}/>
             <Route path="/investments" render={() => <Investments/>}/>
             <Route path="/retirement" render={() => <Retirement/>}/>
