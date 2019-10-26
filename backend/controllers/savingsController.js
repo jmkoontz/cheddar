@@ -72,10 +72,10 @@ export default (app) => {
   });
 
   // delete savings
-  app.delete('/Cheddar/Savings/Saving/:uid/:savingsTitle', async (req, res) => {
+  app.delete('/Cheddar/Savings/Saving/:uid/:savingsId', async (req, res) => {
     let data;
     try {
-      data = await deleteSavings(req.params.uid, req.params.savingsTitle);
+      data = await deleteSavings(req.params.uid, req.params.savingsId);
     } catch (err) {
       data = {error: parseError(err)};
     }

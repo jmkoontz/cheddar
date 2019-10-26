@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button } from 'reactstrap';
+import { Button, ButtonGroup } from 'reactstrap';
 import { Route, NavLink, Redirect, withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
@@ -13,6 +13,7 @@ class EditSavings extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleChange(event){
@@ -57,6 +58,19 @@ class EditSavings extends React.Component {
         console.log(response);
         event.preventDefault();
         alert("Savings plan successfully updated")
+        History.push("/saving")
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  handleDelete(event){
+    axios.delete(`http://localhost:8080/Cheddar/Savings/Saving/${this.state.userID}/${this.state.savingsId}/`)
+      .then((response) => {
+        console.log(response);
+        event.preventDefault();
+        //alert("Savings plan successfully deleted")
         History.push("/saving")
       })
       .catch((error) => {
@@ -144,11 +158,18 @@ class EditSavings extends React.Component {
           <b>Monthly Contribution</b><br/>$
           <input name="monthlyContribution" type="number" value={this.state.monthlyContribution} onChange={this.handleChange} />
         </label><br/>
-        <Button variant="secondary" onClick={() => History.push("/saving")}>
-          Close
-        </Button>
-        <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validAmount && this.state.validCont && this.state.validCat && this.state.validTitle)}>
-          Save Changes
+        <ButtonGroup>
+          <Button variant="secondary" onClick={() => History.push("/saving")}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validAmount && this.state.validCont && this.state.validCat && this.state.validTitle)}>
+            Save Changes
+          </Button>
+        </ButtonGroup><br/><br/>
+        <Button outline color="danger" size="sm" onClick={e =>
+          window.confirm("Are you sure you wish to delete this Savings Goal? This is a permanent action and cannot be undone.") &&
+          this.handleDelete(e)}>
+          Delete
         </Button>
         </form>
       </div>
