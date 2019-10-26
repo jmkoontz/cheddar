@@ -7,7 +7,11 @@
 }
 
 .padTop {
-    margin-top: 1.5em;
+    margin-top: 1em;
+}
+
+.padRight {
+    margin-right: 1em;
 }
 
 .heavyPadTop {
@@ -20,9 +24,9 @@
     font-weight: bold;
 }
 
-.barShadow { 
+.barShadow {
     box-shadow: 5px 10px #b3b3b3;
-    border-radius: 4px; 
+    border-radius: 4px;
 }
 
 .textLeft {
@@ -38,7 +42,29 @@
  .cardSize {
      border-radius: 12px !important;
  }
- 
+
  .card {
     width: auto !important;
+}
+
+.buttonFix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.smallText {
+    font-size: 10px;
+}
+
+.tableHeader {
+  cursor: pointer;
+}
+
+.poundSymbol {
+  text-align: center;
+}
+
+.tableButton {
+  margin-bottom: 1rem;
 }

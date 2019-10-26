@@ -6,6 +6,7 @@ import Budgets from './Budgets/Budgets';
 import CreateSavings from './Saving/CreateSavings'
 import Saving from './Saving/Saving';
 import Investments from './Investments/Investments';
+import Retirement from './Investments/Retirement';
 import Debts from './Debts/Debts';
 import Transactions from './Transactions/Transactions';
 import SignIn from './Accounts/SignIn';
@@ -13,6 +14,7 @@ import firebase from '../firebase.js';
 import './App.css';
 import CreateAccount from "./Accounts/CreateAccount";
 import AccountSettings from "./Accounts/AccountSettings";
+import Assets from "./Assets/Assets";
 
 class App extends Component {
 
@@ -47,23 +49,6 @@ class App extends Component {
     }
   }
 
-  /*getUsername = () => {
-    let uid = sessionStorage.getItem('user');
-    let self = this;
-
-    TODO need to get username from Mongo. This next line gets it from firebase
-
-    firestore.collection('users').doc(uid).get().then((doc) => {
-      self.setState({
-        username: doc.data().username,
-      }, function () {
-        sessionStorage.setItem('username', this.state.username);
-      });
-    }).catch((error) => {
-      console.log('Error getting username: ', error);
-    });
-  };*/
-
   render() {
 
     if(this.state.uid !=  null) {
@@ -77,9 +62,11 @@ class App extends Component {
             <Route path="/createsavings" render={() => <CreateSavings/>}/>
             <Route path="/saving" render={() => <Saving/>}/>
             <Route path="/investments" render={() => <Investments/>}/>
+            <Route path="/retirement" render={() => <Retirement/>}/>
             <Route path="/debts" render={() => <Debts/>}/>
             <Route path="/transactions" render={() => <Transactions/>}/>
             <Route path="/account-settings" render={() => <AccountSettings/>}/>
+            <Route path="/assets" render={() => <Assets/>}/>
             <Route path="/" render={() => <Redirect to="/"/>}/>
           </Switch>
         </div>

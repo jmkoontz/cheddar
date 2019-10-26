@@ -10,7 +10,7 @@ function TransactionForm(props) {
 
   // Handle drop down
   const [drop, setDrop] = useState(false); // Boolean to control dropdown
-  const [transactionCate, setTransactionCate] = useState("Select a Category"); // The category for a new transaction
+  const [transactionCate, setTransactionCate] = useState(""); // The category for a new transaction
   const [transactionName, setTransactionName] = useState(); // The name for a new transaction
   const [transactionAmount, setTransactionAmount] = useState(); // The amount for a new transaction
   const [date, setDate] = useState(new Date());
@@ -40,9 +40,11 @@ function TransactionForm(props) {
         // handle success
         console.log("Success");
 
-        // Update the transaction state
         props.getTransactions();
-        
+        setTransactionName('');
+        setTransactionCate('');
+        setTransactionAmount('');
+        setDate(new Date());
       })
       .catch((error) => {
         console.log("Transaction call did not work");
@@ -87,13 +89,13 @@ function TransactionForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} />
+                  <Input id="name" value={transactionName} onChange={handleNChange} />
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input id="amount" onChange={handleAmtChange} />
+                  <Input type="number" value={transactionAmount} id="amount" onChange={handleAmtChange} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
@@ -109,19 +111,19 @@ function TransactionForm(props) {
 
               </Col>
             </Row>
-            
+
           </Form>
         </CardBody>
         <CardFooter>
-              
-              {transactionCate === "Select a Category"
-                ?
-                <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
-                :
-                <Button onClick={createTransaction} color="primary" >Submit</Button>
-              }
-              
-            </CardFooter>
+
+          {transactionCate === ""
+            ?
+            <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
+            :
+            <Button onClick={createTransaction} color="primary" >Submit</Button>
+          }
+
+        </CardFooter>
       </Card>
     </div>
   );

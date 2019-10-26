@@ -20,11 +20,11 @@ function FixedAmount(props) {
     let tmpObj = {
       name: "Income",
       amount: monthlyIncome,
-      preset: true
     }
 
     props.setCategoryArr([...props.categoryArr, tmpObj]); // Create a new category using a method from the parent
     setDataEnter(true); // Tell the page to now show the rest of the form
+    props.setButtonDisplay(true);
   }
 
   /**
@@ -50,15 +50,15 @@ function FixedAmount(props) {
 
   return (
     <div>
-      {!dataEnter
+       {!props.editModal && !dataEnter
         ?
         <div>
           <Row className="addSpace">
             <Col>
               <Label for="sum">Enter Your Sum of Money or Valued Objects</Label>
-              <Input onChange={handleAmountChange} name="sum" id="sum" placeholder="10000" />
+              <Input onChange={handleAmountChange}type="number" name="sum" id="sum" placeholder="Ex: $10000" />
               <Label for="timeframe">Enter Your Timeframe</Label>
-              <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of weeks" />
+              <Input onChange={handleTimeChange} type="number" name="timeframe" id="timeframe" placeholder="Enter number of weeks" />
             </Col>
           </Row>
           <Row>
