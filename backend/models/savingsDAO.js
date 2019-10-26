@@ -129,10 +129,10 @@ export async function editSavings(uid, savingsId, changes) {
     });
 }
 
-export function deleteSavings(uid, savingsTitle) {
+export function deleteSavings(uid, savingsId) {
   return userModel.findOneAndUpdate(
     {'_id': uid},
-    {'$pull': {'savings': {'title': savingsTitle}}},
+    {'$pull': {'savings': {'_id': savingsId}}},
     {'new': true})
     .then((updatedUser) => {
       if (updatedUser == null)
