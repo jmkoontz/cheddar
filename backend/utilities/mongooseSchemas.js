@@ -31,7 +31,8 @@ export const eventsSchema = new mongoose.Schema({
   start: Date,
   end: Date,
   allDay: Boolean,
-  amount: Number
+  amount: Number,
+  notify: Boolean
 });
 
 export const savingsSchema = new mongoose.Schema({
@@ -73,6 +74,14 @@ export const retirementSchema = new mongoose.Schema({
     history: [retirementHistorySchema]
 });
 
+export const notificationScheduleSchema = new mongoose.Schema({
+  month: false,
+  twoWeek: false,
+  week: false,
+  day: false,
+  dayOf: false
+});
+
 export const userSchema = new mongoose.Schema({
   _id: String,
   firstName: String,
@@ -89,6 +98,7 @@ export const userSchema = new mongoose.Schema({
   savings: [savingsSchema],
   debts: [debtSchema],
   investments: allInvestmentsSchema,
-  retirement: retirementSchema
+  retirement: retirementSchema,
+  notificationSchedule: notificationScheduleSchema
 });
 
