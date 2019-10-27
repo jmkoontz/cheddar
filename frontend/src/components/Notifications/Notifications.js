@@ -2,6 +2,7 @@ import React from 'react';
 import Alert from 'react-bootstrap/Alert';
 
 import './Notifications.css';
+import axios from "axios";
 
 class Notifications extends React.Component {
   constructor (props) {
@@ -12,13 +13,9 @@ class Notifications extends React.Component {
     };
   }
 
-  add (type, title, message) {
+  add (message) {
     const list = this.state.messages;
-    list.push({
-      type,
-      title,
-      message
-    });
+    list.push(message);
 
     this.setState({
       messages: list
@@ -33,13 +30,15 @@ class Notifications extends React.Component {
 
   close (index) {
     const event = this.state.messages[index];
-    console.log(event.period);
 
-    const splice = this.state.messages;
-    splice.splice(index, 1);
+    console.log(event);
+    axios.post('http://localhost:8080/Cheddar/Calendar/dismissNotification/' + sessionStorage.getItem('user'), event).then((resp) => {
+      const splice = this.state.messages;
+      splice.splice(index, 1);
 
-    this.setState({
-      messages: splice
+      this.setState({
+        messages: splice
+      });
     });
   }
 

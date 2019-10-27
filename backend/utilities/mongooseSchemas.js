@@ -32,7 +32,8 @@ export const eventsSchema = new mongoose.Schema({
   end: Date,
   allDay: Boolean,
   amount: Number,
-  notify: Boolean
+  notify: Boolean,
+  dismissed: Object
 });
 
 export const savingsSchema = new mongoose.Schema({

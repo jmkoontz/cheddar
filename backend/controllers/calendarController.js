@@ -89,6 +89,30 @@ export default (app) => {
     buildResponse(res, data);
   });
 
+  // edit an event indexed by the id
+  app.post('/Cheddar/Calendar/dismissNotification/:uid', async (req, res) => {
+    let data;
+    try {
+      const user = await getUser(req.params.uid);
+      const events = user.events;
+
+      for (let i = 0; i < events.length; i++) {
+        if (events[i].id == req.body.id) {
+          if (!events[i].dismissed)
+            events[i].dismissed = {};
+
+          events[i].dismissed[req.body.period] = true;
+        }
+      }
+
+      data = await editUser(req.params.uid, {events: events});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
   // edit the notification schedule
   app.put('/Cheddar/Calendar/notificationSchedule/:uid', async (req, res) => {
     let data;

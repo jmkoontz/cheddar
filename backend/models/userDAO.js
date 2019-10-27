@@ -78,6 +78,9 @@ export async function getNotifications(uid) {
       if (user.notificationSchedule.hasOwnProperty(period) || !user.notificationSchedule[period])
         continue;
 
+      if (event.dismissed && event.dismissed[period])
+        continue;
+
       let cmp;
       switch (period) {
         case "month":
