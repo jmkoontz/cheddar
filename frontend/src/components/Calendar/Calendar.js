@@ -40,7 +40,12 @@ class EventCalendar extends React.Component {
 
       for (let i = 0; i < resp.data.length; i++) {
         const event = resp.data[i];
-        this.notifications.current.add("info", "You have a payment coming up:", event.title);
+        this.notifications.current.add({
+          ...event,
+          message: event.title,
+          type: "info",
+          title: "You have a payment coming up:"
+        });
       }
     });
   };
