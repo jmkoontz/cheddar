@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getUser, editUser} from '../models/userDAO';
+import {getUser, editUser, getNotifications} from '../models/userDAO';
 
 export default (app) => {
   // get a user's events
@@ -70,6 +70,30 @@ export default (app) => {
       }
 
       data = await editUser(req.params.uid, {events: events});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // edit an event indexed by the id
+  app.get('/Cheddar/Calendar/notifications/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await getNotifications(req.params.uid);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // edit the notification schedule
+  app.put('/Cheddar/Calendar/notificationSchedule/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await editUser(req.params.uid, {notificationSchedule: req.body});
     } catch (err) {
       data = {error: parseError(err)};
     }

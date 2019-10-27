@@ -1,5 +1,8 @@
-#events-button {
+#calendar-button-row {
 	margin-bottom: 10px;
-	display: flex;
-	justify-content: flex-end;
+	text-align: left;
+}
+
+.calendar-button {
+	margin-right: 10px;
 }
