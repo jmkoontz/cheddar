@@ -5,7 +5,7 @@ import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget, edi
     deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
     addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
     getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
-    getTransactionsInBudgetAndDateRange} from '../models/budgetDAO';
+    getTransactionsInBudgetAndDateRange, getBudget, transferOldTransactions} from '../models/budgetDAO';
 
 export default (app) => {
   // create budget
@@ -113,7 +113,19 @@ export default (app) => {
   app.get('/Cheddar/Budgets/:uid', async (req, res) => {
     let data;
     try {
-      data = await getAllBudgets(req.params.uid);
+      data = await getAllBudgets(req.params.uid, true);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get a particular budget
+  app.get('/Cheddar/Budgets/:uid/:budgetName', async (req, res) => {
+    let data;
+    try {
+      data = await getBudget(req.params.uid, req.params.budgetName);
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -234,6 +246,18 @@ export default (app) => {
     let data;
     try {
       data = await getTransactionsInBudget(req.params.uid, req.params.budgetName);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // TEST
+  app.get('/Cheddar/testTransfer/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await transferOldTransactions(req.params.uid);
     } catch (err) {
       data = {error: parseError(err)};
     }
