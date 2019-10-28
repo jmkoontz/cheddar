@@ -78,7 +78,8 @@ function BudgetTabs(props) {
 
 	useEffect(
 		() => {
-			getTransactions();
+			if (props.curBudget)
+				getTransactions();
 		},
 		[props]
 	);

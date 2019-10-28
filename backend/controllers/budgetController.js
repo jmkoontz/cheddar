@@ -35,7 +35,6 @@ export default (app) => {
       name: req.body.name,
       type: req.body.type,
       income: req.body.income,
-      timeFrame: req.body.timeFrame,
       favorite: req.body.favorite,
       budgetCategories: req.body.budgetCategories
     };

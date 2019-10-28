@@ -135,9 +135,6 @@ export async function editBudget(uid, budgetName, changes) {
   if (changes.income)
     updateClause.$set['budgets.$.income'] = changes.income;
 
-  if (changes.timeFrame)
-    updateClause.$set['budgets.$.timeFrame'] = changes.timeFrame;
-
   if (changes.budgetCategories)
     updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
 
