@@ -175,7 +175,7 @@ function Budgets() {
 				name: budgetName,
 				type: pickedCategory,
 				income: tmpIncome,
-				timeFrame: 100,
+				timeFrame: 0,
 				favorite: false,
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {

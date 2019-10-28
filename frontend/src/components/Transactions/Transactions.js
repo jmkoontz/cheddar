@@ -13,6 +13,7 @@ function Transactions() {
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	// Transactions and date states
+	const [selectedBudget, setSelectedBudget] = useState("All Budgets");  // What budget to retrieve transactions from
 	const [rawBudgetList, setRawBudgetList] = useState([]);	// list of budgets minus "all budgets"
 	const [budgetList, setBudgetList] = useState([]);	// List of budgets
 	const [currentBudget, setCurrentBudget] = useState();	// Currently selected Budget
@@ -214,8 +215,8 @@ function Transactions() {
 			.then(function (response) {
 				// handle success				
 				for (let i in response.data) {
-          let date = new Date(response.data[i].date);
-          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
 				}
 				// Update the transaction state
 				setTransactions(response.data);
@@ -241,8 +242,8 @@ function Transactions() {
 					if (response.data[i].name === name) {
 						setCurrentBudget(response.data[i]);
 					}
-          let date = new Date(response.data[i].date);
-          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
 				}
 
 				// Update the transaction state
@@ -252,6 +253,20 @@ function Transactions() {
 			.catch((error) => {
 				console.log("Transaction call did not work  " + error);
 			});
+	};
+
+	/**
+	 * Helper function to decide which server call to make
+	 */
+	const getTransactions = () => {
+
+		// Help the transaction table decide what transactions to retrieve
+		if (selectedBudget === "All Budgets") {
+			getTimeTransactions();
+		} else {
+			getBudgetTransactions(selectedBudget);
+		}
+
 	};
 
 	/**
@@ -289,14 +304,17 @@ function Transactions() {
 	);
 
 	const propData = {
+		userID: userID,
 		getBudgetTransactions: getBudgetTransactions,
 		getTimeTransactions: getTimeTransactions,
+		getTransactions: getTransactions,
 		startDate: startDate,
 		setStartDate: setStartDate,
 		endDate: endDate,
 		setEndDate: setEndDate,
 		budgetList: budgetList,
 		rawBudgetList: rawBudgetList,
+		setSelectedBudget: setSelectedBudget
 		// setAllTransactions: setAllTransactions,
 		// allTransactions: allTransactions
 	}
@@ -354,7 +372,12 @@ function Transactions() {
 			<Row>
 				<Col sm={1} />
 				<Col sm={10}>
-					<TransactionTable transactions={transactions} />
+					{!loading
+						?
+						<TransactionTable {...propData} transactions={transactions} />
+						:
+						<div />
+					}
 				</Col>
 				<Col sm={1} />
 			</Row>
