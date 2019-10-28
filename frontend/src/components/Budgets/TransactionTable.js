@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Collapse, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Table, Collapse, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios';
@@ -22,7 +22,9 @@ function TransactionTable(props) {
   const [selectedTransaction, setSelectedTransaction] = useState() // Transaction to be changed
   const [modal, setModal] = useState() // Sets modal to open
 
-  useEffect(
+  {/**
+   */}
+   useEffect(
     () => {
       if (props.transactions) {
         setTransactions(props.transactions);
@@ -30,10 +32,15 @@ function TransactionTable(props) {
       }
     },
     [props]
-  );
+   );
 
   useEffect(
     () => {
+      if (props.transactions) {
+        setTransactions(props.transactions);
+        setAllTransactions(props.transactions);
+      }
+
       if (props.tableMode === 'all' || props.tableCategory !== '')
         switchMode(props.tableMode, props.tableCategory);
     },
@@ -100,55 +107,57 @@ function TransactionTable(props) {
   };
 
   // edit button handler
-  const editHandler = () => {
-    setEditMode(!editMode); 
+  const editHandler = (index) => {
+    setDeleteMode(false);
+    setSelectedTransaction(transactions[index]);
+    setEditMode(!editMode);
     setModal(!modal);
   }
 
   // deletion button handler
-  const deleteHandler = () => {
-    setDeleteMode(!deleteMode); 
+  const deleteHandler = (index) => {
+    setEditMode(false);
+    setSelectedTransaction(transactions[index]);
+    setDeleteMode(!deleteMode);
     setModal(!modal);
   }
 
+  // helper to close modal
+  const closeHandler = () => {
+    setModal(!modal);
+    setSelectedTransaction();
+    setEditMode(false);
+    setDeleteMode(false);
+  }
+
   // server call to edit a transaction
-  const editTransaction = (index) => {
+  const editTransaction = () => {
 
-    console.log("edit me")
-    // axios.put(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${transactions[index]._id}`)
-    // 	.then((response) => {
-    //     // format the date for display
-    //     for (let i in response.data) {
-    //       let date = new Date(response.data[i].date);
-    //       response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-    //     }
+    axios.put(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`,
+    {
 
-    // 		setTransactions(response.data);
-    // 		categorizeData(response.data);
-    // 	})
-    // 	.catch((error) => {
-    // 		console.log(error);
-    // 	});
+    })
+    	.then((response) => {
+        // Handle success
+    		closeHandler();
+        props.getTransactions();
+    	})
+    	.catch((error) => {
+    		console.log(error);
+    	});
   }
 
   // server call to delete a transaction
-  const deleteTransaction = (index) => {
-
-    console.log("delete me")
-    // axios.delete(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${transactions[index]._id}`)
-    // 	.then((response) => {
-    //     // format the date for display
-    //     for (let i in response.data) {
-    //       let date = new Date(response.data[i].date);
-    //       response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-    //     }
-
-    // 		setTransactions(response.data);
-    // 		categorizeData(response.data);
-    // 	})
-    // 	.catch((error) => {
-    // 		console.log(error);
-    // 	});
+  const deleteTransaction = () => {
+    axios.delete(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`)
+      .then((response) => {
+        // Handle success
+        closeHandler();
+        props.getTransactions();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   return (
@@ -188,55 +197,52 @@ function TransactionTable(props) {
             </tr>
           </thead>
           <tbody>
-            {transactions && transactions.map((key, index) => {
-              if (editMode && selectedTransaction && selectedTransaction._id === transactions[index]._id) {
-                return <tr key={transactions[index]._id} align="left">
-                  <td scope="row" align="center">{index + 1}</td>
-                  <td><input value={transactions[index].name} /></td>
-                  <td><input value={"$" + transactions[index].amount.toFixed(2)} /></td>
-                  <td>{transactions[index].shortDate}</td>
-                  <td>{transactions[index].category}</td>
-                  <td>
-                    <Button color="primary" onClick={() => editHandler(index)}>Edit</Button>
-                  </td>
-                  <td>
-                    <Button color="danger" onClick={() => { setDeleteMode(true); setModal(!modal) }}>Delete</Button>
-                  </td>
-                </tr>
-              } else {
-                return <tr key={transactions[index]._id} align="left">
-                  <td scope="row" align="center">{index + 1}</td>
-                  <td>{transactions[index].name}</td>
-                  <td>${transactions[index].amount.toFixed(2)}</td>
-                  <td>{transactions[index].shortDate}</td>
-                  <td>{transactions[index].category}</td>
-                  <td>
-                    <Button color="primary" onClick={() => editHandler(index)}>Edit</Button>
-                  </td>
-                  <td>
-                    <Button color="danger" onClick={() => { setDeleteMode(true); setModal(!modal) }}>Delete</Button>
-                  </td>
-                </tr>
-              }
+            {transactions && transactions.length && transactions.map((key, index) => {
+              return <tr key={transactions[index]._id} align="left">
+                <td scope="row" align="center">{index + 1}</td>
+                <td>{transactions[index].name}</td>
+                <td>${transactions[index].amount.toFixed(2)}</td>
+                <td>{transactions[index].shortDate}</td>
+                <td>{transactions[index].category}</td>
+                <td>
+                  <Button color="primary" onClick={() => editHandler(index)}>Edit</Button>
+                </td>
+                <td>
+                  <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button>
+                </td>
+              </tr>
             }
             )}
           </tbody>
         </Table>
       </Collapse>
-      <Modal isOpen={modal} toggle={() => setModal(!modal)}>
+      <Modal isOpen={modal} toggle={closeHandler}>
         {editMode
           ?
-          <ModalHeader toggle={() => { setEditMode(true); setModal(!modal) }}>Edit Transaction</ModalHeader>
+          <div>
+            <ModalHeader toggle={closeHandler}>Edit Transaction</ModalHeader>
+            <ModalBody>
+              
+            </ModalBody>
+            <ModalFooter>
+              <Button color="primary" onClick={editTransaction}>Submit Changes</Button>{' '}
+              <Button color="secondary" onClick={closeHandler}>Cancel</Button>
+            </ModalFooter>
+          </div>
           :
-          <ModalHeader toggle={() => { setDeleteMode(true); setModal(!modal) }}>Delete Transaction</ModalHeader>
+          <div>
+            <ModalHeader toggle={closeHandler}>Delete Transaction</ModalHeader>
+            <ModalBody>
+              Are you sure you want to delete this transaction?
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" onClick={deleteTransaction}>Delete Transaction</Button>{' '}
+              <Button color="secondary" onClick={closeHandler}>Cancel</Button>
+            </ModalFooter>
+          </div>
         }
-        <ModalBody>
-          Are you sure you want to delete this transaction?
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={() => deleteTransaction()}>Delete Transaction</Button>{' '}
-          <Button color="secondary" onClick={() => { setDeleteMode(false); setEditMode(false); setModal(!modal) }}>Cancel</Button>
-        </ModalFooter>
+
+
       </Modal>
     </div >
   );

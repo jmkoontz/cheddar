@@ -34,7 +34,7 @@ function BudgetTabs(props) {
           response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
         }
 
-				setTransactions(response.data);
+				//setTransactions(response.data);
 				categorizeData(response.data);
 			})
 			.catch((error) => {
@@ -44,6 +44,7 @@ function BudgetTabs(props) {
 
 	const categorizeData = (transacts) => {
 		// Create the category objects
+		setTransactions(transacts);
 		let arrayOfObjects = [];
 		let categories = props.curBudget.budgetCategories;
 
@@ -81,6 +82,17 @@ function BudgetTabs(props) {
 		},
 		[props]
 	);
+
+	const propData = {
+		categorizeData: categorizeData,
+		getTransactions: getTransactions,
+		transactions: transactions,
+		tableMode: tableMode,
+		tableCategory: tableCategory,
+		spendingByCategory: spendingByCategory,
+		setSpendingByCategory: setSpendingByCategory
+
+	}
 
 	return (
 		<div>
@@ -136,8 +148,8 @@ function BudgetTabs(props) {
 								<div className="addSpace">
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
-										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions} spendingByCategory={spendingByCategory}
-												setSpendingByCategory={setSpendingByCategory}/>
+										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions} 
+											categorizeData={categorizeData} spendingByCategory={spendingByCategory}/>
 										:
 										<p>Loading...</p>
 									}
@@ -150,8 +162,8 @@ function BudgetTabs(props) {
 							<Col sm={10}>
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
-									<TransactionTable transactions={transactions} tableMode={tableMode}
-									 	tableCategory={tableCategory} />
+									<TransactionTable {...props} transactions={transactions} tableMode={tableMode}
+									 	tableCategory={tableCategory} getTransactions={getTransactions}/>
 									:
 									<p>Loading...</p>
 								}
