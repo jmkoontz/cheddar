@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Row, Col, Card, CardHeader, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Label } from 'reactstrap';
 import DatePicker from "react-datepicker";
-import axios from 'axios';
 import '../../css/Transactions.css';
 
 function DateFinder(props) {

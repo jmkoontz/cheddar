@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Collapse, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import DatePicker from "react-datepicker";
 import axios from 'axios';
 import '../../css/Budgets.css';
 
@@ -20,11 +21,12 @@ function TransactionTable(props) {
   const [deleteMode, setDeleteMode] = useState(); // Tells the modal to load deletion info
   const [editMode, setEditMode] = useState(); // Tells the modal to load edit info
   const [selectedTransaction, setSelectedTransaction] = useState() // Transaction to be changed
-  const [modal, setModal] = useState() // Sets modal to open
+  const [modal, setModal] = useState() // Sets modal to open or closed
+  const [transactionName, setTransactionName] = useState(""); // The edited name of a transaction
+  const [transactionAmount, setTransactionAmount] = useState(""); // The edited amount of a transaction
+  const [transactionDate, setTransactionDate] = useState(); // The edited date to send
 
-  {/**
-   */}
-   useEffect(
+  useEffect(
     () => {
       if (props.transactions) {
         setTransactions(props.transactions);
@@ -32,7 +34,7 @@ function TransactionTable(props) {
       }
     },
     [props]
-   );
+  );
 
   useEffect(
     () => {
@@ -109,7 +111,11 @@ function TransactionTable(props) {
   // edit button handler
   const editHandler = (index) => {
     setDeleteMode(false);
+    // Prepare the state for editing a transaction
     setSelectedTransaction(transactions[index]);
+    setTransactionName(transactions[index].name);
+    setTransactionAmount(transactions[index].amount);
+    setTransactionDate(new Date(transactions[index].date));
     setEditMode(!editMode);
     setModal(!modal);
   }
@@ -130,21 +136,36 @@ function TransactionTable(props) {
     setDeleteMode(false);
   }
 
+
+  // Helper method to handle user changes to name
+  const handleNameChange = (event) => {
+    setTransactionName(event.target.value);
+  }
+
+  // Helper method to handle user changes to amount
+  const handleAmtChange = (event) => {
+    setTransactionAmount(event.target.value);
+  }
+
   // server call to edit a transaction
   const editTransaction = () => {
+    let tmpObj = {
+      name: transactionName,
+      amount: transactionAmount,
+      date: transactionDate
+    }
 
     axios.put(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`,
-    {
-
-    })
-    	.then((response) => {
+      tmpObj
+    )
+      .then((response) => {
         // Handle success
-    		closeHandler();
+        closeHandler();
         props.getTransactions();
-    	})
-    	.catch((error) => {
-    		console.log(error);
-    	});
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   // server call to delete a transaction
@@ -218,27 +239,47 @@ function TransactionTable(props) {
           <div>
             <ModalHeader toggle={closeHandler}>Edit Transaction</ModalHeader>
             <ModalBody>
-              
+              <FormGroup>
+                <Label for="name" >Transaction Name</Label>
+                <Input type="text" value={transactionName} id="name" onChange={handleNameChange} />
+              </FormGroup>
+              <FormGroup>
+                <Label for="amount">Amount</Label>
+                <Input type="number" value={transactionAmount} id="amount" onChange={handleAmtChange} />
+              </FormGroup>
+              <FormGroup>
+                <Label for="date">Date</Label>
+                <Col sm={12}>
+                  <DatePicker
+                    id="date"
+                    selected={transactionDate}
+                    onChange={d => setTransactionDate(new Date(d))}
+                    maxDate={new Date()}
+                    required={true}
+                  />
+                </Col>
+              </FormGroup>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={editTransaction}>Submit Changes</Button>{' '}
               <Button color="secondary" onClick={closeHandler}>Cancel</Button>
             </ModalFooter>
           </div>
-          :
-          <div>
-            <ModalHeader toggle={closeHandler}>Delete Transaction</ModalHeader>
-            <ModalBody>
-              Are you sure you want to delete this transaction?
+          : deleteMode
+            ?
+            <div>
+              <ModalHeader toggle={closeHandler}>Delete Transaction</ModalHeader>
+              <ModalBody>
+                Are you sure you want to delete this transaction?
             </ModalBody>
-            <ModalFooter>
-              <Button color="danger" onClick={deleteTransaction}>Delete Transaction</Button>{' '}
-              <Button color="secondary" onClick={closeHandler}>Cancel</Button>
-            </ModalFooter>
-          </div>
+              <ModalFooter>
+                <Button color="danger" onClick={deleteTransaction}>Delete Transaction</Button>{' '}
+                <Button color="secondary" onClick={closeHandler}>Cancel</Button>
+              </ModalFooter>
+            </div>
+            :
+            <div />
         }
-
-
       </Modal>
     </div >
   );

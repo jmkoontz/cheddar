@@ -314,7 +314,8 @@ function Transactions() {
 		setEndDate: setEndDate,
 		budgetList: budgetList,
 		rawBudgetList: rawBudgetList,
-		setSelectedBudget: setSelectedBudget
+		setSelectedBudget: setSelectedBudget,
+		selectedBudget: selectedBudget
 		// setAllTransactions: setAllTransactions,
 		// allTransactions: allTransactions
 	}

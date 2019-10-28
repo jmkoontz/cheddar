@@ -179,7 +179,7 @@ function Budgets() {
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
-				console.log(response);
+				//console.log(response);
 				setModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
