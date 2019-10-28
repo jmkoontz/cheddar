@@ -158,7 +158,6 @@ function Budgets() {
 	const createBudget = () => {
 		toggleAlert();
 
-		// TODO remove hard coded values here
 		let tmpIncome;
 		let index = 0;
 		for (let x = 0; x < categoryArr.length; x++) {
@@ -243,7 +242,6 @@ function Budgets() {
 			name: tmpName,
 			type: pickedCategory,
 			income: tmpIncome,
-			timeFrame: curBudget.timeFrame,
 			favorite: curBudget.favorite,
 			budgetCategories: removedIncomeArr
 		}).then(function (response) {

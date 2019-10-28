@@ -197,19 +197,15 @@ function TransactionTable(props) {
             </tr>
           </thead>
           <tbody>
-            {transactions && transactions.length && transactions.map((key, index) => {
+            {transactions && transactions.length > 0 && transactions.map((key, index) => {
               return <tr key={transactions[index]._id} align="left">
                 <td scope="row" align="center">{index + 1}</td>
                 <td>{transactions[index].name}</td>
                 <td>${transactions[index].amount.toFixed(2)}</td>
                 <td>{transactions[index].shortDate}</td>
                 <td>{transactions[index].category}</td>
-                <td>
-                  <Button color="primary" onClick={() => editHandler(index)}>Edit</Button>
-                </td>
-                <td>
-                  <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button>
-                </td>
+                <td><Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                <td><Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
               </tr>
             }
             )}
