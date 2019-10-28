@@ -436,7 +436,7 @@ export async function getTransactionsInBudgetCategoryAndDateRange(uid, budgetNam
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 
   return Promise.resolve(transactions);
 }
@@ -514,7 +514,7 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 
   return Promise.resolve(transactions);
 }
@@ -569,7 +569,7 @@ export async function transferOldTransactions(uid) {
           transactions: budgets[i].budgetCategories[j].transactions
         }
 
-        budgets[i].budgetCategories[j].oldTransactions.push(oldTransactionObj);
+        budgets[i].budgetCategories[j].oldTransactions.unshift(oldTransactionObj);
         budgets[i].budgetCategories[j].transactions = [];
       }
 
