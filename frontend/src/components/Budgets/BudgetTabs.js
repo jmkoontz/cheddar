@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button } from 'reactstrap';
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader,
+		ModalBody, ModalFooter, Button, ButtonGroup } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
 import TransactionTable from './TransactionTable';
@@ -24,7 +26,7 @@ function BudgetTabs(props) {
 		setFavorite(true);
 	}
 
-	// get all transactions for a budget
+	// get all current transactions for a budget
   const getTransactions = () => {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
 			.then((response) => {
@@ -41,6 +43,10 @@ function BudgetTabs(props) {
 				console.log(error);
 			});
 	};
+
+	const getOldTransactions = () => {
+		console.log('getting old transactions')
+	}
 
 	const categorizeData = (transacts) => {
 		// Create the category objects
@@ -75,9 +81,15 @@ function BudgetTabs(props) {
 		setSpendingByCategory(arrayOfObjects);
 	};
 
+	const toggleTimePeriod = () => {
+		console.log('toggling time period')
+		getOldTransactions();
+	};
+
 	useEffect(
 		() => {
 			getTransactions();
+			console.log(props.budgetList)
 		},
 		[props]
 	);
@@ -114,6 +126,19 @@ function BudgetTabs(props) {
 			<TabContent className="padTop" activeTab={props.tab}>
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
+						<Row>
+							<Col>
+								<ButtonGroup>
+									<Button onClick={() => toggleTimePeriod()}>
+										<FontAwesomeIcon icon={faAngleLeft}/>
+									</Button>
+									<Button disabled>10/1/19 - 10/31/19</Button>
+									<Button onClick={() => toggleTimePeriod()}>
+										<FontAwesomeIcon icon={faAngleRight}/>
+									</Button>
+								</ButtonGroup>
+							</Col>
+						</Row>
 						<Row>
 							<Col sm={1} />
 							<Col sm={5}>

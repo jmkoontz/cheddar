@@ -138,7 +138,7 @@ export async function getTransactionsInDateRange(uid, dateRange) {
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 
   return Promise.resolve(transactions);
 }

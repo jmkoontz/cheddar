@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Collapse, Button, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 import '../../css/Budgets.css';
