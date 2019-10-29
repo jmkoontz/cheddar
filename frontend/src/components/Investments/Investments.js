@@ -20,7 +20,7 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
-import Graphs from "./Graphs";
+import StocksGraph from "./StocksGraph";
 
 const tips = (
     <Modal.Body>
@@ -385,7 +385,7 @@ class Investments extends React.Component {
                                 this.state.selectedCompanies.map((name,index)=>{
                                     return(
                                         <div>
-                                        <Graphs key={name+"Graph"} companyName={name} companyOptions={this.state.companyOptions}/>
+                                        <StocksGraph key={name+"Graph"} companyName={name}/>
                                         <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                         </div>
                                     )
