@@ -208,7 +208,7 @@ function Transactions() {
 	const getTimeTransactions = () => {
 
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
-		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()+1}`;
 		let query = queryOne + queryTwo;
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
@@ -217,6 +217,7 @@ function Transactions() {
 				for (let i in response.data) {
 					let date = new Date(response.data[i].date);
 					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+					//console.log(response.data[i].shortDate);
 				}
 				// Update the transaction state
 				setTransactions(response.data);
