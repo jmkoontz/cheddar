@@ -8,8 +8,9 @@ function RealSpending(props) {
 
 	// Transaction Info
 	const [transactions, setTransactions] = useState(); // All the transactions in an array
-	const [loadingTransactions, setLoadingTransactions] = useState(false); // State to check if transactions are received yet 
+	const [loadingTransactions, setLoadingTransactions] = useState(false); // State to check if transactions are received yet
 	const [categoryObjs, setCategoryObjs] = useState([]);	// Array of the category objects for Progress bars
+	const [date, setDate] = useState(new Date());
 
 
 	/**
@@ -51,7 +52,7 @@ function RealSpending(props) {
 
 	}
 
-	
+
 
 	/**
 	 * Server call to get all the transaction data for a budget the database
@@ -91,11 +92,14 @@ function RealSpending(props) {
 								{item.percentUsed > 100
 									?
 									<Progress className="leftText" bar animated color="danger" value={item.percentUsed}>{(item.percentUsed).toFixed(2)}%</Progress>
-									: item.percentUsed >= 75
+									: ((date.getDate()/31)*100) < item.percentUsed
 										?
-										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
-										:
-										<Progress className="leftText" bar animated color="success" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
+										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%  {" Warning: Current spending set to exceed limit before end of month"} </Progress>
+										: item.percentUsed >= 75
+											?
+											<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
+											:
+											<Progress className="leftText" bar animated color="success" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
 								}
 
 							</Progress>

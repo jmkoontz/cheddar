@@ -57,7 +57,7 @@ function FixedAmount(props) {
           <Row className="addSpace">
             <Col>
               <Label for="sum">Enter Your Sum of Money or Valued Objects</Label>
-              <Input onChange={handleAmountChange} name="sum" id="sum" placeholder="Ex: $10000" />
+              <Input onChange={handleAmountChange} name="sum" id="sum" placeholder="Ex: $10000 or 50 credits" />
               <Label for="timeframe">Enter Your Timeframe</Label>
               <Input onChange={handleTimeChange} name="timeframe" id="timeframe" placeholder="Enter number of months" />
             </Col>
