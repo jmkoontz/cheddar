@@ -7,6 +7,7 @@ import '../Investments/Investments.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import axios from 'axios';
 
 import './Overview.css';
 
@@ -16,6 +17,29 @@ class Overview extends React.Component {
 
     this.eventListModal = React.createRef();
     this.calendar = React.createRef();
+    this.state = {
+        uid: sessionStorage.getItem('user'),
+    };
+  }
+
+  componentDidMount() {
+    const params = {uid: this.state.uid};
+    axios.get("http://localhost:8080/Cheddar/Investments", {
+        params: params,
+            }).then(res => {
+                /*var companies = this.state.companies;
+                var i;
+                var trackedCompanies = res.data.trackedCompanies;
+                for(i=0;i<trackedCompanies.length;i++){
+                    companies[trackedCompanies[i]]["tracked"]=true;
+                }*/
+                this.setState({
+                    //companies: companies,
+                    //selectedCompanies: res.data.trackedCompanies,
+                    investments: res.data.investments,
+                });
+        //console.log(res);
+    });
   }
 
   render () {
