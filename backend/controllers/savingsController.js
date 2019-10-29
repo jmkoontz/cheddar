@@ -17,10 +17,10 @@ export default (app) => {
   });
 
   //find one savings
-  app.get('Cheddar/Savings/Saving/:uid/:savingsTitle', async (req, res) => {
+  app.get('Cheddar/Savings/:uid/Saving/:savingsId', async (req, res) => {
     let data;
     try {
-      data = await getOneSavings(req.params.uid, req.params.savingsTitle);
+      data = await getOneSavings(req.params.uid, req.params.savingsId);
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -36,7 +36,8 @@ export default (app) => {
       goalAmount: req.body.goalAmount,
       goalYear: req.body.goalYear,
       goalMonth: req.body.goalMonth,
-      monthlyContribution: req.body.monthlyContribution
+      monthlyContribution: req.body.monthlyContribution,
+      currSaved: 0
     };
 
     let data;
@@ -56,7 +57,8 @@ export default (app) => {
       goalAmount: req.body.goalAmount,
       goalYear: req.body.goalYear,
       goalMonth: req.body.goalMonth,
-      monthlyContribution: req.body.monthlyContribution
+      monthlyContribution: req.body.monthlyContribution,
+      currSaved: req.body.currSaved
     };
 
     let data;
@@ -70,10 +72,10 @@ export default (app) => {
   });
 
   // delete savings
-  app.delete('/Cheddar/Savings/Saving/:uid/:savingsTitle', async (req, res) => {
+  app.delete('/Cheddar/Savings/Saving/:uid/:savingsId', async (req, res) => {
     let data;
     try {
-      data = await deleteSavings(req.params.uid, req.params.savingsTitle);
+      data = await deleteSavings(req.params.uid, req.params.savingsId);
     } catch (err) {
       data = {error: parseError(err)};
     }
