@@ -19,6 +19,11 @@ function BudgetTabs(props) {
 	const [tableMode, setTableMode] = useState('all');  // display all transactions or just one category
   const [tableCategory, setTableCategory] = useState(''); // category to display transactions for
 
+	const [startDate, setStartDate] = useState();	// start date for transactions to display
+	const [endDate, setEndDate] = useState();	// end date for transactions to display
+	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
+	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
+
 	/**
 	 * Server call to set a new favorite budget
 	 */
@@ -33,7 +38,7 @@ function BudgetTabs(props) {
         // format the date for display
         for (let i in response.data) {
           let date = new Date(response.data[i].date);
-          response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+          response.data[i].shortDate = getShortDate(date);
         }
 
 				setTransactions(response.data);
@@ -44,8 +49,28 @@ function BudgetTabs(props) {
 			});
 	};
 
-	const getOldTransactions = () => {
+	const getOldTransactions = (start, end) => {
+		start = new Date(start);
+		end = new Date(end);
+
 		console.log('getting old transactions')
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${props.userID}/${props.curBudget.name}
+				?startYear=${start.getFullYear()}&startMonth=${start.getUTCMonth()}&startDay=${start.getDate()}
+				&endYear=${end.getFullYear()}&endMonth=${end.getUTCMonth()}&endDay=${end.getDate()}`)
+			.then((response) => {
+				console.log(response);
+        // format the date for display
+        for (let i in response.data) {
+          let date = new Date(response.data[i].date);
+          response.data[i].shortDate = getShortDate(date);
+        }
+
+				setTransactions(response.data);
+				categorizeData(response.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	}
 
 	const categorizeData = (transacts) => {
@@ -81,17 +106,85 @@ function BudgetTabs(props) {
 		setSpendingByCategory(arrayOfObjects);
 	};
 
-	const toggleTimePeriod = () => {
-		console.log('toggling time period')
-		getOldTransactions();
+	// convert full date object to MM/DD/YYYY
+	const getShortDate = (dateTime) => {
+		return (dateTime.getMonth() + 1) + '/' + dateTime.getDate() + '/' + dateTime.getFullYear();
+	};
+
+	// switch between time periods for the current budget
+	const toggleTimePeriod = (i) => {
+		let start;
+		let end;
+		
+		if (i < 0) {
+			setBudgetPeriodIndex(i);
+			getTransactions();
+			return;
+		}
+
+		if (props.curBudget.budgetCategories && props.curBudget.budgetCategories[0]) {
+			if (props.curBudget.budgetCategories[0].oldTransactions && props.curBudget.budgetCategories[0].oldTransactions[i]) {
+				start = getShortDate(new Date(props.curBudget.budgetCategories[0].oldTransactions[i].startDate));
+				end = getShortDate(new Date(props.curBudget.budgetCategories[0].oldTransactions[i].endDate));
+			}
+		}
+
+		setStartDate(start);
+		setEndDate(end);
+		setBudgetPeriodIndex(i);
+		getOldTransactions(start, end);
+	};
+
+	// get current date range for budget
+	const getCurrentDateRange = () => {
+		// handles legacy budgets
+		if (!props.curBudget.nextUpdate)
+			return;
+
+		const currentDate = new Date(Date.now());
+		let nextUpdateDate = new Date(props.curBudget.nextUpdate);
+		let start;
+		let end = new Date(nextUpdateDate);
+		end.setUTCDate(end.getUTCDate() - 1);
+
+		if (props.curBudget.timeFrame === '--') {
+			start = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), 1);
+		} else if (props.curBudget.timeFrame === 'monthly') {
+			const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
+			start = new Date(Date.parse(nextUpdateDate) - twoWeeksOffset);
+		} else if (props.curBudget.timeFrame === 'weekly') {
+			const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
+			start = new Date(Date.parse(nextUpdateDate) - oneWeekOffset);
+		}
+
+		setStartDate(getShortDate(start));
+		setEndDate(getShortDate(end));
+	};
+
+	// get and set the maximum index of old budget periods
+	const getMaxBudgetPeriodIndex = () => {
+		let max = 0;
+		for (let i in props.curBudget.budgetCategories) {
+			if (props.curBudget.budgetCategories[i].oldTransactions.length - 1 > max)
+				max = props.curBudget.budgetCategories[i].oldTransactions.length - 1;
+		}
+
+		setMaxBudgetPeriodIndex(max);
 	};
 
 	useEffect(
 		() => {
 			getTransactions();
-			console.log(props.budgetList)
 		},
 		[props]
+	);
+
+	useEffect(
+		() => {
+			getCurrentDateRange();
+			getMaxBudgetPeriodIndex();
+		},
+		[props.curBudget]
 	);
 
 	return (
@@ -129,11 +222,11 @@ function BudgetTabs(props) {
 						<Row>
 							<Col>
 								<ButtonGroup>
-									<Button onClick={() => toggleTimePeriod()}>
+									<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
 										<FontAwesomeIcon icon={faAngleLeft}/>
 									</Button>
-									<Button disabled>10/1/19 - 10/31/19</Button>
-									<Button onClick={() => toggleTimePeriod()}>
+									<Button disabled>{startDate} - {endDate}</Button>
+									<Button onClick={() => toggleTimePeriod(budgetPeriodIndex - 1)} disabled={budgetPeriodIndex < 0}>
 										<FontAwesomeIcon icon={faAngleRight}/>
 									</Button>
 								</ButtonGroup>
