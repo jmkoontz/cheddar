@@ -12,7 +12,6 @@ import '../../css/Budgets.css';
 function BudgetTabs(props) {
 
 	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
-	const [favorite, setFavorite] = useState(false);	// Sets the user's favorite budget
 	const [transactions, setTransactions] = useState();
 	const [spendingByCategory, setSpendingByCategory] = useState();	// categories and spending
 
@@ -22,8 +21,8 @@ function BudgetTabs(props) {
 	/**
 	 * Server call to set a new favorite budget
 	 */
-	const setNewFavorite = (name) => {
-		setFavorite(true);
+	const setNewFavorite = () => {
+		console.log(props.curBudget.name)
 	}
 
 	// get all transactions for a budget
@@ -152,7 +151,13 @@ function BudgetTabs(props) {
 										<Button className="heart" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
 									<Col>
-										<FontAwesomeIcon  size="3x" icon={faHeart} color="#ffc0cb" />
+									{props.favorite
+										?
+										<FontAwesomeIcon  size="3x" icon={faHeart} color="#ffc0cb" onClick={setNewFavorite}/>
+										:
+										<FontAwesomeIcon  size="3x" icon={faHeart} color="#808080" onClick={setNewFavorite}/>
+									}
+										
 									</Col>
 										<Col sm={3}/>
 								</Row>

@@ -31,6 +31,7 @@ function Budgets() {
 	// Tab controlls
 	const [tab, setTab] = useState("0"); // Holds active tab
 	const [curBudget, setCurBudget] = useState(); // Currently shown budget
+	const [favorite, setFavorite] = useState();	// Sets the user's favorite budget
 	// Budget creation error message
 	const [errMsg, setErrMsg] = useState(""); // Error message
 	const [creationError, setCreationAlert] = useState(false); // Toggles error alert
@@ -82,8 +83,10 @@ function Budgets() {
 	const setNewTab = (newTab) => {
 		//console.log(newTab);
 		setTab(newTab);
-		//console.log(budgetList[parseInt(newTab)])
+		console.log(budgetList[parseInt(newTab)])
 		setCurBudget(budgetList[parseInt(newTab)]);
+
+		setFavorite(budgetList[parseInt(newTab)].favorite);
 	}
 
 	/**
@@ -297,6 +300,8 @@ function Budgets() {
 		editModal: editModal,
 		setEditModal: setEditModal,
 		openEditModal: openEditModal,
+		setFavorite: setFavorite,
+		favorite: favorite
 
 	};
 
