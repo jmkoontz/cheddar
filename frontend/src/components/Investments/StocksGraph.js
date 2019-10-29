@@ -22,7 +22,7 @@ import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
-class Graphs extends React.Component {
+class StocksGraph extends React.Component {
 
     constructor(props){
         super(props);
@@ -120,6 +120,9 @@ class Graphs extends React.Component {
                 valueFormatString: "MM/DD/YY",
                 title: "Date",
             },
+            axisY:{
+                title: "Stock closing price ($)",
+            },
             data: dataArr,
         }
         var companyOptions = this.state.companyOptions;
@@ -134,7 +137,7 @@ class Graphs extends React.Component {
     render() {
         return(
             
-            <Row className="card">
+            <Row>
                 {
                     (Object.keys(this.state.companyOptions).length > 0) ?
                 <CanvasJSChart options={this.state.companyOptions[this.props.companyName]}
@@ -150,4 +153,4 @@ class Graphs extends React.Component {
 
 }
 
-export default Graphs;
+export default StocksGraph;
