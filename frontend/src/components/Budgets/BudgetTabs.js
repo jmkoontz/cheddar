@@ -145,17 +145,17 @@ function BudgetTabs(props) {
 								<Row>
 									<Col sm={3}/>
 									<Col >
-										<Button className="padRight heart" color="danger" onClick={() => { setDeleteModal(true) }}>Delete</Button>
+										<Button className="padRight buttonAdj" color="danger" onClick={() => { setDeleteModal(true) }}>Delete</Button>
 									</Col>
 									<Col>
-										<Button className="heart" color="primary" onClick={props.openEditModal}>Edit</Button>
+										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
 									<Col>
 									{props.favorite
 										?
-										<FontAwesomeIcon  size="3x" icon={faHeart} color="#ffc0cb" onClick={setNewFavorite}/>
+										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={setNewFavorite}/>
 										:
-										<FontAwesomeIcon  size="3x" icon={faHeart} color="#808080" onClick={setNewFavorite}/>
+										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#808080" onClick={setNewFavorite}/>
 									}
 										
 									</Col>

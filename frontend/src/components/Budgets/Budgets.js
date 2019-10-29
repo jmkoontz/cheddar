@@ -83,9 +83,7 @@ function Budgets() {
 	const setNewTab = (newTab) => {
 		//console.log(newTab);
 		setTab(newTab);
-		console.log(budgetList[parseInt(newTab)])
 		setCurBudget(budgetList[parseInt(newTab)]);
-
 		setFavorite(budgetList[parseInt(newTab)].favorite);
 	}
 
@@ -97,6 +95,7 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
+		setFavorite(budg.favorite);
 	}
 
 	/**
