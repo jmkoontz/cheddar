@@ -21,6 +21,8 @@ function BudgetTabs(props) {
 
 	const [startDate, setStartDate] = useState();	// start date for transactions to display
 	const [endDate, setEndDate] = useState();	// end date for transactions to display
+	const [currentStartDate, setCurrentStartDate] = useState(); // start of date range currently displayed
+	const [currentEndDate, setCurrentEndDate] = useState(); // end of date range currently displayed
 	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
 
@@ -49,16 +51,9 @@ function BudgetTabs(props) {
 			});
 	};
 
-	const getOldTransactions = (start, end) => {
-		start = new Date(start);
-		end = new Date(end);
-
-		console.log('getting old transactions')
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${props.userID}/${props.curBudget.name}
-				?startYear=${start.getFullYear()}&startMonth=${start.getUTCMonth()}&startDay=${start.getDate()}
-				&endYear=${end.getFullYear()}&endMonth=${end.getUTCMonth()}&endDay=${end.getDate()}`)
+	const getOldTransactions = (index) => {
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/OldTransactions/${props.userID}/${props.curBudget.name}/${index}`)
 			.then((response) => {
-				console.log(response);
         // format the date for display
         for (let i in response.data) {
           let date = new Date(response.data[i].date);
@@ -115,8 +110,10 @@ function BudgetTabs(props) {
 	const toggleTimePeriod = (i) => {
 		let start;
 		let end;
-		
+
 		if (i < 0) {
+			setStartDate(currentStartDate);
+			setEndDate(currentEndDate);
 			setBudgetPeriodIndex(i);
 			getTransactions();
 			return;
@@ -132,7 +129,7 @@ function BudgetTabs(props) {
 		setStartDate(start);
 		setEndDate(end);
 		setBudgetPeriodIndex(i);
-		getOldTransactions(start, end);
+		getOldTransactions(i);
 	};
 
 	// get current date range for budget
@@ -147,9 +144,9 @@ function BudgetTabs(props) {
 		let end = new Date(nextUpdateDate);
 		end.setUTCDate(end.getUTCDate() - 1);
 
-		if (props.curBudget.timeFrame === '--') {
+		if (props.curBudget.timeFrame === 'monthly') {
 			start = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), 1);
-		} else if (props.curBudget.timeFrame === 'monthly') {
+		} else if (props.curBudget.timeFrame === 'biweekly') {
 			const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
 			start = new Date(Date.parse(nextUpdateDate) - twoWeeksOffset);
 		} else if (props.curBudget.timeFrame === 'weekly') {
@@ -159,6 +156,8 @@ function BudgetTabs(props) {
 
 		setStartDate(getShortDate(start));
 		setEndDate(getShortDate(end));
+		setCurrentStartDate(getShortDate(start));
+		setCurrentEndDate(getShortDate(end));
 	};
 
 	// get and set the maximum index of old budget periods
@@ -248,13 +247,15 @@ function BudgetTabs(props) {
 								</div>
 								<Button className="padTop padRight" color="danger" onClick={() => {setDeleteModal(true)}}>Delete</Button>
 								<Button className="padTop" color="primary" onClick={props.openEditModal}>Edit</Button>
+								<Row className="addSpace" />
 							</Col>
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
 								<div className="addSpace">
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
-										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}/>
+										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}
+											budgetPeriodIndex={budgetPeriodIndex} />
 										:
 										<p>Loading...</p>
 									}

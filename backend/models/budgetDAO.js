@@ -464,12 +464,12 @@ export function getTransactionsInBudget(uid, budgetName) {
               'category': user.budgets[0].budgetCategories[i].name
             });
           }
+        }
 
-          try {
-            transactions = await getTransactions(uid, transactionIdList);
-          } catch (error) {
-            return Promise.reject(error);
-          }
+        try {
+          transactions = await getTransactions(uid, transactionIdList);
+        } catch (error) {
+          return Promise.reject(error);
         }
 
         for (let i in transactionCategoryList) {
@@ -515,6 +515,49 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
   transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
+
+  return Promise.resolve(transactions);
+}
+
+export async function getOldTransactions(uid, budgetName, index) {
+  let budget;
+  try {
+    budget = await getBudget(uid, budgetName);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let transactions = [];
+  let transactionIdList = [];
+  let transactionCategoryList = [];
+  for (let i in budget.budgetCategories) {
+    if (budget.budgetCategories[i].oldTransactions && budget.budgetCategories[i].oldTransactions[index]) {
+      for (let j in budget.budgetCategories[i].oldTransactions[index].transactions) {
+        transactionIdList.push(budget.budgetCategories[i].oldTransactions[index].transactions[j]);
+        transactionCategoryList.push({
+          'id': budget.budgetCategories[i].oldTransactions[index].transactions[j],
+          'category': budget.budgetCategories[i].name
+        });
+      }
+    }
+  }
+
+  try {
+    transactions = await getTransactions(uid, transactionIdList);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+  console.log(transactions)
+
+  for (let i in transactionCategoryList) {
+    for (let j in transactions) {
+      if (transactionCategoryList[i].id.toString() === transactions[j]._id.toString()) {
+        transactions[j] = transactions[j].toObject(); // Mongoose objects are not mutable
+        transactions[j].category = transactionCategoryList[i].category;
+        break;
+      }
+    }
+  }
 
   return Promise.resolve(transactions);
 }

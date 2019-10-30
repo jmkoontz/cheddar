@@ -5,7 +5,8 @@ import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget, edi
     deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
     addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
     getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
-    getTransactionsInBudgetAndDateRange, getBudget, transferOldTransactions} from '../models/budgetDAO';
+    getTransactionsInBudgetAndDateRange, getBudget, transferOldTransactions,
+    getOldTransactions} from '../models/budgetDAO';
 
 export default (app) => {
   // create budget
@@ -246,6 +247,18 @@ export default (app) => {
     let data;
     try {
       data = await getTransactionsInBudget(req.params.uid, req.params.budgetName);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get old transactions for a specific time period
+  app.get('/Cheddar/Budgets/Budget/OldTransactions/:uid/:budgetName/:index', async (req, res) => {
+    let data;
+    try {
+      data = await getOldTransactions(req.params.uid, req.params.budgetName, req.params.index);
     } catch (err) {
       data = {error: parseError(err)};
     }
