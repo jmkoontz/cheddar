@@ -21,6 +21,7 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
 import Graphs from "./Graphs";
+import '../App.css';
 
 const tips = (
     <Modal.Body>
@@ -363,7 +364,7 @@ class Investments extends React.Component {
         
         return (
             <div className="parent">
-                <h3>Track Investments</h3>
+                <h3 className="titleSpace">Track Investments</h3>
                 
                 <Container fluid="true">
                     <Row>
