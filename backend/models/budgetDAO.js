@@ -572,8 +572,8 @@ export async function transferOldTransactions(uid) {
   let modified = false;
   for (let i in budgets) {
     // legacy compatibility
-    if (!budgets[i].nextUpdate)
-      return Promise.resolve('Legacy budget - no nextUpdate field');
+    if (!budgets[i].nextUpdate || budgets[i].type !== 'Custom')
+      continue;
 
     if (budgets[i].nextUpdate <= new Date(Date.now())) {
       modified = true;
