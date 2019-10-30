@@ -12,8 +12,8 @@ import '../../css/Budgets.css';
 function BudgetTabs(props) {
 
 	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
-	const [transactions, setTransactions] = useState();
-	const [spendingByCategory, setSpendingByCategory] = useState();	// categories and spending
+	const [transactions, setTransactions] = useState([]);
+	const [spendingByCategory, setSpendingByCategory] = useState([]);	// categories and spending
 
 	const [tableMode, setTableMode] = useState('all');  // display all transactions or just one category
 	const [tableCategory, setTableCategory] = useState(''); // category to display transactions for
@@ -80,7 +80,7 @@ function BudgetTabs(props) {
           response.data[i].shortDate = getShortDate(date);
         }
 
-				setTransactions(response.data);
+				// setTransactions(response.data);
 				categorizeData(response.data);
 			})
 			.catch((error) => {
@@ -188,7 +188,7 @@ function BudgetTabs(props) {
 	// calculate number of days remaining in current period
 	const calculateDateDifference = (date) => {
 		const diff = Date.parse(date) - Date.now();
-		return Math.round(diff / (1000 * 60 * 60 * 24)) + 1;
+		return Math.round(diff / (1000 * 60 * 60 * 24)) + 2;	// +2: 1 day to round up, 1 to count last day
 	};
 
 	// get and set the maximum index of old budget periods
@@ -202,22 +202,29 @@ function BudgetTabs(props) {
 		setMaxBudgetPeriodIndex(max);
 	};
 
-	useEffect(
-		() => {
-			if (props.curBudget)
-				getTransactions();
-		},
-		[props]
-	);
+	// useEffect(
+	// 	() => {
+	// 		// if (props.curBudget)
+	// 		// 	getTransactions();
+	// 	},
+	// 	[props]
+	// );
 
 	useEffect(
 		() => {
+			setTransactions([]);
+			setSpendingByCategory([]);
+
+			if (props.curBudget)
+				getTransactions();
+
 			if (props.curBudget.type === 'Custom') {
 				getCurrentDateRange();
 				getMaxBudgetPeriodIndex();
 			}
 
 			setBudgetPeriodIndex(-1);
+			// console.log(spendingByCategory)
 		},
 		[props.curBudget]
 	);
@@ -305,9 +312,8 @@ function BudgetTabs(props) {
 								<div className="padTop">
 									{index === parseInt(props.tab) && props.curBudget && spendingByCategory
 										?
-										<Pie data={item.budgetCategories} transactions={transactions}
-											spendingByCategory={spendingByCategory} setTableMode={setTableMode}
-											setTableCategory={setTableCategory} />
+										<Pie data={item.budgetCategories} spendingByCategory={spendingByCategory}
+											setTableMode={setTableMode} setTableCategory={setTableCategory} />
 										:
 										<p>Loading...</p>
 									}
@@ -340,7 +346,8 @@ function BudgetTabs(props) {
 										?
 										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} currentStartDate={currentStartDate}
-											categorizeData={categorizeData} spendingByCategory={spendingByCategory} />
+											categorizeData={categorizeData} spendingByCategory={spendingByCategory}
+											daysRemaining={daysRemaining} />
 										:
 										<p>Loading...</p>
 									}
