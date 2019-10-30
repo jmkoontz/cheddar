@@ -21,6 +21,7 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
 import StocksGraph from "./StocksGraph";
+import GrowthGraph from "./GrowthGraph";
 
 const tips = (
     <Modal.Body>
@@ -364,7 +365,7 @@ class Investments extends React.Component {
     }
 
     getData = async (companyName) => {
-        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
+        let res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
         var data = this.state.data;
         data[companyName] = res;
         this.setState({
@@ -422,7 +423,15 @@ class Investments extends React.Component {
                                 
                             </Col>
                             <Col className="card">
-                                Growth Graph Here
+                            {
+                                this.state.investments.length > 0 ?
+                                this.state.investments.map((investment,index)=>{
+                                    return(
+                                        <GrowthGraph data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
+                                    )
+                                }) : <Loader/>
+                            }
+                                
                             </Col>
                         </Row>
                     </Container>
