@@ -104,9 +104,12 @@ function RealSpending(props) {
 							</Progress>
 						</div>
 					)}
-
-					<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs} />
-
+					{props.budgetPeriodIndex === -1
+						?
+						<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs} />
+						:
+						null
+					}
 				</div>
 			}
 		</div>
