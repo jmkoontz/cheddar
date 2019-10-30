@@ -3,11 +3,15 @@ import mongoose from 'mongoose';
 import {userModel} from '../utilities/mongooseModels';
 import {addTransaction, getTransactions} from './transactionDAO';
 
-export function getAllBudgets(uid) {
+export async function getAllBudgets(uid, external) {
   const returnClause = {
     '_id': 0, // exclude _id
     'budgets': 1
   };
+
+  // skip if called from transferOldTransactions
+  if (external)
+    await transferOldTransactions(uid);
 
   return userModel.findOne({_id: uid}, returnClause)
     .then((user) => {
@@ -37,6 +41,30 @@ export function getBudgetNames(uid) {
         return Promise.resolve(namesList);
       } else {
         return Promise.reject('UserError: User not found');
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function getBudget(uid, budgetName) {
+  const findClause = {
+    '_id': uid,
+    'budgets.name': budgetName
+  };
+
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'budgets': 1
+  };
+
+  return userModel.findOne(findClause, returnClause)
+    .then((user) => {
+      if (user && user.budgets) {
+        return Promise.resolve(user.budgets[0]);
+      } else {
+        return Promise.reject('UserError: User or budget not found');
       }
     })
     .catch((err) => {
@@ -89,6 +117,22 @@ export async function createBudget(uid, budget) {
   // protect against duplicate budget names
   if (budgetNames.includes(budget.name))
     return Promise.reject('UserError: Budget with name \"' + budget.name + '\" already exists');
+
+  // set update date for budget
+  let currentDate = new Date(Date.now());
+  currentDate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), currentDate.getDate());
+  if (budget.timeFrame === 'monthly') {
+    if (currentDate.getUTCMonth() === 11)
+      budget.nextUpdate = new Date(currentDate.getFullYear() + 1, 0, 1);
+    else
+      budget.nextUpdate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth() + 1, 1);
+  } else if (budget.timeFrame === 'biweekly') {
+    const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
+    budget.nextUpdate = new Date(Date.parse(currentDate) + twoWeeksOffset);
+  } else if (budget.timeFrame === 'weekly') {
+    const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
+    budget.nextUpdate = new Date(Date.parse(currentDate) + oneWeekOffset);
+  }
 
   return userModel.findOneAndUpdate(
     {_id: uid},
@@ -310,7 +354,6 @@ export async function editBudgetCategory(uid, budgetName, categoryName, changes)
     });
 }
 
-
 export function deleteBudgetCategory(uid, budgetName, categoryName) {
   const findClause = {
     '_id': uid,
@@ -450,7 +493,7 @@ export async function getTransactionsInBudgetCategoryAndDateRange(uid, budgetNam
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 
   return Promise.resolve(transactions);
 }
@@ -478,12 +521,12 @@ export function getTransactionsInBudget(uid, budgetName) {
               'category': user.budgets[0].budgetCategories[i].name
             });
           }
+        }
 
-          try {
-            transactions = await getTransactions(uid, transactionIdList);
-          } catch (error) {
-            return Promise.reject(error);
-          }
+        try {
+          transactions = await getTransactions(uid, transactionIdList);
+        } catch (error) {
+          return Promise.reject(error);
         }
 
         for (let i in transactionCategoryList) {
@@ -528,7 +571,126 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date < endDate);
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
 
   return Promise.resolve(transactions);
+}
+
+export async function getOldTransactions(uid, budgetName, index) {
+  let budget;
+  try {
+    budget = await getBudget(uid, budgetName);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let transactions = [];
+  let transactionIdList = [];
+  let transactionCategoryList = [];
+  for (let i in budget.budgetCategories) {
+    if (budget.budgetCategories[i].oldTransactions && budget.budgetCategories[i].oldTransactions[index]) {
+      for (let j in budget.budgetCategories[i].oldTransactions[index].transactions) {
+        transactionIdList.push(budget.budgetCategories[i].oldTransactions[index].transactions[j]);
+        transactionCategoryList.push({
+          'id': budget.budgetCategories[i].oldTransactions[index].transactions[j],
+          'category': budget.budgetCategories[i].name
+        });
+      }
+    }
+  }
+
+  try {
+    transactions = await getTransactions(uid, transactionIdList);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  for (let i in transactionCategoryList) {
+    for (let j in transactions) {
+      if (transactionCategoryList[i].id.toString() === transactions[j]._id.toString()) {
+        transactions[j] = transactions[j].toObject(); // Mongoose objects are not mutable
+        transactions[j].category = transactionCategoryList[i].category;
+        break;
+      }
+    }
+  }
+
+  return Promise.resolve(transactions);
+}
+
+export async function transferOldTransactions(uid) {
+  let budgets;
+  try {
+    budgets = await getAllBudgets(uid, false);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  let modified = false;
+  for (let i in budgets) {
+    // legacy compatibility
+    if (!budgets[i].nextUpdate || budgets[i].type !== 'Custom')
+      continue;
+
+    if (budgets[i].nextUpdate <= new Date(Date.now())) {
+      modified = true;
+      let oldEndDate = new Date(budgets[i].nextUpdate);
+      let oldStartDate;
+      let newDate;
+
+      if (budgets[i].timeFrame === 'monthly') {
+        if (oldEndDate.getUTCMonth() === 11)
+          newDate = new Date(oldEndDate.getFullYear() + 1, 0, 1);
+        else
+          newDate = new Date(oldEndDate.getFullYear(), oldEndDate.getUTCMonth() + 1, 1);
+
+        if (oldEndDate.getUTCMonth() === 0)
+          oldStartDate = new Date(oldEndDate.getFullYear() - 1, 11, 1);
+        else
+          oldStartDate = new Date(oldEndDate.getFullYear(), oldEndDate.getUTCMonth() - 1, 1);
+      } else if (budgets[i].timeFrame === 'biweekly') {
+        const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
+        newDate = new Date(Date.parse(oldEndDate) + twoWeeksOffset);
+        oldStartDate = new Date(Date.parse(oldEndDate) - twoWeeksOffset);
+      } else if (budgets[i].timeFrame === 'weekly') {
+        const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
+        newDate = new Date(Date.parse(oldEndDate) + oneWeekOffset);
+        oldStartDate = new Date(Date.parse(oldEndDate) - oneWeekOffset);
+      }
+
+      oldEndDate.setDate(oldEndDate.getDate() - 1);
+
+      for (let j in budgets[i].budgetCategories) {
+        let oldTransactionObj = {
+          startDate: oldStartDate,
+          endDate: oldEndDate,
+          amount: budgets[i].budgetCategories[j].amount,
+          transactions: budgets[i].budgetCategories[j].transactions
+        }
+
+        budgets[i].budgetCategories[j].oldTransactions.unshift(oldTransactionObj);
+        budgets[i].budgetCategories[j].transactions = [];
+      }
+
+      budgets[i].nextUpdate = newDate;
+    }
+
+    if (modified) {
+      return userModel.findOneAndUpdate(
+        {'_id': uid},
+        {'$set': {budgets: budgets}},
+        {'new': true})
+        .then((updatedUser) => {
+          if (updatedUser == null)
+            return Promise.reject('UserError: User not found');
+
+          return Promise.resolve(updatedUser);
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+    }
+  }
+
+  return Promise.resolve('No changes made');
 }
