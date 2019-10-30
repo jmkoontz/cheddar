@@ -547,7 +547,6 @@ export async function getOldTransactions(uid, budgetName, index) {
   } catch (error) {
     return Promise.reject(error);
   }
-  console.log(transactions)
 
   for (let i in transactionCategoryList) {
     for (let j in transactions) {
