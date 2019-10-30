@@ -6,7 +6,7 @@ import {
   deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
   addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
   getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
-  getTransactionsInBudgetAndDateRange, unfavoriteBudget
+  getTransactionsInBudgetAndDateRange, unfavoriteBudget, favoriteBudget
 } from '../models/budgetDAO';
 
 export default (app) => {
@@ -53,10 +53,9 @@ export default (app) => {
 
   // favorite a budget
   app.put('/Cheddar/Budgets/Favorite/:uid/:budgetName', async (req, res) => {
-
     let data;
     try {
-      data = await (req.params.uid, req.params.budgetName);
+      data = await favoriteBudget(req.params.uid, req.params.budgetName);
     } catch (err) {
       data = { error: parseError(err) };
     }
