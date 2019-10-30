@@ -242,9 +242,7 @@ function Budgets() {
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 		{
 			name: tmpName,
-			type: pickedCategory,
 			income: tmpIncome,
-			favorite: curBudget.favorite,
 			budgetCategories: removedIncomeArr
 		}).then(function (response) {
 
