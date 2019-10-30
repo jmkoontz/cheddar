@@ -129,14 +129,8 @@ export async function editBudget(uid, budgetName, changes) {
     'budgets.name': budgetName
   };
 
-  if (changes.type)
-    updateClause.$set['budgets.$.type'] = changes.type;
-
   if (changes.income)
     updateClause.$set['budgets.$.income'] = changes.income;
-
-  if (changes.timeFrame)
-    updateClause.$set['budgets.$.timeFrame'] = changes.timeFrame;
 
   if (changes.budgetCategories)
     updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
@@ -144,6 +138,66 @@ export async function editBudget(uid, budgetName, changes) {
   return userModel.findOneAndUpdate(
     findClause,
     updateClause,
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function favoriteBudget(uid, budgetName) {
+
+  let budgets;
+  try {
+    budgets = await getAllBudgets(uid);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+
+  for (let x = 0; x < budgets.length; x++) {
+    if (budgets[x].favorite === true) {
+      budgets[x].favorite = false;
+    }
+
+    if (budgets[x].name === budgetName) {
+      budgets[x].favorite = true;
+    }
+  }
+
+  const findClause = {
+    '_id': uid
+  };
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    {'$set': {'budgets': budgets}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function unfavoriteBudget(uid, budgetName) {
+
+  const findClause = {
+    '_id': uid,
+    'budgets.name': budgetName
+  };
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    {'$set': {'budgets.$.favorite': false}},
     {'new': true})
     .then((updatedUser) => {
       if (updatedUser == null)
@@ -324,7 +378,7 @@ export function removeTransactionFromBudget(uid, budgetName, categoryName, trans
 
   return userModel.findOneAndUpdate(
     {'_id': uid},
-    {'$pull': {'budgets.$[budget].budgetCategories.$[category].transactions': transactionId}},
+    {'$pull': {'budgets.$[budget].budgetCategories.$[category].transactions':  mongoose.Types.ObjectId(transactionId)}},
     options)
     .then((updatedUser) => {
       if (updatedUser == null)
