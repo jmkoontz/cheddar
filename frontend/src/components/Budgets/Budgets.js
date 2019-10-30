@@ -25,7 +25,9 @@ function Budgets() {
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
+	const [pickedTimeFrame, setPickedTimeFrame] = useState("Monthly");
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
+	const [timeFrameDropDown, toggleTimeFrameDropDown] = useState(false);
 	// Page states
 	const [newData, setNewData] = useState(false); // Toggles prop changes
 	// Tab controlls
@@ -43,6 +45,7 @@ function Budgets() {
 		setCreationAlert(false);
 		setCategoryArr([]);
 		setPickedCategory("Select a Budget Type");
+		setPickedTimeFrame("Monthly");
 		setBudgetName("");
 	}
 
@@ -175,7 +178,7 @@ function Budgets() {
 				name: budgetName,
 				type: pickedCategory,
 				income: tmpIncome,
-				timeFrame: 100,
+				timeFrame: pickedTimeFrame,
 				favorite: false,
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {
@@ -241,10 +244,7 @@ function Budgets() {
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 		{
 			name: tmpName,
-			type: pickedCategory,
 			income: tmpIncome,
-			timeFrame: curBudget.timeFrame,
-			favorite: curBudget.favorite,
 			budgetCategories: removedIncomeArr
 		}).then(function (response) {
 
@@ -320,10 +320,9 @@ function Budgets() {
 				}
 				<ModalBody>
 					<Row>
-
-						<Col sm={3}>
+						<Col sm={5}>
 							<Dropdown isOpen={budgetDropDown} toggle={() => toggleBudgetDropDown(!budgetDropDown)}>
-								<DropdownToggle className="smallText" caret>
+								<DropdownToggle disabled={editModal} className="smallText" caret>
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
@@ -331,6 +330,19 @@ function Budgets() {
 									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
+								</DropdownMenu>
+							</Dropdown>
+						</Col>
+						<Col sm={3} />
+						<Col sm={3}>
+							<Dropdown isOpen={timeFrameDropDown} toggle={() => toggleTimeFrameDropDown(!timeFrameDropDown)}>
+								<DropdownToggle disabled={editModal} className="smallText" caret>
+									{pickedTimeFrame.charAt(0).toUpperCase() + pickedTimeFrame.slice(1)}
+								</DropdownToggle>
+								<DropdownMenu>
+									<DropdownItem onClick={() => setPickedTimeFrame("monthly")}>Monthly</DropdownItem>
+									<DropdownItem onClick={() => setPickedTimeFrame("biweekly")}>Biweekly</DropdownItem>
+									<DropdownItem onClick={() => setPickedTimeFrame("weekly")}>Weekly</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>

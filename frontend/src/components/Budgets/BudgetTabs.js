@@ -108,6 +108,9 @@ function BudgetTabs(props) {
 
 	// switch between time periods for the current budget
 	const toggleTimePeriod = (i) => {
+		if (props.curBudget.type !== 'Custom')
+			return;
+		
 		let start;
 		let end;
 
@@ -180,15 +183,17 @@ function BudgetTabs(props) {
 
 	useEffect(
 		() => {
-			getCurrentDateRange();
-			getMaxBudgetPeriodIndex();
+			if (props.curBudget.type === 'Custom') {
+				getCurrentDateRange();
+				getMaxBudgetPeriodIndex();
+			}
 		},
 		[props.curBudget]
 	);
 
 	return (
 		<div>
-			<Row >
+			<Row>
 				<Col sm={3} />
 				<Col sm={6}>
 					<h3 className={"addSpace"}>Select a Budget</h3>
@@ -218,19 +223,24 @@ function BudgetTabs(props) {
 			<TabContent className="padTop" activeTab={props.tab}>
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
-						<Row>
-							<Col>
-								<ButtonGroup>
-									<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
-										<FontAwesomeIcon icon={faAngleLeft}/>
-									</Button>
-									<Button disabled>{startDate} - {endDate}</Button>
-									<Button onClick={() => toggleTimePeriod(budgetPeriodIndex - 1)} disabled={budgetPeriodIndex < 0}>
-										<FontAwesomeIcon icon={faAngleRight}/>
-									</Button>
-								</ButtonGroup>
-							</Col>
-						</Row>
+						{item.type === 'Custom'
+							?
+							<Row>
+								<Col>
+									<ButtonGroup>
+										<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
+											<FontAwesomeIcon icon={faAngleLeft}/>
+										</Button>
+										<Button disabled>{startDate} - {endDate}</Button>
+										<Button onClick={() => toggleTimePeriod(budgetPeriodIndex - 1)} disabled={budgetPeriodIndex < 0}>
+											<FontAwesomeIcon icon={faAngleRight}/>
+										</Button>
+									</ButtonGroup>
+								</Col>
+							</Row>
+							:
+							null
+						}
 						<Row>
 							<Col sm={1} />
 							<Col sm={5}>
