@@ -31,7 +31,7 @@ class StocksGraph extends React.Component {
             defaultRate: "Weekly",
             company: "MSFT",
             companyName: "Microsoft",
-            frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
+            frequency: "TIME_SERIES_DAILY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
             show: false,
             show2: false,
@@ -100,14 +100,16 @@ class StocksGraph extends React.Component {
     }
 
     getOptions = async (companyName,frequency) => {
-        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key);
+        var test = this.props.data;
+        console.log(test);
+        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
         console.log("TESTING");
         console.log(res);
-        var dateKeys = Object.keys(res.data["Weekly Adjusted Time Series"]);
+        var dateKeys = Object.keys(res.data["Time Series (Daily)"]);
         var points = [];
         var i = 0;
-        for(i=0;i<52;i++){
-            points.push({x: new Date(dateKeys[i]), y: Math.floor(res.data["Weekly Adjusted Time Series"][dateKeys[i]]["4. close"])});
+        for(i=0;i<(52*5);i+=5){
+            points.push({x: new Date(dateKeys[i] + " EST"), y: Math.floor(res.data["Time Series (Daily)"][dateKeys[i]]["4. close"])});
         }
         var dataArr = []
         dataArr.push({type: "line", dataPoints: points});
