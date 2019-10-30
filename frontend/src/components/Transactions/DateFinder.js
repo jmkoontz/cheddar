@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Row, Col, Card, CardHeader, CardBody, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Label } from 'reactstrap';
 import DatePicker from "react-datepicker";
-import axios from 'axios';
 import '../../css/Transactions.css';
 
 function DateFinder(props) {
@@ -79,7 +78,7 @@ function DateFinder(props) {
               ?
               <DropdownMenu>
                 {props.budgetList.map((item, index) =>
-                  <DropdownItem key={index} onClick={() => setSelectedBudget(item.name)}>{item.name}</DropdownItem>
+                  <DropdownItem key={index} onClick={() => {setSelectedBudget(item.name); props.setSelectedBudget(item.name)}}>{item.name}</DropdownItem>
                 )}
               </DropdownMenu>
               :

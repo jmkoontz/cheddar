@@ -5,12 +5,19 @@ import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
+import Collapsible from 'react-collapsible';
+import '../../css/Collapsible.css';
 
-const DebtModel = ({category, nickname, initial, currBalance, interestRate}) => (
-  <div><br/>
-    {nickname && <h3>{nickname}</h3>}
-    <h3>{category}</h3>
-    <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p>
+const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate}) => (
+  <div>
+    <Collapsible trigger={category}
+    triggerOpenedClassName="Collapsible__trigger--active"
+    triggerWhenOpen={<Button outline color="secondary" onClick={() => History.push({pathname: `/editdebts/${_id}`})} type="button">Edit</Button>}
+    lazyRender
+    easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
+      <h2>{nickname}</h2>
+      <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p>
+    </Collapsible>
   </div>
 )
 
@@ -22,10 +29,12 @@ class Debts extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
   handleClick = () => {
     this.setState({show: true})
     //History.push("/createsavings");
   }
+
   handleClose = () =>{
     this.setState({show: false})
   }
@@ -96,7 +105,7 @@ class Debts extends React.Component {
     const debts = this.state.debtList;
     return (
       <div className="BigDivArea">
-        <h3>Debt Repayment Plan</h3>
+        <h3 className="titleSpace">Debt Repayment Plan</h3><br/>
         {(debts.length > 0 && debts[0])
           ? debts.map(plan => <DebtModel {...plan} />)
           : <p>Keep track of all the debts you may have here. Start by adding one below</p>}

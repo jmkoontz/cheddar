@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import {userModel} from '../utilities/mongooseModels';
+import {getAllBudgets, removeTransactionFromBudget} from './budgetDAO';
 
 export function addTransaction(uid, transaction) {
   for (let i in transaction) {
@@ -62,7 +63,23 @@ export function editTransaction(uid, transactionId, transaction) {
 }
 
 // TODO remove transaction from budget categories
-export function deleteTransaction(uid, transactionId) {
+export async function deleteTransaction(uid, transactionId) {
+
+  let budgets;
+  try {
+    budgets = await getAllBudgets(uid);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+
+  for (let i in budgets) {
+    for (let j in budgets[i].budgetCategories) {
+      if (budgets[i].budgetCategories[j].transactions.includes(mongoose.Types.ObjectId(transactionId))) {
+        await removeTransactionFromBudget(uid, budgets[i].name, budgets[i].budgetCategories[j].name, transactionId)
+      }
+    }
+  } 
+
   return userModel.findOneAndUpdate(
     {'_id': uid},
     {'$pull': {'transactions': {'_id': mongoose.Types.ObjectId(transactionId)}}},
