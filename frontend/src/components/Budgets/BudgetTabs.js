@@ -18,11 +18,18 @@ function BudgetTabs(props) {
 	const [tableMode, setTableMode] = useState('all');  // display all transactions or just one category
 	const [tableCategory, setTableCategory] = useState(''); // category to display transactions for
 
-	/**
-	 * Server call to set a new favorite budget
-	 */
+	 // server call to set a new favorite budget
 	const setNewFavorite = () => {
 		console.log(props.curBudget.name)
+		axios.put(`http://localhost:8080/Cheddar/Budgets/Unfavorite/${props.userID}/${props.curBudget.name}`)
+			.then((response) => {
+				// format the date for display
+				// TODO, make the budgetList update, dont call getBudgets
+				props.getBudgets();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	}
 
 	// get all transactions for a budget
@@ -153,13 +160,13 @@ function BudgetTabs(props) {
 									<Col>
 									{props.favorite
 										?
-										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={setNewFavorite}/>
+										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={() => setNewFavorite()}/>
 										:
-										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#808080" onClick={setNewFavorite}/>
+										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#808080" onClick={() => setNewFavorite()}/>
 									}
 										
 									</Col>
-										<Col sm={3}/>
+									<Col sm={3}/>
 								</Row>
 							</Col>
 							<Col sm={5}>

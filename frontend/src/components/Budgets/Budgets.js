@@ -300,7 +300,8 @@ function Budgets() {
 		setEditModal: setEditModal,
 		openEditModal: openEditModal,
 		setFavorite: setFavorite,
-		favorite: favorite
+		favorite: favorite,
+		getBudgets: getBudgets
 
 	};
 

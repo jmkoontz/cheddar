@@ -1,11 +1,13 @@
 import bodyParser from 'body-parser';
 
-import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget, editBudget,
-    deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
-    addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
-    getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
-    getTransactionsInBudgetAndDateRange} from '../models/budgetDAO';
+import { parseError, buildResponse } from '../utilities/controllerFunctions';
+import {
+  getAllBudgets, getBudgetNames, getBudgetCategoryNames, createBudget, editBudget,
+  deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
+  addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
+  getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
+  getTransactionsInBudgetAndDateRange, unfavoriteBudget
+} from '../models/budgetDAO';
 
 export default (app) => {
   // create budget
@@ -23,7 +25,7 @@ export default (app) => {
     try {
       data = await createBudget(req.params.uid, budget);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -43,7 +45,32 @@ export default (app) => {
     try {
       data = await editBudget(req.params.uid, req.params.budgetName, changes);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // favorite a budget
+  app.put('/Cheddar/Budgets/Favorite/:uid/:budgetName', async (req, res) => {
+
+    let data;
+    try {
+      data = await (req.params.uid, req.params.budgetName);
+    } catch (err) {
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // Unfavorite a budget
+  app.put('/Cheddar/Budgets/Unfavorite/:uid/:budgetName', async (req, res) => {
+    let data;
+    try {
+      data = await unfavoriteBudget(req.params.uid, req.params.budgetName);
+    } catch (err) {
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -55,7 +82,7 @@ export default (app) => {
     try {
       data = await deleteBudget(req.params.uid, req.params.budgetName);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -73,7 +100,7 @@ export default (app) => {
     try {
       data = await addBudgetCategory(req.params.uid, req.params.budgetName, category);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -90,7 +117,7 @@ export default (app) => {
     try {
       data = await editBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName, changes);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -102,7 +129,7 @@ export default (app) => {
     try {
       data = await deleteBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -114,7 +141,7 @@ export default (app) => {
     try {
       data = await getAllBudgets(req.params.uid);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -126,7 +153,7 @@ export default (app) => {
     try {
       data = await getBudgetNames(req.params.uid);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -138,7 +165,7 @@ export default (app) => {
     try {
       data = await getBudgetCategoryNames(req.params.uid, req.params.budgetName);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -156,7 +183,7 @@ export default (app) => {
     try {
       data = await addTransactionToBudget(req.params.uid, req.params.budgetName, req.params.categoryName, transaction);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -168,7 +195,7 @@ export default (app) => {
     try {
       data = await removeTransactionFromBudget(req.params.uid, req.params.budgetName, req.params.categoryName, req.params.transactionId);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -189,7 +216,7 @@ export default (app) => {
     try {
       data = await getTransactionsInBudgetCategoryAndDateRange(req.params.uid, req.params.budgetName, req.params.categoryName, dateRange);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -201,7 +228,7 @@ export default (app) => {
     try {
       data = await getTransactionsInBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -222,7 +249,7 @@ export default (app) => {
     try {
       data = await getTransactionsInBudgetAndDateRange(req.params.uid, req.params.budgetName, dateRange);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -234,9 +261,10 @@ export default (app) => {
     try {
       data = await getTransactionsInBudget(req.params.uid, req.params.budgetName);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
   });
 };
+

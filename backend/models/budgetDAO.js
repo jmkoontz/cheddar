@@ -153,6 +153,28 @@ export async function editBudget(uid, budgetName, changes) {
     });
 }
 
+export async function unfavoriteBudget(uid, budgetName) {
+
+  const findClause = {
+    '_id': uid,
+    'budgets.name': budgetName
+  };
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    {'budgets.$.favorite': false},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export function deleteBudget(uid, budgetName) {
   return userModel.findOneAndUpdate(
     {'_id': uid},
