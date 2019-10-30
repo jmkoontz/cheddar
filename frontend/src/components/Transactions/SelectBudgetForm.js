@@ -37,7 +37,7 @@ function SelectBudgetForm(props) {
   }
 
   const createTransaction = () => {
-    
+
     axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budgetName}/${transactionCategory}`,
       {
         name: transactionName,
@@ -120,13 +120,13 @@ function SelectBudgetForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} value={transactionName}/>
+                  <Input id="name" onChange={handleNChange} value={transactionName} />
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input type="number" id="amount" onChange={handleAmtChange} value={transactionAmount}/>
+                  <Input type="number" id="amount" onChange={handleAmtChange} value={transactionAmount} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
@@ -139,15 +139,13 @@ function SelectBudgetForm(props) {
                     maxDate={new Date()}
                   />
                 </FormGroup>
-
               </Col>
             </Row>
-
           </Form>
         </CardBody>
         <CardFooter>
 
-          {transactionCategory === "Select a Category" || transactionName === "" || budgetName === "Select a Budget" ||  transactionAmount === "" || budget === null
+          {transactionCategory === "Select a Category" || transactionName === "" || budgetName === "Select a Budget" || transactionAmount === "" || budget === null
             ?
             <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
             :
