@@ -100,10 +100,8 @@ class StocksGraph extends React.Component {
     }
 
     getOptions = async (companyName,frequency) => {
-        var test = this.props.data;
-        console.log(test);
-        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
-        console.log("TESTING");
+        let res = this.props.data;
+        console.log("RESPONSE");
         console.log(res);
         var dateKeys = Object.keys(res.data["Time Series (Daily)"]);
         var points = [];
