@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader,
 		ModalBody, ModalFooter, Button, ButtonGroup } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { faAngleLeft, faAngleRight, faHeart } from '@fortawesome/free-solid-svg-icons';
 import RealSpending from './RealSpending';
 import Pie from "./Pie";
 import TransactionTable from './TransactionTable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios';
 import '../../css/Budgets.css';
 
@@ -195,7 +193,7 @@ function BudgetTabs(props) {
 
 	// get and set the maximum index of old budget periods
 	const getMaxBudgetPeriodIndex = () => {
-		let max = 0;
+		let max = -1;
 		for (let i in props.curBudget.budgetCategories) {
 			if (props.curBudget.budgetCategories[i].oldTransactions.length - 1 > max)
 				max = props.curBudget.budgetCategories[i].oldTransactions.length - 1;
@@ -356,7 +354,8 @@ function BudgetTabs(props) {
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
 									<TransactionTable {...props} transactions={transactions} tableMode={tableMode}
-										tableCategory={tableCategory} getTransactions={getTransactions} />
+										tableCategory={tableCategory} getTransactions={getTransactions}
+										budgetPeriodIndex={budgetPeriodIndex} />
 									:
 									<p>Loading...</p>
 								}
