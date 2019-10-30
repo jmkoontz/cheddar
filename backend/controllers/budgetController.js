@@ -6,7 +6,8 @@ import {
   deleteBudget, addBudgetCategory, editBudgetCategory, deleteBudgetCategory,
   addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
   getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
-  getTransactionsInBudgetAndDateRange, unfavoriteBudget, favoriteBudget
+  getTransactionsInBudgetAndDateRange, unfavoriteBudget, favoriteBudget, getBudget,
+  transferOldTransactions, getOldTransactions
 } from '../models/budgetDAO';
 
 export default (app) => {
@@ -138,7 +139,19 @@ export default (app) => {
   app.get('/Cheddar/Budgets/:uid', async (req, res) => {
     let data;
     try {
-      data = await getAllBudgets(req.params.uid);
+      data = await getAllBudgets(req.params.uid, true);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get a particular budget
+  app.get('/Cheddar/Budgets/:uid/:budgetName', async (req, res) => {
+    let data;
+    try {
+      data = await getBudget(req.params.uid, req.params.budgetName);
     } catch (err) {
       data = { error: parseError(err) };
     }
@@ -265,5 +278,28 @@ export default (app) => {
 
     buildResponse(res, data);
   });
-};
 
+  // get old transactions for a specific time period
+  app.get('/Cheddar/Budgets/Budget/OldTransactions/:uid/:budgetName/:index', async (req, res) => {
+    let data;
+    try {
+      data = await getOldTransactions(req.params.uid, req.params.budgetName, req.params.index);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // TEST
+  app.get('/Cheddar/testTransfer/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await transferOldTransactions(req.params.uid);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+};
