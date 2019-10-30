@@ -255,7 +255,7 @@ function BudgetTabs(props) {
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
 										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}
-											budgetPeriodIndex={budgetPeriodIndex} />
+											budgetPeriodIndex={budgetPeriodIndex} currentStartDate={currentStartDate} />
 										:
 										<p>Loading...</p>
 									}

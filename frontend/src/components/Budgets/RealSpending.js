@@ -106,7 +106,8 @@ function RealSpending(props) {
 					)}
 					{props.budgetPeriodIndex === -1
 						?
-						<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs} />
+						<TransactionForm {...props} setCategoryObjs={setCategoryObjs} categoryObjs={categoryObjs}
+							currentStartDate={props.currentStartDate} />
 						:
 						null
 					}
