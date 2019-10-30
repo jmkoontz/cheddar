@@ -74,11 +74,11 @@ class Investments extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            data: [],
+            data: {},
             defaultRate: "Weekly",
             company: "MSFT",
             companyName: "Microsoft",
-            frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
+            frequency: "TIME_SERIES_DAILY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
             show: false,
             show2: false,
@@ -94,6 +94,7 @@ class Investments extends React.Component {
             uid: sessionStorage.getItem('user'),
             enteredInvestment: 0,
             enteredInvestmentDate: "",
+            enteredInvestmentShares: 1,
             newInvestment: {},
             companyOptions: {},
         }
@@ -116,6 +117,14 @@ class Investments extends React.Component {
                         companies: companies,
                         selectedCompanies: res.data.trackedCompanies,
                         investments: res.data.investments,
+                    },() => {
+                        var comps = this.state.selectedCompanies;
+                        console.log(comps);
+                        let i =0;
+                        for(i = 0;i < comps.length; i++){
+                            console.log(comps[i]);
+                            this.getData(comps[i]);
+                        }
                     });
             //console.log(res);
         });
@@ -143,6 +152,7 @@ class Investments extends React.Component {
                 //this.makeApiRequest();
             }       
         }
+        let i=0;
     }
 
     shouldComponentUpdate(nextProps,nextState){
@@ -310,10 +320,17 @@ class Investments extends React.Component {
         });
     }
 
+    updateInvestmentShares = (shares) => {
+        this.setState({
+            enteredInvestmentShares: shares.target.value,
+        });
+    }
+
     updateInvestment = () => {
         let investment = {};
         investment["type"] = "stock";
         investment["startingInvestment"] = this.state.enteredInvestment;
+        investment["shares"] = this.state.enteredInvestmentShares;
         investment["startDate"] = this.state.enteredInvestmentDate;
         investment["company"] = this.state.companyName;
         this.setState({
@@ -344,6 +361,15 @@ class Investments extends React.Component {
             alert("Investment already exists");
         }
         
+    }
+
+    getData = async (companyName) => {
+        let res = await axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
+        var data = this.state.data;
+        data[companyName] = res;
+        this.setState({
+            data: data,
+        });
     }
 
     
@@ -382,14 +408,15 @@ class Investments extends React.Component {
                         <Row>
                             <Col className="card">
                             {
+                                (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.selectedCompanies.length > 0) ?
                                 this.state.selectedCompanies.map((name,index)=>{
                                     return(
                                         <div>
-                                        <StocksGraph key={name+"Graph"} companyName={name}/>
+                                        <StocksGraph data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
                                         <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                         </div>
                                     )
-                                })
+                                }) : <Loader/>
                             }
                             
                                 
@@ -449,6 +476,8 @@ class Investments extends React.Component {
                             <Form.Group controlId="formBasic">
                                 <Form.Label>Invested Amount</Form.Label>
                                 <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
+                                <Form.Label>Investment Shares</Form.Label>
+                                <Form.Control as="input" type="number" defaultValue={this.state.updateInvestmentShares} onChange={(event)=>{this.updateInvestmentShares(event)}}/>
                                 <Form.Label>Date Invested</Form.Label>
                                 <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
                                 <Form.Label>Favorite</Form.Label>
