@@ -110,10 +110,8 @@ function TransactionForm(props) {
                     showDisabledMonthNavigation
                   />
                 </FormGroup>
-
               </Col>
             </Row>
-
           </Form>
         </CardBody>
         <CardFooter>

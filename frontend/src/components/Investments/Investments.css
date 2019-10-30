@@ -1,18 +1,51 @@
 .card {
-    min-width: 200;    
-    width: 30%;
-    padding: 5px;
+    margin-bottom: 15px;
 }
 
 .cardContainer {
-    flex-wrap: wrap;
+    width:100%;
+}
+
+.cardContainer2 {
+    left: 0;
+}
+
+.parent {
+    width:100%;
+}
+
+.col-color {
+    background-color: coral;
+}
+
+.color {
+    background-color: coral;
+}
+.row-color {
+    background-color: coral;
+}
+
+.container-color {
+    background-color: coral;
 }
 
 .add-button-container {
-    justify-content: flex-end;
-    padding: 5px;
-    flex: 3;
-    flex-direction: row;
+    width: 100%;
+    position: relative;
+}
+
+.tips-button {
+    align-self: flex-end;
+}
+
+.add-company-button-container {
+    width: 50%;
+    position: relative;
+}
+
+.tips-button-container {
+    width: 50%;
+    position: relative;
 }
 
 .visible-border {
