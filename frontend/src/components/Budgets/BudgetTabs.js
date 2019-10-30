@@ -23,6 +23,7 @@ function BudgetTabs(props) {
 	const [endDate, setEndDate] = useState();	// end date for transactions to display
 	const [currentStartDate, setCurrentStartDate] = useState(); // start of date range currently displayed
 	const [currentEndDate, setCurrentEndDate] = useState(); // end of date range currently displayed
+	const [daysRemaining, setDaysRemaining] = useState();	// days remaining in current period
 	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
 
@@ -110,7 +111,7 @@ function BudgetTabs(props) {
 	const toggleTimePeriod = (i) => {
 		if (props.curBudget.type !== 'Custom')
 			return;
-		
+
 		let start;
 		let end;
 
@@ -161,6 +162,13 @@ function BudgetTabs(props) {
 		setEndDate(getShortDate(end));
 		setCurrentStartDate(getShortDate(start));
 		setCurrentEndDate(getShortDate(end));
+		setDaysRemaining(calculateDateDifference(getShortDate(end)));
+	};
+
+	// calculate number of days remaining in current period
+	const calculateDateDifference = (date) => {
+		const diff = Date.parse(date) - Date.now();
+		return Math.round(diff / (1000 * 60 * 60 * 24)) + 1;
 	};
 
 	// get and set the maximum index of old budget periods
@@ -187,6 +195,8 @@ function BudgetTabs(props) {
 				getCurrentDateRange();
 				getMaxBudgetPeriodIndex();
 			}
+
+			setBudgetPeriodIndex(-1);
 		},
 		[props.curBudget]
 	);
@@ -226,17 +236,33 @@ function BudgetTabs(props) {
 						{item.type === 'Custom'
 							?
 							<Row>
-								<Col>
-									<ButtonGroup>
-										<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
-											<FontAwesomeIcon icon={faAngleLeft}/>
-										</Button>
-										<Button disabled>{startDate} - {endDate}</Button>
-										<Button onClick={() => toggleTimePeriod(budgetPeriodIndex - 1)} disabled={budgetPeriodIndex < 0}>
-											<FontAwesomeIcon icon={faAngleRight}/>
-										</Button>
-									</ButtonGroup>
+								<Col sm={4} />
+								<Col sm={4}>
+									<Row>
+										<Col>
+											<ButtonGroup>
+												<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
+													<FontAwesomeIcon icon={faAngleLeft} />
+												</Button>
+												<Button disabled>{startDate} - {endDate}</Button>
+												<Button onClick={() => toggleTimePeriod(budgetPeriodIndex - 1)} disabled={budgetPeriodIndex < 0}>
+													<FontAwesomeIcon icon={faAngleRight} />
+												</Button>
+											</ButtonGroup>
+										</Col>
+									</Row>
+									<Row>
+										<Col>
+											{daysRemaining === 1
+												?
+												<p>{daysRemaining} day remaining</p>
+												:
+												<p>{daysRemaining} days remaining</p>
+											}
+										</Col>
+									</Row>
 								</Col>
+								<Col sm={4} />
 							</Row>
 							:
 							null
