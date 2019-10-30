@@ -249,7 +249,7 @@ function TransactionTable(props) {
               </FormGroup>
               <FormGroup>
                 <Label for="date">Date</Label>
-                <Col sm={12}>
+                <Col sm={12} className="removePadding">
                   <DatePicker
                     id="date"
                     selected={transactionDate}
