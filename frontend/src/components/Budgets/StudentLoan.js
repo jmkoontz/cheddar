@@ -78,8 +78,8 @@ function StudentLoan(props) {
           <FormBody {...props} />
         </div>
       }
-    </div >
+    </div>
   );
-};
+}
 
 export default StudentLoan;
