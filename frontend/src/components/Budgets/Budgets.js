@@ -25,7 +25,7 @@ function Budgets() {
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
-	const [pickedTimeFrame, setPickedTimeFrame] = useState("Monthly");
+	const [pickedTimeFrame, setPickedTimeFrame] = useState("monthly");
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	const [timeFrameDropDown, toggleTimeFrameDropDown] = useState(false);
 	// Page states
@@ -46,7 +46,7 @@ function Budgets() {
 		setCreationAlert(false);
 		setCategoryArr([]);
 		setPickedCategory("Select a Budget Type");
-		setPickedTimeFrame("Monthly");
+		setPickedTimeFrame("monthly");
 		setBudgetName("");
 	}
 
@@ -267,8 +267,7 @@ function Budgets() {
 	useEffect(
 		() => {
 			getBudgets();
-		},
-		[userID]
+		}, [userID]
 	);
 
 	const formInfo = {

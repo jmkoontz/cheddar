@@ -73,6 +73,8 @@ class App extends Component {
             <Route path="/assets" render={() => <Assets/>}/>
             <Route path="/" render={() => <Redirect to="/"/>}/>
           </Switch>
+
+
         </div>
       );
 

@@ -292,7 +292,7 @@ function BudgetTabs(props) {
 											</ButtonGroup>
 										</Col>
 									</Row>
-									<Row>
+									<Row hidden={budgetPeriodIndex >= 0}>
 										<Col>
 											{daysRemaining === 1
 												?
