@@ -51,7 +51,7 @@ class Saving extends React.Component {
   }
 
   handleClose = () =>{
-    this.setState({show: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
+    this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
   }
 
   handleChange(event){
@@ -101,7 +101,7 @@ class Saving extends React.Component {
         console.log(response);
         event.preventDefault();
         this.getSavings();
-        this.setState({show: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: ''})
+        this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
       })
       .catch((error) => {
         console.error(error);
