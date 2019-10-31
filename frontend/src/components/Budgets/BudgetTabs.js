@@ -213,14 +213,6 @@ function BudgetTabs(props) {
 		setMaxBudgetPeriodIndex(max);
 	};
 
-	// useEffect(
-	// 	() => {
-	// 		// if (props.curBudget)
-	// 		// 	getTransactions();
-	// 	},
-	// 	[props]
-	// );
-
 	useEffect(
 		() => {
 			setTransactions([]);
@@ -236,7 +228,6 @@ function BudgetTabs(props) {
 			}
 
 			setBudgetPeriodIndex(-1);
-			// console.log(spendingByCategory)
 		},
 		[props.curBudget]
 	);
