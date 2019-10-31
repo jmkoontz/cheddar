@@ -98,10 +98,11 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
+		console.log(budg)
 		if (budg) {
 			setFavorite(budg.favorite);
 		}
-		
+
 	}
 
 	/**
@@ -112,7 +113,7 @@ function Budgets() {
 		setEditModal(true);
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
-		let tmpIncome ={
+		let tmpIncome = {
 			name: "Income",
 			amount: curBudget.income
 		}
@@ -245,26 +246,26 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
+		//console.log(removedIncomeArr)
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
-		{
-			name: tmpName,
-			income: tmpIncome,
-			budgetCategories: removedIncomeArr
-		}).then(function (response) {
+			{
+				name: tmpName,
+				income: tmpIncome,
+				budgetCategories: removedIncomeArr
+			}).then(function (response) {
 
-			console.log(response);
-			setEditModal(false);
-			setModal(false);
-			setCategoryArr([]);
-			setButtonDisplay(false);
-			setCurBudget();
-			getBudgets();
+				console.log(response);
+				setEditModal(false);
+				setModal(false);
+				setButtonDisplay(false);
+				setCurBudget();
+				getBudgets();
 
-		}).catch(function (error) {
-			//setErrMsg(error);
-			//setCreationAlert(true);
-			console.log(error);
-		});
+			}).catch(function (error) {
+				//setErrMsg(error);
+				//setCreationAlert(true);
+				console.log(error);
+			});
 	}
 
 	useEffect(
@@ -304,7 +305,8 @@ function Budgets() {
 		openEditModal: openEditModal,
 		setFavorite: setFavorite,
 		favorite: favorite,
-		getBudgets: getBudgets
+		getBudgets: getBudgets,
+		setCurBudget: setCurBudget
 
 	};
 
@@ -319,10 +321,10 @@ function Budgets() {
 
 			<Modal isOpen={modal} toggle={() => setModal(false)}>
 				{editModal
-				?
-				<ModalHeader toggle={() => {setModal(false); setEditModal(false);}}>Edit a Budget</ModalHeader>
-				:
-				<ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
+					?
+					<ModalHeader toggle={() => { setModal(false); setEditModal(false); }}>Edit a Budget</ModalHeader>
+					:
+					<ModalHeader toggle={() => setModal(false)}>Create a Budget</ModalHeader>
 				}
 				<ModalBody>
 					<Row>
@@ -395,16 +397,17 @@ function Budgets() {
 					<ModalFooter>
 						{editModal
 							?
-							<Button type="submit" color="primary" onClick={editBudget}>Submit Changes</Button>
+							<Button type="submit" color="primary" onClick={() => editBudget()}>Submit Changes</Button>
 							:
 							<Button type="submit" color="primary" onClick={createBudget}>Submit</Button>
 						}
-						<Button color="secondary" onClick={() => {closeModal(); setEditModal(false);}}>Cancel</Button>
+						<Button color="secondary" onClick={() => { closeModal(); setEditModal(false); }}>Cancel</Button>
 					</ModalFooter>
 				}
 
 
 			</Modal>
+		
 
 		</div>
 	);
