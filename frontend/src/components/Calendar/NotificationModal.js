@@ -40,16 +40,9 @@ class NotificationModal extends React.Component {
   };
 
   displaySchedule = () => {
-    axios.get('http://localhost:8080/Cheddar/Calendar/' + sessionStorage.getItem('user')).then((resp) => {
-      console.log("schedule");
+    axios.get('http://localhost:8080/Cheddar/Calendar/notificationSchedule/' + sessionStorage.getItem('user')).then((resp) => {
       this.setState({
-        schedule: {
-          month: false,
-          twoWeek: true,
-          week: false,
-          day: false,
-          dayOf: false
-        }
+        schedule: resp.data
       });
     });
   };
@@ -123,6 +116,15 @@ class NotificationModal extends React.Component {
                 }}
               />
             </Form>
+
+            <Form.Check
+              label={"Send me email notifications"}
+              type="checkbox"
+              checked={schedule.emailsEnabled}
+              onChange={(e) => {
+                this.onSelectTime("emailsEnabled");
+              }}
+            />
           </Modal.Body>
 
           <Modal.Footer>
