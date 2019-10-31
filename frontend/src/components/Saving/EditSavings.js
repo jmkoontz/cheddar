@@ -107,7 +107,7 @@ class EditSavings extends React.Component {
     const years = Array.from(new Array(20),(val, index) => index + this.state.goalDate.year);
     return (
       <div className="BigDivArea">
-        <h3>Edit Savings Goal</h3>
+        <h3 className="titleSpace">Edit Savings Goal</h3>
 
         <form onSubmit={this.handleSubmit}>
         <label>
@@ -160,7 +160,7 @@ class EditSavings extends React.Component {
         </label><br/>
         <ButtonGroup>
           <Button variant="secondary" onClick={() => History.push("/saving")}>
-            Close
+            Cancel
           </Button>
           <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validAmount && this.state.validCont && this.state.validCat && this.state.validTitle)}>
             Save Changes
