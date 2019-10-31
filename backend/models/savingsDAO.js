@@ -68,10 +68,10 @@ export async function createSavings(uid, saving) {
     });
 }
 
-export async function getOneSavings(uid, savingsTitle){
+export async function getOneSavings(uid, savingsId){
   const findClause = {
     '_id': uid,
-    'savings.title': savingsTitle
+    'savings._id': savingsId
   };
 
   const returnClause = {
@@ -79,7 +79,7 @@ export async function getOneSavings(uid, savingsTitle){
     'savings': 1
   };
 
-  return userModel.findOne(findClause)
+  return userModel.findOne(findClause, returnClause)
     .then((user) => {
       if (user)
         return Promise.resolve(user.savings);
@@ -91,12 +91,12 @@ export async function getOneSavings(uid, savingsTitle){
     });
 }
 
-export async function editSavings(uid, savingsTitle, changes) {
+export async function editSavings(uid, savingsId, changes) {
   let updateClause = {$set: {}};
 
   const findClause = {
     '_id': uid,
-    'savings.title': savingsTitle
+    'savings._id': savingsId
   };
 
   if (changes.title)
@@ -129,10 +129,10 @@ export async function editSavings(uid, savingsTitle, changes) {
     });
 }
 
-export function deleteSavings(uid, savingsTitle) {
+export function deleteSavings(uid, savingsId) {
   return userModel.findOneAndUpdate(
     {'_id': uid},
-    {'$pull': {'savings': {'title': savingsTitle}}},
+    {'$pull': {'savings': {'_id': savingsId}}},
     {'new': true})
     .then((updatedUser) => {
       if (updatedUser == null)

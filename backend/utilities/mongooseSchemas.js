@@ -13,14 +13,16 @@ export const budgetCategorySchema = new mongoose.Schema({
   },
   name: String,
   amount: Number,
-  transactions: [mongoose.Schema.Types.ObjectId]
+  transactions: [mongoose.Schema.Types.ObjectId],
+  oldTransactions: []
 });
 
 export const budgetSchema = new mongoose.Schema({
   name: String,
   type: String,
   income: Number,
-  timeFrame: Number,
+  timeFrame: String,
+  nextUpdate: Date,
   favorite: Boolean,
   budgetCategories: [budgetCategorySchema]
 });
@@ -43,7 +45,8 @@ export const savingsSchema = new mongoose.Schema({
   goalAmount: Number,
   goalYear: Number,
   goalMonth: String,
-  monthlyContribution: Number
+  monthlyContribution: Number,
+  currSaved: Number
 });
 
 export const debtSchema = new mongoose.Schema({
@@ -104,4 +107,3 @@ export const userSchema = new mongoose.Schema({
   retirement: retirementSchema,
   notificationSchedule: notificationScheduleSchema
 });
-
