@@ -2,10 +2,11 @@ import React from "react";
 import { Calendar, momentLocalizer  } from 'react-big-calendar';
 import moment from 'moment';
 import axios from 'axios';
+import EventModal from "./EventModal";
+import Notifications from "../Notifications/Notifications";
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Calendar.css';
-import EventModal from "./EventModal";
 
 const localizer = momentLocalizer(moment);
 
@@ -20,14 +21,32 @@ class EventCalendar extends React.Component {
     };
 
     this.eventModal = React.createRef();
-    this.displayEvents();
+    this.notifications = React.createRef();
   }
+
+  componentDidMount = () => {
+    this.displayEvents();
+  };
 
   displayEvents = () => {
     axios.get('http://localhost:8080/Cheddar/Calendar/' + sessionStorage.getItem('user')).then((resp) => {
       this.setState({
         events: resp.data
       });
+    });
+
+    axios.get('http://localhost:8080/Cheddar/Calendar/notifications/' + sessionStorage.getItem('user')).then((resp) => {
+      this.notifications.current.clear();
+
+      for (let i = 0; i < resp.data.length; i++) {
+        const event = resp.data[i];
+        this.notifications.current.add({
+          ...event,
+          message: event.title,
+          type: "info",
+          title: "You have a payment coming up:"
+        });
+      }
     });
   };
 
@@ -83,6 +102,10 @@ class EventCalendar extends React.Component {
           event={this.state.selectedEvent}
           isNew={this.state.isCreatingEvent}
           onClose={this.displayEvents}
+        />
+
+        <Notifications
+          ref={this.notifications}
         />
       </div>
     );

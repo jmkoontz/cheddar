@@ -10,6 +10,9 @@ import calendarController from './controllers/calendarController';
 import savingsController from './controllers/savingsController';
 import debtController from './controllers/debtController';
 import retirementController from './controllers/retirementController';
+import schedule from 'node-schedule';
+
+import {pushEmailNotifications} from './models/userDAO';
 
 const app = express();
 
@@ -34,6 +37,10 @@ calendarController(app);
 savingsController(app);
 debtController(app);
 
+// Create an email send for notifications
+schedule.scheduleJob("0 0 * * *", async () => {
+  pushEmailNotifications();
+});
 
 // listen to port
 let port = process.env.PORT;

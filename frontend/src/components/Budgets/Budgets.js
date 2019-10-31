@@ -267,8 +267,7 @@ function Budgets() {
 	useEffect(
 		() => {
 			getBudgets();
-		},
-		[userID]
+		}, [userID]
 	);
 
 	const formInfo = {
