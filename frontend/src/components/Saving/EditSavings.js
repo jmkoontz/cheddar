@@ -107,7 +107,7 @@ class EditSavings extends React.Component {
     const years = Array.from(new Array(20),(val, index) => index + this.state.goalDate.year);
     return (
       <div className="BigDivArea">
-        <h3>Edit Savings Goal</h3>
+        <h3 className="titleSpace">Edit Savings Goal</h3>
 
         <form onSubmit={this.handleSubmit}>
         <label>

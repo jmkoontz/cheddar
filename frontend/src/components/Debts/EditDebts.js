@@ -99,7 +99,7 @@ class EditDebts extends React.Component {
   render () {
     return (
       <div className="BigDivArea">
-        <h3>Edit Debt Repayment Plan</h3><br/>
+        <h3 className="titleSpace">Edit Debt Repayment Plan</h3><br/>
         <form onSubmit={this.handleSubmit}>
         <label>
         <select name="category" value={this.state.category} onChange={this.handleChange}>
