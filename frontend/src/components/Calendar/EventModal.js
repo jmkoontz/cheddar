@@ -114,6 +114,16 @@ class EventModal extends React.Component {
               />
             </Form.Group>
 
+            <Form.Check
+              label={"Notify me of this"}
+              type="checkbox"
+              checked={event.notify}
+              onChange={() => {
+                this.setProperty("notify", !event.notify);
+              }}
+            />
+            <br/>
+
             <Form.Group>
               <Form.Label>Selected Date</Form.Label>
               <Calendar

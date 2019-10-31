@@ -33,7 +33,10 @@ export const eventsSchema = new mongoose.Schema({
   start: Date,
   end: Date,
   allDay: Boolean,
-  amount: Number
+  amount: Number,
+  notify: Boolean,
+  dismissed: Object,
+  emailed: Object
 });
 
 export const savingsSchema = new mongoose.Schema({
@@ -76,6 +79,15 @@ export const retirementSchema = new mongoose.Schema({
     history: [retirementHistorySchema]
 });
 
+export const notificationScheduleSchema = new mongoose.Schema({
+  month: Boolean,
+  twoWeek: Boolean,
+  week: Boolean,
+  day: Boolean,
+  dayOf: Boolean,
+  emailsEnabled: Boolean
+});
+
 export const userSchema = new mongoose.Schema({
   _id: String,
   firstName: String,
@@ -92,5 +104,6 @@ export const userSchema = new mongoose.Schema({
   savings: [savingsSchema],
   debts: [debtSchema],
   investments: allInvestmentsSchema,
-  retirement: retirementSchema
+  retirement: retirementSchema,
+  notificationSchedule: notificationScheduleSchema
 });
