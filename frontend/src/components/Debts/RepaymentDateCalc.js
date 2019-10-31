@@ -45,7 +45,13 @@ class RepaymentDateCalc extends React.Component {
     if(!months){
       return;
     }
-    this.setState({month: monthNames[(new Date() ).getMonth() + Number((months % 12).toFixed())], year: (new Date()).getFullYear() + Number((months / 12).toFixed())})
+    var calcYear = (new Date()).getFullYear() + Number((months / 12).toFixed())
+    var calcMonth = (new Date()).getMonth() + Number((months % 12).toFixed())
+    if(calcMonth > 12){
+      calcMonth = calcMonth - 12;
+      calcYear++;
+    }
+    this.setState({month: monthNames[calcMonth], year: calcYear})
     //console.log(this.state.month + ' ' + this.state.year);
   }
 
