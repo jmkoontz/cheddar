@@ -424,10 +424,12 @@ class Investments extends React.Component {
                             </Col>
                             <Col className="card">
                             {
-                                this.state.investments.length > 0 ?
+                                (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.investments.length > 0) ?
                                 this.state.investments.map((investment,index)=>{
+                                    console.log("HERE");
+                                    console.log(investment["company"]);
                                     return(
-                                        <GrowthGraph data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
+                                        <GrowthGraph investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
                                     )
                                 }) : <Loader/>
                             }
