@@ -98,7 +98,10 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
-		setFavorite(budg.favorite);
+		if (budg) {
+			setFavorite(budg.favorite);
+		}
+		
 	}
 
 	/**
@@ -144,7 +147,7 @@ function Budgets() {
 				setLoading(false);
 			})
 			.catch((error) => {
-				console.log("Didn't get those budgets sir");
+				console.log(error);
 				//TODO: error handling for budgets failing to load
 				// if (error.response && error.response.data) {
 				//   console.log(error.response.data.error);
