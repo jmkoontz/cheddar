@@ -30,7 +30,7 @@ class GrowthGraph extends React.Component {
             data: [],
             defaultRate: "Weekly",
             company: "MSFT",
-            companyName: "Microsoft",
+            companyName: this.props.companyName,
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
             key: keys.AlphaVantageAPIKey,
             show: false,
@@ -49,12 +49,46 @@ class GrowthGraph extends React.Component {
             enteredInvestmentDate: "",
             newInvestment: {},
             companyOptions: {},
+            investment: this.props.investment,
         }
         console.log("GROWTH GRAPHS");
     }
 
     componentDidMount(){
-        
+        console.log(this.props.data);
+        let res = this.props.data;
+        var dateKeys = Object.keys(res.data["Time Series (Daily)"]);
+        var points = [];
+        var i = 0;
+        for(i=0;i<(52*5);i++){
+            if(dateKeys[i] == this.state.investment["startDate"]){
+                break;
+            }
+            else if(i%5 == 0){
+                points.push({x: new Date(dateKeys[i] + " EST"), y: Math.floor((res.data["Time Series (Daily)"][dateKeys[i]]["4. close"])*this.state.investment["shares"])});
+            }
+        }
+        var dataArr = []
+        dataArr.push({type: "line", dataPoints: points});
+        console.log(dataArr);
+        const options = {
+            title: {
+                text: "Weekly investment growth for "+this.state.companyName+" (1 year)"
+            },
+            axisX: {
+                valueFormatString: "MM/DD/YY",
+                title: "Date",
+            },
+            axisY:{
+                title: "Stock closing price ($)",
+            },
+            data: dataArr,
+        }
+        var companyOptions = this.state.companyOptions;
+        companyOptions[this.state.companyName] = options;
+        this.setState({
+            companyOptions: companyOptions,
+        });
     }
 
     
@@ -63,7 +97,7 @@ class GrowthGraph extends React.Component {
         return(
             
             <div>
-                test
+                <CanvasJSChart options={this.state.companyOptions[this.props.companyName]} />
             </div>
 
                                 
