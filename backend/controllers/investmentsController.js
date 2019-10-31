@@ -25,6 +25,16 @@ export default (app) => {
     }    
     buildResponse(res, data);
   });
+
+  app.post('/Cheddar/Investments/Edit', async (req, res) => {
+    let data = {};
+    try {
+      data = await editInvestment(req.body.investments,req.body.uid);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }    
+    buildResponse(res, data);
+  })
   
   app.post('/Cheddar/Investments/TrackedCompanies', async (req,res) => {
     let data = {};

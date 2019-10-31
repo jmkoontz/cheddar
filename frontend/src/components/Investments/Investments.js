@@ -327,12 +327,24 @@ class Investments extends React.Component {
         });
     }
 
+    updateInvestmentFavorite = (favorite) => {
+        var value = false;
+        if(favorite.target.value == "on"){
+            value = true;
+        }
+
+        this.setState({
+            enteredInvestmentFavorite: value,
+        });
+    }
+
     updateInvestment = () => {
         let investment = {};
         investment["type"] = "stock";
         investment["startingInvestment"] = this.state.enteredInvestment;
         investment["shares"] = this.state.enteredInvestmentShares;
         investment["startDate"] = this.state.enteredInvestmentDate;
+        investment["favorite"] = this.state.enteredInvestmentFavorite;
         investment["company"] = this.state.companyName;
         this.setState({
             newInvestment: investment,
@@ -360,6 +372,15 @@ class Investments extends React.Component {
         }
         else{
             alert("Investment already exists");
+            this.showInfoModal();
+            /*console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
+            this.state.investments.push(investment);
+            axios.post("http://localhost:8080/Cheddar/Investments", {
+                "uid": this.state.uid,
+                "investments": this.state.investments,
+            }).then(res => {
+                this.showInfoModal();
+            });*/
         }
         
     }
@@ -411,6 +432,9 @@ class Investments extends React.Component {
                             {
                                 (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.selectedCompanies.length > 0) ?
                                 this.state.selectedCompanies.map((name,index)=>{
+                                    console.log("HERE");
+                                    console.log("NAME: " + name);
+                                    console.log(this.state.data);
                                     return(
                                         <div>
                                         <StocksGraph data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
@@ -426,8 +450,6 @@ class Investments extends React.Component {
                             {
                                 (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.investments.length > 0) ?
                                 this.state.investments.map((investment,index)=>{
-                                    console.log("HERE");
-                                    console.log(investment["company"]);
                                     return(
                                         <GrowthGraph investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
                                     )
@@ -492,7 +514,7 @@ class Investments extends React.Component {
                                 <Form.Label>Date Invested</Form.Label>
                                 <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
                                 <Form.Label>Favorite</Form.Label>
-                                <Form.Control as="input" type="checkbox" onChange={console.log("Favorite Checked/Unchecked")/*(event)=>{this.updateInvestmentDate(event)}*/}/>
+                                <Form.Control as="input" type="checkbox" onChange={(event)=>{this.updateInvestmentFavorite(event)}}/>
                             </Form.Group>
                             <Button variant="primary" onClick={() => this.updateInvestment()}>
                                 Submit
