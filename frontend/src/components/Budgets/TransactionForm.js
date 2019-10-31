@@ -38,7 +38,14 @@ function TransactionForm(props) {
         date: date
       }).then(function (response) {
         // handle success
-        console.log("Success");
+        for (let x = 0; x < response.data.budgets.length; x++) {
+
+          if (response.data.budgets[x].name === props.curBudget.name) {
+            let obj = props.curBudget;
+
+            obj.budgetCategories = response.data.budgets[x].budgetCategories;
+          }
+        }
 
         props.getTransactions();
         setTransactionName('');
