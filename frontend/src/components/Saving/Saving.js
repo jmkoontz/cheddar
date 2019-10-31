@@ -202,7 +202,7 @@ class Saving extends React.Component {
               <br/>
                 <label>
                   <b>Goal Amount</b><br/>$
-                  <input name="goalAmount" type="number" value={this.state.goalAmount} onChange={this.handleChange} />
+                  <input name="goalAmount" type="number" step="0.01" value={this.state.goalAmount} onChange={this.handleChange} />
                 </label>
               <br/>
               <label>
@@ -232,7 +232,7 @@ class Saving extends React.Component {
               <br/>
               <label>
                 <b>Monthly Contribution</b><br/>$
-                <input name="monthlyContribution" type="number" value={this.state.monthlyContribution} onChange={this.handleChange} />
+                <input name="monthlyContribution" type="number" step="0.01" value={this.state.monthlyContribution} onChange={this.handleChange} />
               </label>
               </form>
               </Col>
