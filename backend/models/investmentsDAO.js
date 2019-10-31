@@ -55,8 +55,20 @@ export function addInvestment(investments,uid){
         });
 }
 
-export function editInvestment(investment){
-
+export function editInvestment(investment,uid){
+  let updateClause = {$set: {'investments.investments':investments}};
+  return userModel.findOneAndUpdate(
+      {_id: uid},
+      updateClause)
+      .then((updatedUser) => {
+        if (updatedUser == null)
+          return Promise.reject('UserError: User not found');
+  
+        return Promise.resolve(updatedUser);
+      })
+      .catch((err) => {
+        return Promise.reject(err);
+      });
 }
 
 export function deleteInvestment(investment){
