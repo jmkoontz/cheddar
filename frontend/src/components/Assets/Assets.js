@@ -97,8 +97,7 @@ class Assets extends Component {
 
     return (
       <div className='divArea'>
-        <div style={{height: '1em'}}/>
-        <h3>Assets</h3>
+        <h3 className="titleSpace">Assets</h3>
         <Row>
           <Label className='asset-label'>Total Asset Value: ${this.state.assetValue}</Label>
         </Row>

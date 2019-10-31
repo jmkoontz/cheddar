@@ -20,6 +20,7 @@ function SelectBudgetForm(props) {
   const [date, setDate] = useState(new Date());
   // Budgets
   const [budgetList, setBudgetList] = useState([]);
+  const [currentStartDate, setCurrentStartDate] = useState();
 
 
   /**
@@ -37,7 +38,7 @@ function SelectBudgetForm(props) {
   }
 
   const createTransaction = () => {
-    
+
     axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budgetName}/${transactionCategory}`,
       {
         name: transactionName,
@@ -58,6 +59,31 @@ function SelectBudgetForm(props) {
         console.log("Transaction call did not work");
       });
   }
+
+  // get current date range for budget
+  const getCurrentStartDate = (currentBudget) => {
+    // handles legacy budgets
+    if (!currentBudget.nextUpdate)
+      return;
+
+    const currentDate = new Date(Date.now());
+    let nextUpdateDate = new Date(currentBudget.nextUpdate);
+    let start;
+    let end = new Date(nextUpdateDate);
+    end.setUTCDate(end.getUTCDate() - 1);
+
+    if (currentBudget.timeFrame === 'monthly') {
+      start = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), 1);
+    } else if (currentBudget.timeFrame === 'biweekly') {
+      const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
+      start = new Date(Date.parse(nextUpdateDate) - twoWeeksOffset);
+    } else if (currentBudget.timeFrame === 'weekly') {
+      const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
+      start = new Date(Date.parse(nextUpdateDate) - oneWeekOffset);
+    }
+
+    setCurrentStartDate(start);
+  };
 
   useEffect(
     () => {
@@ -83,7 +109,7 @@ function SelectBudgetForm(props) {
                   </DropdownToggle>
                   <DropdownMenu>
                     {props.rawBudgetList.length > 0 && props.rawBudgetList.map((item, index) =>
-                      <DropdownItem key={index} onClick={() => { setBudgetName(item.name); setBudget(item); }}>{item.name}</DropdownItem>
+                      <DropdownItem key={index} onClick={() => { setBudgetName(item.name); setBudget(item); getCurrentStartDate(item)}}>{item.name}</DropdownItem>
                     )}
                   </DropdownMenu>
                 </Dropdown>
@@ -120,13 +146,13 @@ function SelectBudgetForm(props) {
               <Col sm={3}>
                 <FormGroup>
                   <Label for="name">Name</Label>
-                  <Input id="name" onChange={handleNChange} value={transactionName}/>
+                  <Input id="name" onChange={handleNChange} value={transactionName} />
                 </FormGroup>
               </Col>
               <Col sm={3}>
                 <FormGroup>
                   <Label for="amount">Amount</Label>
-                  <Input type="number" id="amount" onChange={handleAmtChange} value={transactionAmount}/>
+                  <Input type="number" id="amount" onChange={handleAmtChange} value={transactionAmount} />
                 </FormGroup>
               </Col>
               <Col sm={3} className="buttonFix">
@@ -136,18 +162,18 @@ function SelectBudgetForm(props) {
                     id="date"
                     selected={date}
                     onChange={d => setDate(d)}
+                    minDate={currentStartDate}
                     maxDate={new Date()}
+                    showDisabledMonthNavigation
                   />
                 </FormGroup>
-
               </Col>
             </Row>
-
           </Form>
         </CardBody>
         <CardFooter>
 
-          {transactionCategory === "Select a Category" || transactionName === "" || budgetName === "Select a Budget" ||  transactionAmount === "" || budget === null
+          {transactionCategory === "Select a Category" || transactionName === "" || budgetName === "Select a Budget" || transactionAmount === "" || budget === null
             ?
             <Button onClick={createTransaction} color="primary" disabled>Submit</Button>
             :

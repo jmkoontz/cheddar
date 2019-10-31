@@ -1,47 +1,50 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Progress } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
+import Collapsible from 'react-collapsible';
+import '../../css/Collapsible.css';
 
-const SavingsPlan = ({title, category, goalAmount, goalMonth, goalYear, monthlyCont}) => (
-    <div><br/>
-     <h3>{title}</h3>
-     <p>Save ${goalAmount} by {goalMonth} {goalYear}</p>
+const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, monthlyCont, currSaved}) => (
+    <div>
+     <Collapsible trigger={title}
+     triggerOpenedClassName="Collapsible__trigger--active"
+     triggerWhenOpen={<Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} type="button">Edit</Button>}
+     lazyRender
+     easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
+      <h2>{title}</h2>
+      <p>Save ${goalAmount.toLocaleString()} by {goalMonth} {goalYear}</p>
+      {(currSaved / goalAmount) < 1
+        ? <Progress animated value={(currSaved / goalAmount) * 100}>${currSaved.toLocaleString()}</Progress>
+        : <Progress animated color="success" value={(currSaved / goalAmount) * 100}>${currSaved.toLocaleString()}</Progress>
+      }
+     </Collapsible>
     </div>
 )
 
-const Months = {
-  "January":1,
-  "February":2,
-  "March":3,
-  "April":4,
-  "May":5,
-  "June":6,
-  "July":7,
-  "August":8,
-  "September":9,
-  "October":10,
-  "November":11,
-  "December":12
-}
+const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 class Saving extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: 'january', year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false}
+    this.state = { userID: sessionStorage.getItem('user'), show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
   handleClick = () => {
     this.setState({show: true})
     //History.push("/createsavings");
   }
+
   handleClose = () =>{
-    this.setState({show: false})
+    this.setState({show: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: ''})
   }
 
   handleChange(event){
@@ -82,13 +85,14 @@ class Saving extends React.Component {
         goalAmount: this.state.goalAmount,
         goalYear: this.state.year,
         goalMonth: this.state.month,
-        monthlyContribution: this.state.monthlyContribution
+        monthlyContribution: this.state.monthlyContribution,
+        currSaved: 0
       })
       .then((response) => {
         console.log(response);
         event.preventDefault();
         this.getSavings();
-        this.setState({show: false})
+        this.setState({show: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: ''})
       })
       .catch((error) => {
         console.error(error);
@@ -109,6 +113,7 @@ class Saving extends React.Component {
 
 
   componentDidMount(){
+    this.setState({month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()})
     this.getSavings();
   }
 
@@ -117,10 +122,11 @@ class Saving extends React.Component {
     const savings = this.state.savingsList
     return (
       <div className="BigDivArea">
-        <h3>Savings Goals</h3>
+        <h3 className="titleSpace">Savings Goals</h3>
           {(savings.length > 0 && savings[0])
             ? savings.map(plan => <SavingsPlan {...plan} />)
             : <p>You have no savings plans. Why don't you add one below</p>}
+        <br/>
          <span className="input-group-btn">
               <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
         </span>
@@ -138,9 +144,9 @@ class Saving extends React.Component {
               </label><br/>
               <select name="category" value={this.state.category} onChange={this.handleChange}>
                 <option value="Choose a category">Choose a category</option>
-                <option value="Pay off Debts">Pay off Credit Card Debt</option>
+                <option value="Pay off Credit Card Debt">Pay off Credit Card Debt</option>
                 <option value="Pay off Loans">Pay off Loans</option>
-                <option value="Save for Emeregency">Save for Emeregency</option>
+                <option value="Save for Emergency">Save for Emeregency</option>
                 <option value="Save for a Trip">Save for a Trip</option>
                 <option value="Save for a Purchase">Save for a Purchase</option>
                 <option value="Other">Other</option>

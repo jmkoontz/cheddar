@@ -39,6 +39,7 @@ export default (app) => {
   // edit debt
   app.put('/Cheddar/Debts/:uid/:debtID', async (req, res) => {
     let changes = {
+      category: req.body.category,
       nickname: req.body.nickname,
       initial: req.body.initial,
       currBalance: req.body.currBalance,

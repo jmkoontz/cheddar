@@ -20,8 +20,54 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
+import Graphs from "./Graphs";
+import '../App.css';
 
+const tips = (
+    <Modal.Body>
+                    <div>
+                    1. Goals<br/>
+                        Make sure you have a long term goal in mind. Know why you are deciding to invest.
+                    </div>
+                    <div>
+                    2. Understand the risk<br/>
+                        It is very possible you may lose the money you invest. Investing in a more established
+                        and stable firm can be safer than a startup. However, nothing is guarunteed. Do not
+                        invest if you are not willing to lose it.
+                        </div>
+                    <div>
+                    3. Be rational and logical<br/>
+                        If you decide to buy or sell stock, make sure you are doing so on the basis of fact and
+                        not emotion. It can be exciting to gain money or upsetting when you lose, however
+                        it is important to be rational and make logical decisions.
+                        </div>
+                    <div>
+                    4. Stick to the basics<br/>
+                        When first starting out it will help to learn about different types of investments,
+                        definitions of metrics, and fundamental methods of stock selection and timing.
+                        </div>
+                    <div>
+                    5. Diversify risk<br/>
+                        Do not invest solely in one company. Be open to investing in various markets. When
+                        one market is not doing well, it is possible another is which can help balance out
+                        losses from the poorly performing markets.
+                        </div>
+                    <div>
+                    6. Avoid Leverage<br/>
+                        Do not invest money you do not have. Starting out, it can be dangerous when stocks
+                        decrease in a way that is unexpected. Avoid investing loaned money until you have
+                        become a well established investor.
+                        </div>
+                    <div>    
+                        <br/>
+                    Source: https://www.moneycrashers.com/stock-market-investing-tips-guide-checklist/
 
+                    Lewis, Michael, et al. “6 Stock Market Investing Tips &amp; Guide for Beginners - Checklist.
+                        ” Money Crashers, 10 July 2019, www.moneycrashers.com/stock-market-investing-tips
+                        -guide-checklist/.
+                        </div>
+                </Modal.Body>
+);
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -50,6 +96,7 @@ class Investments extends React.Component {
             enteredInvestment: 0,
             enteredInvestmentDate: "",
             newInvestment: {},
+            companyOptions: {},
         }
     }
 
@@ -77,24 +124,24 @@ class Investments extends React.Component {
             if(this.state.frequency != "TIME_SERIES_DAILY_ADJUSTED"){
                 this.setState({frequency: "TIME_SERIES_DAILY_ADJUSTED"},
                     () =>{
-                        this.makeApiRequest();
+                        //this.makeApiRequest();
                     }
                 );
             }
             else{
-                this.makeApiRequest();
+                //this.makeApiRequest();
             }            
         }
         else if(this.state.defaultRate == "Weekly") {
             if(this.state.frequency != "TIME_SERIES_WEEKLY_ADJUSTED"){
                 this.setState({frequency: "TIME_SERIES_WEEKLY_ADJUSTED"},
                     () =>{
-                        this.makeApiRequest();
+                        //this.makeApiRequest();
                     }
                 );
             }
             else{
-                this.makeApiRequest();
+                //this.makeApiRequest();
             }       
         }
     }
@@ -110,7 +157,8 @@ class Investments extends React.Component {
     }
 
     //This function makes an api request to the AlphaVantage API and sets state to contain datapoints for graph
-     makeApiRequest = () => {
+     /*makeApiRequest = () => {
+        this.getOptions("Amazon","Weekly");
         axios.get("https://www.alphavantage.co/query?function="+this.state.frequency+"&symbol="+ this.state.company+"&apikey="+this.state.key)
             .then(res => {
                 try{
@@ -155,7 +203,7 @@ class Investments extends React.Component {
                     }
                 }
             });
-    }
+    }*/
 
     test = (param) => {
         var name = "";
@@ -177,7 +225,7 @@ class Investments extends React.Component {
             company: name,
             companyName: param,
         },() => {
-            this.makeApiRequest();
+            //this.makeApiRequest();
         });
         console.log(param);
     }
@@ -195,16 +243,25 @@ class Investments extends React.Component {
         });
     }
 
-    showInfoModal = () => {
+    showInfoModal = (name) => {
+        if(name === undefined){
+            this.setState({
+                showInfo: !this.state.showInfo,
+            });
+        }
+        else{
         this.setState({
             showInfo: !this.state.showInfo,
+            companyName: name,
         });
+    }
     }
 
     addSelectedCompany = (company) => {
         var originalCompanies = this.state.companies;
-        var companies = this.state.selectedCompanies;
-        
+        var companies = this.state.selectedCompanies;        
+
+
         if(originalCompanies[company]["tracked"] == true){
             originalCompanies[company]["tracked"] = false;
             if(companies.includes(company)){
@@ -290,6 +347,8 @@ class Investments extends React.Component {
         
     }
 
+    
+
     render () {
         const options = {
             title: {
@@ -304,190 +363,107 @@ class Investments extends React.Component {
 
         
         return (
-            <div className="BigDivArea">
-                <h3>Track Investments</h3>
-                <div className="add-button-container">
-                    <Button className="add-button" variant="primary" onClick={this.showModal}>Add Company</Button>
-                    <Button className="add-button" variant="primary" onClick={this.showModal2}>Tips</Button>
-                </div>
+            <div className="parent">
+                <h3 className="titleSpace">Track Investments</h3>
+                
+                <Container fluid="true">
+                    <Row>
+                        <Col>
+                            <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                        </Col>
+                        <Col className="text-right">
+                            <Button variant="link" onClick={this.showModal2}>Tips</Button>
+                        </Col>
+                    </Row>
+                </Container>
+
+
                 <div className="cardContainer">
-                  { this.state.data.length > 0 ?
-                    <CanvasJSChart options={options}
-                      // onRef = {ref => this.chart = ref}
-                    />
-                    : <Loader/>
-                  }
+                    <Container fluid="true">
+                        <Row>
+                            <Col className="card">
+                            {
+                                this.state.selectedCompanies.map((name,index)=>{
+                                    return(
+                                        <div>
+                                        <Graphs key={name+"Graph"} companyName={name} companyOptions={this.state.companyOptions}/>
+                                        <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
+                                        </div>
+                                    )
+                                })
+                            }
+                            
+                                
+                            </Col>
+                            <Col className="card">
+                                Growth Graph Here
+                            </Col>
+                        </Row>
+                    </Container>
                 </div>
 
                 <Modal show={this.state.show2} onHide={this.showModal2} size="lg" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Stocks Tips
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div>
-                    1. Goals<br/>
-                        Make sure you have a long term goal in mind. Know why you are deciding to invest.
-                    </div>
-                    <div>
-                    2. Understand the risk<br/>
-                        It is very possible you may lose the money you invest. Investing in a more established
-                        and stable firm can be safer than a startup. However, nothing is guarunteed. Do not
-                        invest if you are not willing to lose it.
-                        </div>
-                    <div>
-                    3. Be rational and logical<br/>
-                        If you decide to buy or sell stock, make sure you are doing so on the basis of fact and
-                        not emotion. It can be exciting to gain money or upsetting when you lose, however
-                        it is important to be rational and make logical decisions.
-                        </div>
-                    <div>
-                    4. Stick to the basics<br/>
-                        When first starting out it will help to learn about different types of investments,
-                        definitions of metrics, and fundamental methods of stock selection and timing.
-                        </div>
-                    <div>
-                    5. Diversify risk<br/>
-                        Do not invest solely in one company. Be open to investing in various markets. When
-                        one market is not doing well, it is possible another is which can help balance out
-                        losses from the poorly performing markets.
-                        </div>
-                    <div>
-                    6. Avoid Leverage<br/>
-                        Do not invest money you do not have. Starting out, it can be dangerous when stocks
-                        decrease in a way that is unexpected. Avoid investing loaned money until you have
-                        become a well established investor.
-                        </div>
-                    <div>    
-                        <br/>
-                    Source: https://www.moneycrashers.com/stock-market-investing-tips-guide-checklist/
-
-                    Lewis, Michael, et al. “6 Stock Market Investing Tips &amp; Guide for Beginners - Checklist.
-                        ” Money Crashers, 10 July 2019, www.moneycrashers.com/stock-market-investing-tips
-                        -guide-checklist/.
-                        </div>
-                </Modal.Body>
-                
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                        Stocks Tips
+                        </Modal.Title>
+                    </Modal.Header>
+                    {tips}
                 </Modal>
 
                 <Modal show={this.state.show} onHide={this.showModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Select Companies
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicCheckbox">
-                        {Object.keys(this.state.companies).map((name)=>{
-                            var checkedd = false;
-                            if(this.state.companies[name]["tracked"] == true){
-                                checkedd = true;
-                            }
-                            return (<Form.Check key={name+this.state.companies[name]["id"]} type="checkbox" label={name} checked={checkedd} onChange={() => this.addSelectedCompany(name)}/>)
-                        })}
-                    </Form.Group>
-                    <Button variant="primary" onClick={this.showModal}>
-                        Submit
-                    </Button>
-                    </Form>
-                </Modal.Body>
-                
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Select Companies
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                                {
+                                    Object.keys(this.state.companies).map((name) => {
+                                        var checkedd = false;
+                                        if(this.state.companies[name]["tracked"] == true){
+                                            checkedd = true;
+                                        }
+                                        return (
+                                            <Form.Row key={name+"row"}>
+                                                <Form.Check key={name+this.state.companies[name]["id"]} type="checkbox" label={name} checked={checkedd} onChange={() => this.addSelectedCompany(name)}/>
+                                            </Form.Row>        
+                                        )
+                                    })
+                                }
+                            <Button variant="primary" onClick={this.showModal}>
+                                Submit
+                            </Button>
+                        </Form>
+                    </Modal.Body>
                 </Modal>
 
                 <Modal show={this.state.showInfo} onHide={this.showInfoModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Enter Investment Information for {this.state.companyName}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasic">
-                        <Form.Label>Invested Amount</Form.Label>
-                        <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
-                        <Form.Label>Date Invested</Form.Label>
-                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
-                    </Form.Group>
-                    <Button variant="primary" onClick={() => this.updateInvestment()}>
-                        Submit
-                    </Button>
-                    </Form>
-                </Modal.Body>
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Enter Investment Information for {this.state.companyName}
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="formBasic">
+                                <Form.Label>Invested Amount</Form.Label>
+                                <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
+                                <Form.Label>Date Invested</Form.Label>
+                                <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
+                                <Form.Label>Favorite</Form.Label>
+                                <Form.Control as="input" type="checkbox" onChange={console.log("Favorite Checked/Unchecked")/*(event)=>{this.updateInvestmentDate(event)}*/}/>
+                            </Form.Group>
+                            <Button variant="primary" onClick={() => this.updateInvestment()}>
+                                Submit
+                            </Button>
+                        </Form>
+                    </Modal.Body>
                 </Modal>
-                <DropdownButton id="dropdown-basic-button" title={this.state.companyName}>
-                {this.state.selectedCompanies.map((name,index)=>{
-                    return (<Dropdown.Item key={this.state.companies[name]+index} onClick={() => this.test(name)}>{name}</Dropdown.Item>)
-                })}
-                </DropdownButton>
-                <Button onClick={() => { this.setState({showInfo: true})}}>Add/Edit Investment</Button>
             </div>
         );
     }
 }
 
-export default Investments;
-
-/*
-<Container>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-    </Row>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-        </Col>
-    </Row>
-</Container>
-
-
-
-
-
-<Modal show={this.state.show} onHide={this.showModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Modal heading
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicCheckbox">
-                        {Object.keys(this.state.companies).map((name)=>{
-                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
-                        })}
-                    </Form.Group>
-                    <Button variant="primary" type="submit" onClick={this.showModal}>
-                        Submit
-                    </Button>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.showModal}>Close</Button>
-                </Modal.Footer>
-                </Modal>
-*/
+export default Investments; 
