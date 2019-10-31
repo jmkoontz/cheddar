@@ -112,17 +112,17 @@ class EditDebts extends React.Component {
         </select>
         <br/>
           <label>
-            <b>Initial Amount Owned</b><br/>$
+            <b>Initial Principle</b><br/>$
             <input name="initial" type="number" value={this.state.initial} onChange={this.handleChange} />
           </label>
         <br/>
         <label>
-          <b>Current Balance Owed</b><br/>$
+          <b>Current Balance</b><br/>$
           <input name="currBalance" type="number" value={this.state.currBalance} onChange={this.handleChange} />
         </label>
         <br/>
         <label>
-          <b>Interest Rate</b><br/>
+          <b>Annual Interest Rate</b><br/>
           <input name="interestRate" type="number" step="0.01" value={this.state.interestRate} onChange={this.handleChange} />
         %</label><br/>
         <b>Nickname</b> (<i>optional</i>)<br/>
