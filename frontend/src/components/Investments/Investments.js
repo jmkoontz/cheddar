@@ -472,8 +472,8 @@ class Investments extends React.Component {
                         <Col>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
                             <DropdownButton id="dropdown-basic-button" title="Dropdown button">
-                                <Dropdown.Item onSelect={this.setFrequency("Daily")}>Daily</Dropdown.Item>
-                                <Dropdown.Item onSelect={this.setFrequency("Weekly")}>Weekly</Dropdown.Item>
+                                <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
+                                <Dropdown.Item onSelect={ () => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
                             </DropdownButton>
                         </Col>
                         <Col className="text-right">
