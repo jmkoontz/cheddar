@@ -127,7 +127,6 @@ function TransactionForm(props) {
       </Card>
     </div>
   );
-
-};
+}
 
 export default TransactionForm;

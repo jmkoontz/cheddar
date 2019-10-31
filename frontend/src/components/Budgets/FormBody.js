@@ -69,7 +69,6 @@ function FormBody(props) {
             <Label for={"" + index}>{item.name}</Label>
             <Row>
               <Col sm={10}>
-
                 <Input
                   onChange={handleCategoryChange}
                   type="text"
@@ -78,7 +77,6 @@ function FormBody(props) {
                   required="required"
                   value={item.amount}
                 />
-
               </Col>
               <Col sm={2}>
                 <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
