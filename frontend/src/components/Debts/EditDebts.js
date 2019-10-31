@@ -99,7 +99,7 @@ class EditDebts extends React.Component {
   render () {
     return (
       <div className="BigDivArea">
-        <h3>Edit Debt Repayment Plan</h3><br/>
+        <h3 className="titleSpace">Edit Debt Repayment Plan</h3><br/>
         <form onSubmit={this.handleSubmit}>
         <label>
         <select name="category" value={this.state.category} onChange={this.handleChange}>
@@ -130,7 +130,7 @@ class EditDebts extends React.Component {
         </label><br/>
         <ButtonGroup>
           <Button variant="secondary" onClick={() => History.push("/debts")}>
-            Close
+            Cancel
           </Button>
           <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validCat)}>
             Save Changes

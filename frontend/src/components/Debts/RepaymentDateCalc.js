@@ -124,7 +124,7 @@ class RepaymentDateCalc extends React.Component {
       const years = Array.from(new Array(50),(val, index) => index + (new Date()).getFullYear());
       return (
         <div className="BigDivArea">
-        <h3>Repayment Date Calculator</h3>
+        <h3 className="titleSpace">Repayment Date Calculator</h3>
         <form onSubmit={this.handleSubmit}>
           <select name="debtId" value={this.state.debtId} onChange={this.handleChange}>
             {this.createSelect()}
