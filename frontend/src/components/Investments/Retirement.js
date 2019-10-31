@@ -159,7 +159,7 @@ class Retirement extends React.Component {
         console.log(options.data);
         return (
             <div className="BigDivArea">
-                <h3>Retirement Plan</h3>
+                <h3 className="titleSpace">Retirement Plan</h3>
                 <Button variant="primary" onClick={() => this.showModal()}>
                     {this.state.buttonText}
                 </Button>

@@ -62,6 +62,11 @@ const Pie = props => {
     for (let i in props.spendingByCategory)
       totalSpending += props.spendingByCategory[i].spent;
 
+    if (totalSpending === 0) {
+      setChartData();
+      return;
+    }
+
     options.series[0].data = [];
     for (let i in props.spendingByCategory) {
       const slice = {
@@ -100,6 +105,7 @@ const Pie = props => {
         if (chartData) {
           props.setTableMode('all');
           props.setTableCategory('');
+          setChartData();
           setKey(key + 1);  // destroy old chart
         }
 
@@ -111,7 +117,12 @@ const Pie = props => {
 
   return (
     <div>
-      <HighchartsReact key={key} allowChartUpdate={true} highcharts={Highcharts} options={chartData} />
+      {chartData
+        ?
+        <HighchartsReact key={key} allowChartUpdate={true} highcharts={Highcharts} options={chartData} />
+        :
+        <p>No transactions yet</p>
+      }
     </div>
   );
 };

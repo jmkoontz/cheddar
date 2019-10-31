@@ -53,7 +53,7 @@ class App extends Component {
 
   render() {
 
-    if(this.state.uid !=  null) {
+    if(this.state.uid !=  null || sessionStorage.getItem('user')) {
 
       return (
         <div className="App">

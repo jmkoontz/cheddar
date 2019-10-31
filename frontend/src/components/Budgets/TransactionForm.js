@@ -105,13 +105,13 @@ function TransactionForm(props) {
                     id="date"
                     selected={date}
                     onChange={d => setDate(d)}
+                    minDate={new Date(props.currentStartDate)}
                     maxDate={new Date()}
+                    showDisabledMonthNavigation
                   />
                 </FormGroup>
-
               </Col>
             </Row>
-
           </Form>
         </CardBody>
         <CardFooter>
