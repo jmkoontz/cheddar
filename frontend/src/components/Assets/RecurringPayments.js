@@ -13,9 +13,8 @@ import {
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
-import History from "../../history";
 
-class Assets extends Component {
+class RecurringPayments extends Component {
 
   constructor(props){
     super(props);
@@ -65,27 +64,6 @@ class Assets extends Component {
     console.log(array);
   };
 
-  hide1 = () => {
-    this.setState({
-      show1: false,
-      assetValue: this.state.assetValue -= 220000,
-    });
-  };
-
-  hide2 = () => {
-    this.setState({
-      show2: false,
-      assetValue: this.state.assetValue -= 11000,
-    });
-  };
-
-  hide3 = () => {
-    this.setState({
-      show3: false,
-      assetValue: this.state.assetValue -= 6000,
-    });
-  };
-
   openModal = () => {
     this.setState({
       modal: true,
@@ -115,42 +93,22 @@ class Assets extends Component {
     console.log(response);
   };*/
 
-  goToRecurringPayments = () => {
-    History.push("/recurring-payments");
-  };
-
   render(){
 
     return (
       <div className='divArea'>
         <div style={{height: '1em'}}/>
-        <h3>Assets</h3>
-        <Row>
-          <Label className='asset-label'>Total Asset Value: ${this.state.assetValue}</Label>
-        </Row>
-        <Row>
-          <Dropdown isOpen={this.state.currencyConverterOpen} toggle={this.currencyToggle}>
-            <DropdownToggle caret>{this.state.selectedCurrency}</DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={this.selectCurrency}>USD</DropdownItem>
-              <DropdownItem onClick={this.selectCurrency}>EUR</DropdownItem>
-              <DropdownItem onClick={this.selectCurrency}>JPY</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </Row>
-        <Row>
-          <Button size='sm' onClick={this.goToRecurringPayments}>Go To Recurring Payments</Button>
-        </Row>
+        <h3>Recurring Payments</h3>
 
         <hr/>
 
         <Modal isOpen={this.state.modal} toggle={this.closeModal}>
-          <ModalHeader toggle={this.closeModal}> Add A New Category </ModalHeader>
+          <ModalHeader toggle={this.closeModal}> Add A New Payment </ModalHeader>
           <ModalBody>
             <Form onSubmit={this.addNewCategory}>
               <Row>
                 <Col md='11'>
-                  <Input type='text' id='category_name' placeholder='Category Name'/>
+                  <Input type='text' id='payment_name' placeholder='Recurring Payment Name'/>
                 </Col>
               </Row>
               <div style={{height: '1em'}}/>
@@ -165,40 +123,11 @@ class Assets extends Component {
         <div className='right'>
           <Row>
             <Col>
-              <Button className='signInButton' size='sm' onClick={this.openModal}>Add New Category</Button>
+              <Button className='signInButton' size='sm' onClick={this.openModal}>Add New Recurring Payment </Button>
             </Col>
           </Row>
         </div>
         <hr/>
-
-        {this.state.show1
-        ?
-          <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.hide1} category_name={'Physical Assets'}/>
-          :
-          null
-        }
-
-        {this.state.show2
-          ?
-          <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.hide2} category_name={'Crypto'}/>
-          :
-          null
-        }
-
-        {this.state.show3
-          ?
-          <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.hide3} category_name={'Real-Life Currency'}/>
-          :
-          null
-        }
-
-        {this.state.category_names.map((name, i) => {
-          return (
-            <div key={i}>
-              <CategoryTable addToAssetValue={this.addToAssetValue} removeCategory={this.removeCategory} category_name={name}/>
-            </div>
-          );
-        })}
 
       </div>
     );
@@ -206,4 +135,4 @@ class Assets extends Component {
 
 }
 
-export default Assets;
+export default RecurringPayments;
