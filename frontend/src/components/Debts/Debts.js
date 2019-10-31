@@ -112,6 +112,7 @@ class Debts extends React.Component {
          <span className="input-group-btn">
               <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
         </span>
+          <Button outline color="info" onClick={() => History.push("/repaymentcalc")} type="button">Calculate Repayment Date</Button>
 
         <Modal show={this.state.show} onHide={this.handleClose} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
