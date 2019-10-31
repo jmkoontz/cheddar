@@ -33,7 +33,8 @@ export const eventsSchema = new mongoose.Schema({
   allDay: Boolean,
   amount: Number,
   notify: Boolean,
-  dismissed: Object
+  dismissed: Object,
+  emailed: Object
 });
 
 export const savingsSchema = new mongoose.Schema({
@@ -76,11 +77,12 @@ export const retirementSchema = new mongoose.Schema({
 });
 
 export const notificationScheduleSchema = new mongoose.Schema({
-  month: false,
-  twoWeek: false,
-  week: false,
-  day: false,
-  dayOf: false
+  month: Boolean,
+  twoWeek: Boolean,
+  week: Boolean,
+  day: Boolean,
+  dayOf: Boolean,
+  emailsEnabled: Boolean
 });
 
 export const userSchema = new mongoose.Schema({

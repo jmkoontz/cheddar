@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getUser, editUser, getNotifications} from '../models/userDAO';
+import {getUser, editUser, getNotifications, pushEmailNotifications} from '../models/userDAO';
 
 export default (app) => {
   // get a user's events
@@ -95,17 +95,42 @@ export default (app) => {
     try {
       const user = await getUser(req.params.uid);
       const events = user.events;
+      const periods = ["month", "twoWeek", "week", "day", "dayOf"];
 
       for (let i = 0; i < events.length; i++) {
         if (events[i].id == req.body.id) {
           if (!events[i].dismissed)
-            events[i].dismissed = {};
+            events[i].dismissed = {
+              month: false,
+              twoWeek: false,
+              week: false,
+              day: false,
+              dayOf: false
+            };
 
-          events[i].dismissed[req.body.period] = true;
+          for (let j = 0; j < periods.length; j++) {
+            events[i].dismissed[periods[j]] = true;
+
+            if (periods[j] == req.body.period)
+              break;
+          }
         }
       }
 
       data = await editUser(req.params.uid, {events: events});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get the notification schedule
+  app.get('/Cheddar/Calendar/notificationSchedule/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await getUser(req.params.uid);
+      data = data.notificationSchedule;
     } catch (err) {
       data = {error: parseError(err)};
     }
@@ -118,6 +143,17 @@ export default (app) => {
     let data;
     try {
       data = await editUser(req.params.uid, {notificationSchedule: req.body});
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  app.get('/Cheddar/Calendar/triggerAllEmails/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await pushEmailNotifications();
     } catch (err) {
       data = {error: parseError(err)};
     }
