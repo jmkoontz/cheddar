@@ -130,7 +130,7 @@ class EditDebts extends React.Component {
         </label><br/>
         <ButtonGroup>
           <Button variant="secondary" onClick={() => History.push("/debts")}>
-            Close
+            Cancel
           </Button>
           <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validCat)}>
             Save Changes

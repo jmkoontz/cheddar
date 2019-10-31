@@ -1,6 +1,6 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Progress } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
@@ -16,7 +16,11 @@ const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate}
     lazyRender
     easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
       <h2>{nickname}</h2>
-      <p>Current Balance: ${currBalance}<br/>Interest Rate: {interestRate}%</p>
+      <p>Current Balance: ${currBalance.toLocaleString()}<br/>Initial Principle: ${initial.toLocaleString()}<br/>Interest Rate: {interestRate}%</p>
+      {(1 - (currBalance / initial)) < 1
+        ? <Progress animated value={(1 - (currBalance / initial)) * 100}>{((1 - (currBalance / initial)) * 100).toFixed(1)}%</Progress>
+        : <Progress animated color="success" value={(1 - (currBalance / initial)) * 100}>{((1 - (currBalance / initial)) * 100).toFixed(1)}%</Progress>
+      }
     </Collapsible>
   </div>
 )

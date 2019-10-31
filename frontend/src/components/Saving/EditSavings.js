@@ -160,7 +160,7 @@ class EditSavings extends React.Component {
         </label><br/>
         <ButtonGroup>
           <Button variant="secondary" onClick={() => History.push("/saving")}>
-            Close
+            Cancel
           </Button>
           <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validAmount && this.state.validCont && this.state.validCat && this.state.validTitle)}>
             Save Changes
