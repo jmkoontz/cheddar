@@ -432,6 +432,12 @@ class Investments extends React.Component {
         
     }
 
+    setFrequency = (frequency) => {
+        this.setState({
+            defaultRate: frequency,
+        });
+    }
+
     getData = async (companyName) => {
         let res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
         var data = this.state.data;
@@ -464,6 +470,10 @@ class Investments extends React.Component {
                     <Row>
                         <Col>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                            <DropdownButton id="dropdown-basic-button" title="Dropdown button">
+                                <Dropdown.Item onSelect={this.setFrequency("Daily")}>Daily</Dropdown.Item>
+                                <Dropdown.Item onSelect={this.setFrequency("Weekly")}>Weekly</Dropdown.Item>
+                            </DropdownButton>
                         </Col>
                         <Col className="text-right">
                             <Button variant="link" onClick={this.showModal2}>Tips</Button>
@@ -484,7 +494,7 @@ class Investments extends React.Component {
                                     console.log(this.state.data);
                                     return(
                                         <div>
-                                        <StocksGraph data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
+                                        <StocksGraph frequency={this.state.defaultRate} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
                                         <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                         </div>
                                     )
@@ -499,7 +509,7 @@ class Investments extends React.Component {
                                 this.state.investments.map((investment,index)=>{
                                     if(this.state.selectedCompanies.includes(investment["company"])){
                                     return(
-                                        <GrowthGraph investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
+                                        <GrowthGraph frequency={this.state.defaultRate} investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
                                     )
                                     }
                                     else{
