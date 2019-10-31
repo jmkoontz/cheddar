@@ -88,6 +88,17 @@ class Investments extends React.Component {
                 "Apple": {"id":"AAPL","tracked":false},
                 "Google": {"id":"GOOG","tracked":false},
                 "Microsoft": {"id":"MSFT","tracked":false},
+                "American Eagle Outfitters": {"id":"AEO","tracked":false},
+                "Starbucks": {"id":"SBUX","tracked":false},
+                "Facebook": {"id":"FB","tracked":false},
+                "AT&T": {"id":"T","tracked":false},
+                "Netflix": {"id":"NFLX","tracked":false},
+                "Ford Motor Company": {"id":"F","tracked":false},
+                "Target": {"id":"TGT","tracked":false},
+                "Bank of America": {"id":"BAC","tracked":false},
+                "Exxon Mobil": {"id":"XOM","tracked":false},
+                "Tesla Inc": {"id":"TSLA","tracked":false},
+                "Yum! Brands Inc": {"id":"YUM","tracked":false},
             },
             investments: [],
             selectedCompanies: [],
@@ -230,6 +241,39 @@ class Investments extends React.Component {
             case "Google":
                 name = "GOOG";
                 break;
+            case "American Eagle Outfitters":
+                name = "AEO";
+                break;
+            case "Starbucks":
+                name = "SBUX";
+                break;
+            case "Facebook":
+                name = "FB";
+                break;
+            case "AT&T":
+                name = "T";
+                break;
+            case "Netflix":
+                name = "NFLX";
+                break;
+            case "Ford Motor Company":
+                name = "F";
+                break;
+            case "Target":
+                name = "TGT";
+                break;
+            case "Bank of America":
+                name = "BAC";
+                break;
+            case "Exxon Mobil":
+                name = "XOM";
+                break;
+            case "Tesla Inc":
+                name = "TSLA";
+                break;
+            case "Yum! Brands Inc":
+                name = "YUM";
+                break;
         }
         this.setState({
             company: name,
@@ -353,19 +397,22 @@ class Investments extends React.Component {
         },()=>{console.log(this.state.newInvestment)});
         let i = 0;
         var proceed = true;
+        var investments = this.state.investments;
         for(i=0;i<this.state.investments.length;i++){
             if(this.state.investments[i]){
                 if(this.state.investments[i].company && this.state.investments[i].company == this.state.companyName){
-                    proceed = false;
+                    investments = investments.splice(i,1);
+                    
                 }
             }
         }
         if(proceed){
+            console.log("TESTING");
             console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
             this.state.investments.push(investment);
             axios.post("http://localhost:8080/Cheddar/Investments", {
                 "uid": this.state.uid,
-                "investments": this.state.investments,
+                "investments": investments,
             }).then(res => {
                 this.showInfoModal();
             });
@@ -450,9 +497,14 @@ class Investments extends React.Component {
                             {
                                 (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.investments.length > 0) ?
                                 this.state.investments.map((investment,index)=>{
+                                    if(this.state.selectedCompanies.includes(investment["company"])){
                                     return(
                                         <GrowthGraph investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
                                     )
+                                    }
+                                    else{
+                                        return null
+                                    }
                                 }) : <Loader/>
                             }
                                 
