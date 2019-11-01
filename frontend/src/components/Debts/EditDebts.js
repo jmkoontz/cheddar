@@ -9,7 +9,7 @@ import axios from 'axios';
 class EditDebts extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), debtId: '', category: '', nickname: '', initial: '', currBalance: '', interestRate: '', validInit: true, validCurr: true, validInterest: true, validCat: true};
+    this.state = { userID: sessionStorage.getItem('user'), debtId: '', category: '', nickname: '', initial: '', currBalance: '', interestRate: '', minimumPayment: '', validInit: true, validCurr: true, validInterest: true, validMin: true, validCat: true};
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,6 +37,9 @@ class EditDebts extends React.Component {
       case "interestRate":
         this.setState({validInterest: (value > 0 && value < 100)});
         break;
+      case "minimumPayment":
+        this.setState({validMin: (value > 0 && value < 100)});
+        break;
       default:
         break;
       }
@@ -44,13 +47,15 @@ class EditDebts extends React.Component {
 
   handleSubmit(event){
     //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyCont + ' a month until ' + this.state.month + ' ' + this.state.year);
+
     axios.put(`http://localhost:8080/Cheddar/Debts/${this.state.userID}/${this.state.debtId}`,
       {
         category: this.state.category,
         nickname: this.state.nickname,
         initial: this.state.initial,
         currBalance: this.state.currBalance,
-        interestRate: this.state.interestRate
+        interestRate: this.state.interestRate,
+        minimumPayment: this.state.minimumPayment
       })
       .then((response) => {
         console.log(response);
@@ -87,7 +92,7 @@ class EditDebts extends React.Component {
         for(let i in response.data){
           if(response.data[i]._id == id){
             console.log(response.data[i]);
-            this.setState({debtId: response.data[i]._id, category: response.data[i].category, nickname: response.data[i].nickname, initial: response.data[i].initial, currBalance: response.data[i].currBalance, interestRate: response.data[i].interestRate})
+            this.setState({debtId: response.data[i]._id, category: response.data[i].category, nickname: response.data[i].nickname, initial: response.data[i].initial, currBalance: response.data[i].currBalance, interestRate: response.data[i].interestRate, minimumPayment: response.data[i].minimumPayment})
           }
         }
       })
@@ -112,18 +117,22 @@ class EditDebts extends React.Component {
         </select>
         <br/>
           <label>
-            <b>Initial Amount Owned</b><br/>$
-            <input name="initial" type="number" value={this.state.initial} onChange={this.handleChange} />
+            <b>Initial Principle</b><br/>$
+            <input name="initial" type="number" step="0.01" value={this.state.initial} onChange={this.handleChange} />
           </label>
         <br/>
         <label>
-          <b>Current Balance Owed</b><br/>$
-          <input name="currBalance" type="number" value={this.state.currBalance} onChange={this.handleChange} />
+          <b>Current Balance</b><br/>$
+          <input name="currBalance" type="number" step="0.01" value={this.state.currBalance} onChange={this.handleChange} />
         </label>
         <br/>
         <label>
-          <b>Interest Rate</b><br/>
+          <b>Annual Interest Rate</b><br/>
           <input name="interestRate" type="number" step="0.01" value={this.state.interestRate} onChange={this.handleChange} />
+        %</label><br/>
+        <label>
+          <b>Minimum Payment Percent</b><br/>
+          <input name="minimumPayment" type="number" step="0.01" value={this.state.minimumPayment} onChange={this.handleChange} />
         %</label><br/>
         <b>Nickname</b> (<i>optional</i>)<br/>
           <input name="nickname" type="text" value={this.state.nickname} onChange={this.handleChange} />
@@ -132,7 +141,7 @@ class EditDebts extends React.Component {
           <Button variant="secondary" onClick={() => History.push("/debts")}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validCat)}>
+          <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validMin && this.state.validCat)}>
             Save Changes
           </Button>
         </ButtonGroup><br/><br/>

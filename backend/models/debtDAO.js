@@ -68,6 +68,9 @@ export async function editDebt(uid, debtID, changes) {
   if (changes.interestRate)
     updateClause.$set['debts.$.interestRate'] = changes.interestRate;
 
+  if (changes.minimumPayment)
+    updateClause.$set['debts.$.minimumPayment'] = changes.minimumPayment;
+
   return userModel.findOneAndUpdate(
     findClause,
     updateClause,

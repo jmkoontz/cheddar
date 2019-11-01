@@ -1,12 +1,19 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button, Progress } from 'reactstrap';
+import { Button, Progress, Container, Row, Col } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
 import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
+import '../../css/SavingsModal.css'
+import CanvasJSReact from '../../assets/canvasjs.react';
+
+
+
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, monthlyCont, currSaved}) => (
     <div>
@@ -32,7 +39,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
 class Saving extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false}
+    this.state = { userID: sessionStorage.getItem('user'), graphData: [], show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -44,7 +51,7 @@ class Saving extends React.Component {
   }
 
   handleClose = () =>{
-    this.setState({show: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: ''})
+    this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
   }
 
   handleChange(event){
@@ -65,9 +72,11 @@ class Saving extends React.Component {
         break;
       case "goalAmount":
         this.setState({validAmount: (value > 0)});
+        this.getLineData();
         break;
       case "monthlyContribution":
         this.setState({validCont: (value > 0)});
+        this.getLineData();
         break;
       default:
         break;
@@ -92,7 +101,7 @@ class Saving extends React.Component {
         console.log(response);
         event.preventDefault();
         this.getSavings();
-        this.setState({show: false, title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: ''})
+        this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
       })
       .catch((error) => {
         console.error(error);
@@ -111,6 +120,24 @@ class Saving extends React.Component {
       });
   }
 
+  getLineData = () => {
+    if(this.state.goalAmount == '' || this.state.monthlyContribution == ''){
+      return;
+    }
+    var data = [];
+    const goal = Number(this.state.goalAmount);
+    const contribution = Number(this.state.monthlyContribution);
+    var amount = 0;
+    if(goal < contribution){
+      return;
+    }
+    while(amount <= goal){
+      data.push({y: amount});
+      //console.log(amount);
+      amount = amount + contribution;
+    }
+    this.setState({graphData: data});
+  }
 
   componentDidMount(){
     this.setState({month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()})
@@ -119,7 +146,25 @@ class Saving extends React.Component {
 
   render () {
     const years = Array.from(new Array(20),(val, index) => index + this.state.goalDate.year);
-    const savings = this.state.savingsList
+    const savings = this.state.savingsList;
+    const options = {
+      animationEnabled: true,
+    	theme: "light2",
+    	title:{
+    		text: "Time to Reach Goal"
+    	},
+      axisX:{
+       title: "Months",
+       minimum: 0
+      },
+      axisY:{
+        prefix: "$"
+      },
+    	data: [{
+    		type: "line",
+        dataPoints: this.state.graphData
+      }]
+   };
     return (
       <div className="BigDivArea">
         <h3 className="titleSpace">Savings Goals</h3>
@@ -134,10 +179,13 @@ class Saving extends React.Component {
 
         <Modal show={this.state.show} onHide={this.handleClose} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
-            <Modal.Title>Create new Savings Goal</Modal.Title>
+            <Modal.Title>Create New Savings Goal</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-              <form onSubmit={this.handleSubmit}>
+          <Container>
+          <Row>
+          <Col xs="4">
+              <form onSubmit={this.handleSubmit} className="form">
               <label>
                 <b>Title</b><br/>
                 <input name="title" type="text" value={this.state.title} onChange={this.handleChange} />
@@ -154,7 +202,7 @@ class Saving extends React.Component {
               <br/>
                 <label>
                   <b>Goal Amount</b><br/>$
-                  <input name="goalAmount" type="number" value={this.state.goalAmount} onChange={this.handleChange} />
+                  <input name="goalAmount" type="number" step="0.01" value={this.state.goalAmount} onChange={this.handleChange} />
                 </label>
               <br/>
               <label>
@@ -184,16 +232,31 @@ class Saving extends React.Component {
               <br/>
               <label>
                 <b>Monthly Contribution</b><br/>$
-                <input name="monthlyContribution" type="number" value={this.state.monthlyContribution} onChange={this.handleChange} />
+                <input name="monthlyContribution" type="number" step="0.01" value={this.state.monthlyContribution} onChange={this.handleChange} />
               </label>
               </form>
+              </Col>
+              <Col xs="6">
+              <div className="Graph">
+              {(this.state.validAmount && this.state.validCont)?
+                <div>
+                  <CanvasJSChart options = {options}
+                      /* onRef = {ref => this.chart = ref} */
+                  />
+                </div>
+                : null
+              }
+              </div>
+              </Col>
+              </Row>
+              </Container>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
               Close
             </Button>
             <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validAmount && this.state.validCont && this.state.validCat && this.state.validTitle)}>
-              Save Changes
+              Create
             </Button>
           </Modal.Footer>
         </Modal>

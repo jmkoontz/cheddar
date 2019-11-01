@@ -1,14 +1,18 @@
 import React from 'react';
 import { Component } from 'react';
-import { Button, Progress } from 'reactstrap';
+import { Button, Progress, Container, Row, Col  } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
 import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
+import CanvasJSReact from '../../assets/canvasjs.react';
 
-const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate}) => (
+var CanvasJS = CanvasJSReact.CanvasJS;
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+
+const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate, minimumPayment}) => (
   <div>
     <Collapsible trigger={category}
     triggerOpenedClassName="Collapsible__trigger--active"
@@ -28,7 +32,7 @@ const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate}
 class Debts extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), show: false, debtList: [], category: '', nickname: '', initial: '', currBalance: '', interestRate: '', validInit: false, validCurr: false, validInterest: false, validCat: false}
+    this.state = { userID: sessionStorage.getItem('user'), graphData: [], show: false, debtList: [], category: '', nickname: '', initial: '', currBalance: '', interestRate: '', minimumPayment: '', validInit: false, validCurr: false, validInterest: false, validMin: false, validCat: false}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -40,7 +44,7 @@ class Debts extends React.Component {
   }
 
   handleClose = () =>{
-    this.setState({show: false})
+    this.setState({show: false, graphData: [], category: '', nickname: '', initial: '', currBalance: '', interestRate: '', minimumPayment: '', validInit: false, validCurr: false, validInterest: false, validMin: false, validCat: false});
   }
 
   handleChange(event){
@@ -61,9 +65,15 @@ class Debts extends React.Component {
         break;
       case "currBalance":
         this.setState({validCurr: (value > 0)});
+        this.getLineData();
         break;
       case "interestRate":
         this.setState({validInterest: (value > 0 && value < 100)});
+        this.getLineData();
+        break;
+      case "minimumPayment":
+        this.setState({validMin: (value > 0 && value < 100)});
+        this.getLineData();
         break;
       default:
         break;
@@ -78,13 +88,14 @@ class Debts extends React.Component {
         nickname: this.state.nickname,
         initial: this.state.initial,
         currBalance: this.state.currBalance,
-        interestRate: this.state.interestRate
+        interestRate: this.state.interestRate,
+        minimumPayment: this.state.minimumPayment
       })
       .then((response) => {
         console.log(response);
         event.preventDefault();
         this.getDebts();
-        this.setState({show: false})
+        this.setState({show: false, graphData: [], category: '', nickname: '', initial: '', currBalance: '', interestRate: '', minimumPayment: '', validInit: false, validCurr: false, validInterest: false, validMin: false, validCat: false});
       })
       .catch((error) => {
         console.error(error);
@@ -101,12 +112,52 @@ class Debts extends React.Component {
       });
   }
 
+  getLineData = () => {
+    if(this.state.minimumPayment == '' || this.state.interestRate == '' || this.state.currBalance == ''){
+      return;
+    }
+    var data = [];
+    const minimumPay = (Number(this.state.minimumPayment) / 100);
+    const interest = (Number(this.state.interestRate) / 12) / 100;
+    var amount = Number(this.state.currBalance);
+    console.log(minimumPay + ' ' + interest + ' ' + amount);
+    while(amount > 0){
+      data.push({y: amount});
+      //console.log(amount);
+      if((amount * minimumPay) < 15)
+        amount = amount - 15;
+      else {
+        amount = amount - (amount * minimumPay)
+      }
+      amount = amount + (amount * interest)
+    }
+    this.setState({graphData: data});
+  }
+
   componentDidMount(){
     this.getDebts();
   }
 
   render () {
     const debts = this.state.debtList;
+    const options = {
+      animationEnabled: true,
+    	theme: "light2",
+    	title:{
+    		text: "Time to Pay Off Debt"
+    	},
+      axisX:{
+       title: "Months",
+       minimum: 0
+      },
+      axisY:{
+        prefix: "$"
+      },
+    	data: [{
+    		type: "line",
+        dataPoints: this.state.graphData
+      }]
+   };
     return (
       <div className="BigDivArea">
         <h3 className="titleSpace">Debt Repayment Plan</h3><br/>
@@ -123,6 +174,9 @@ class Debts extends React.Component {
             <Modal.Title>Add a Debt</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+          <Container>
+          <Row>
+          <Col xs="4">
               <form onSubmit={this.handleSubmit}>
               <label>
               <select name="category" value={this.state.category} onChange={this.handleChange}>
@@ -135,29 +189,46 @@ class Debts extends React.Component {
               </select>
               <br/>
                 <label>
-                  <b>Initial Amount Owned</b><br/>$
-                  <input name="initial" type="number" value={this.state.initial} onChange={this.handleChange} />
+                  <b>Initial Principle</b><br/>$
+                  <input name="initial" type="number" step="0.01" value={this.state.initial} onChange={this.handleChange} />
                 </label>
               <br/>
               <label>
-                <b>Current Balance Owed</b><br/>$
-                <input name="currBalance" type="number" value={this.state.currBalance} onChange={this.handleChange} />
+                <b>Current Balance</b><br/>$
+                <input name="currBalance" type="number" step="0.01" value={this.state.currBalance} onChange={this.handleChange} />
               </label>
               <br/>
               <label>
-                <b>Interest Rate</b><br/>
+                <b>Annual Interest Rate</b><br/>
                 <input name="interestRate" type="number" step="0.01" value={this.state.interestRate} onChange={this.handleChange} />
+              %</label><br/>
+              <label>
+                <b>Minimum Payment Percent</b><br/>
+                <input name="minimumPayment" type="number" step="0.01" value={this.state.minimumPayment} onChange={this.handleChange} />
               %</label><br/>
               <b>Nickname</b> (<i>optional</i>)<br/>
                 <input name="nickname" type="text" value={this.state.nickname} onChange={this.handleChange} />
               </label>
               </form>
+              </Col>
+              <Col xs="6">
+              <div className="Graph">
+              {(this.state.validInterest && this.state.validMin && this.state.validCurr)?
+                  <CanvasJSChart options = {options}
+                      /* onRef = {ref => this.chart = ref} */
+                  />
+                : null
+              }
+              </div>
+              </Col>
+              </Row>
+              </Container>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.handleClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validCat)}>
+            <Button variant="primary" onClick={this.handleSubmit} disabled={!(this.state.validInit && this.state.validCurr && this.state.validInterest && this.state.validMin && this.state.validCat)}>
               Save Changes
             </Button>
           </Modal.Footer>

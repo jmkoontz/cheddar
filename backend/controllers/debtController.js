@@ -23,7 +23,8 @@ export default (app) => {
       nickname: req.body.nickname,
       initial: req.body.initial,
       currBalance: req.body.currBalance,
-      interestRate: req.body.interestRate
+      interestRate: req.body.interestRate,
+      minimumPayment: req.body.minimumPayment
     };
 
     let data;
@@ -43,7 +44,8 @@ export default (app) => {
       nickname: req.body.nickname,
       initial: req.body.initial,
       currBalance: req.body.currBalance,
-      interestRate: req.body.interestRate
+      interestRate: req.body.interestRate,
+      minimumPayment: req.body.minimumPayment
     };
 
     let data;

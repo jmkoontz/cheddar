@@ -15,7 +15,7 @@ export async function getAllBudgets(uid, external) {
 
   return userModel.findOne({_id: uid}, returnClause)
     .then((user) => {
-      if (user)
+      if (user && user.budgets)
         return Promise.resolve(user.budgets);
       else
         return Promise.reject('UserError: User not found');
