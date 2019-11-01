@@ -5,10 +5,27 @@ import TransactionForm from './TransactionForm';
 import '../../css/Budgets.css';
 import { destroyObjectProperties } from "highcharts";
 
+
+
 function RealSpending(props) {
+
+	const [date, setDate] = useState(new Date());
+	const [totalDays, setTotalDays] = useState(31);
 
 	useEffect(
 		() => {
+
+			let total;
+			if(props.curBudget.timeFrame == "monthly") {
+				total = 31;
+			}
+			else if(props.curBudget.timeFrame == "biweekly") {
+				total = 14;
+			}
+			else if(props.curBudget.timeFrame == "weekly") {
+				total = 7;
+			}
+			setTotalDays(total);
 
 		},
 		[props]
@@ -28,11 +45,14 @@ function RealSpending(props) {
 								{item.percentUsed > 100
 									?
 									<Progress className="leftText" bar animated color="danger" value={item.percentUsed}>{(item.percentUsed).toFixed(2)}%</Progress>
-									: item.percentUsed >= 75
+									: (((totalDays - props.daysRemaining)/totalDays)*100) < item.percentUsed
 										?
-										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
-										:
-										<Progress className="leftText" bar animated color="success" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
+										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%  {" Warning: Current spending set to exceed limit before end of month"} </Progress>
+										: item.percentUsed >= 75
+											?
+											<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
+											:
+											<Progress className="leftText" bar animated color="success" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%</Progress>
 								}
 
 							</Progress>
