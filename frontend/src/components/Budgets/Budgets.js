@@ -259,6 +259,7 @@ function Budgets() {
 				setEditModal(false);
 				setModal(false);
 				setButtonDisplay(false);
+				setCategoryArr([]);
 				setCurBudget();
 				getBudgets();
 
