@@ -6,3 +6,9 @@
 .calendar-button {
 	margin-right: 10px;
 }
+
+.card-title {
+	font-weight: bold;
+	text-decoration: underline;
+	font-size: 20px;
+}

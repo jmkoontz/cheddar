@@ -10,6 +10,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Loader from '../Loader/Loader';
+import {Card, CardTitle, CardText, CardBody} from 'reactstrap';
 
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
@@ -173,6 +174,37 @@ class Overview extends React.Component {
                 </Row>
             </Container>
         </div>
+
+        <hr/>
+
+        <Row>
+          <Col md='6'>
+          <Card>
+            <CardBody>
+              <CardTitle>
+                Your Top Asset
+              </CardTitle>
+              <CardBody>
+                House: $140000
+              </CardBody>
+            </CardBody>
+          </Card>
+        </Col>
+
+          <Col md='6'>
+            <Card>
+              <CardBody>
+                <CardTitle className='card-title'>
+                  Your Top Recurring Payment
+                </CardTitle>
+                <CardBody>
+                  Rent: $1500 due on 2019-11-25
+                </CardBody>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+
       </div>
     );
   }
