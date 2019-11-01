@@ -8,7 +8,6 @@ import '../../css/Budgets.css';
 
 function TransactionTable(props) {
   const [transactions, setTransactions] = useState(); // array of transactions to display
-  const [allTransactions, setAllTransactions] = useState(); // array of all transactions
   const [sortKey, setSortKey] = useState('date'); // field the table is sorted by
   const [sortNameAsc, setSortNameAsc] = useState(false);  // if name should be in ascending order
   const [sortAmountAsc, setSortAmountAsc] = useState(false);  // if amount should be in ascending order
@@ -26,11 +25,14 @@ function TransactionTable(props) {
   const [transactionAmount, setTransactionAmount] = useState(""); // The edited amount of a transaction
   const [transactionDate, setTransactionDate] = useState(); // The edited date to send
 
+  let allTransactions = []; // array of all transactions
+
   useEffect(
     () => {
       if (props.transactions) {
+        console.log(props.transactions)
         setTransactions(props.transactions);
-        setAllTransactions(props.transactions);
+        allTransactions = props.transactions;
       }
     },
     [props]
@@ -40,11 +42,11 @@ function TransactionTable(props) {
     () => {
       if (props.transactions) {
         setTransactions(props.transactions);
-        setAllTransactions(props.transactions);
-      }
+        allTransactions = props.transactions;
 
-      if (props.tableMode === 'all' || props.tableCategory !== '')
-        switchMode(props.tableMode, props.tableCategory);
+        if (props.tableMode === 'all' || props.tableCategory !== '')
+          switchMode(props.tableMode, props.tableCategory);
+      }
     },
     [props.tableMode, props.tableCategory]
   );

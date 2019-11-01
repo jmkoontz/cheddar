@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader,
-		ModalBody, ModalFooter, Button, ButtonGroup } from 'reactstrap';
+import {
+	Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader,
+	ModalBody, ModalFooter, Button, ButtonGroup
+} from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight, faHeart } from '@fortawesome/free-solid-svg-icons';
 import RealSpending from './RealSpending';
@@ -11,13 +13,15 @@ import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
 
-	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
+
 	const [transactions, setTransactions] = useState([]);
 	const [spendingByCategory, setSpendingByCategory] = useState([]);	// categories and spending
 
 	const [tableMode, setTableMode] = useState('all');  // display all transactions or just one category
 	const [tableCategory, setTableCategory] = useState(''); // category to display transactions for
 
+	const [deleteName, setDeleteName] = useState("");
+	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
 	const [startDate, setStartDate] = useState();	// start date for transactions to display
 	const [endDate, setEndDate] = useState();	// end date for transactions to display
 	const [currentStartDate, setCurrentStartDate] = useState(); // start of date range currently displayed
@@ -26,42 +30,48 @@ function BudgetTabs(props) {
 	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
 
+	// delete budget helper
+	const deleteHelper = (name) => {
+		setDeleteName(name);
+		setDeleteModal(!deleteModal);
+	}
+
 	// server call to unfavorite a budget
- 	const unfavoriteBudget = () => {
-	 axios.put(`http://localhost:8080/Cheddar/Budgets/Unfavorite/${props.userID}/${props.curBudget.name}`)
-		 .then((response) => {
-			 // format the date for display
-			 // TODO, make the budgetList update, dont call getBudgets
-			 //props.setFavorite(false);
-			 props.getBudgets();
-		 })
-		 .catch((error) => {
-			 console.log(error);
-		 });
- 	}
+	const unfavoriteBudget = () => {
+		axios.put(`http://localhost:8080/Cheddar/Budgets/Unfavorite/${props.userID}/${props.curBudget.name}`)
+			.then((response) => {
+				// format the date for display
+				// TODO, make the budgetList update, dont call getBudgets
+				//props.setFavorite(false);
+				props.getBudgets();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 
 	// server call to favorite a budget
 	const favoriteBudget = () => {
-	 axios.put(`http://localhost:8080/Cheddar/Budgets/Favorite/${props.userID}/${props.curBudget.name}`)
-		 .then((response) => {
-			 // format the date for display
-			 // TODO, make the budgetList update, dont call getBudgets
-			 props.getBudgets();
-		 })
-		 .catch((error) => {
-			 console.log(error);
-		 });
- 	}
+		axios.put(`http://localhost:8080/Cheddar/Budgets/Favorite/${props.userID}/${props.curBudget.name}`)
+			.then((response) => {
+				// format the date for display
+				// TODO, make the budgetList update, dont call getBudgets
+				props.getBudgets();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 
 	// get all current transactions for a budget
-  const getTransactions = () => {
+	const getTransactions = () => {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
 			.then((response) => {
-        // format the date for display
-        for (let i in response.data) {
-          let date = new Date(response.data[i].date);
-          response.data[i].shortDate = getShortDate(date);
-        }
+				// format the date for display
+				for (let i in response.data) {
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = getShortDate(date);
+				}
 
 				//setTransactions(response.data);
 				categorizeData(response.data);
@@ -74,11 +84,11 @@ function BudgetTabs(props) {
 	const getOldTransactions = (index) => {
 		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/OldTransactions/${props.userID}/${props.curBudget.name}/${index}`)
 			.then((response) => {
-        // format the date for display
-        for (let i in response.data) {
-          let date = new Date(response.data[i].date);
-          response.data[i].shortDate = getShortDate(date);
-        }
+				// format the date for display
+				for (let i in response.data) {
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = getShortDate(date);
+				}
 
 				// setTransactions(response.data);
 				categorizeData(response.data);
@@ -119,6 +129,7 @@ function BudgetTabs(props) {
 			}
 		}
 
+		
 		setSpendingByCategory(arrayOfObjects);
 	};
 
@@ -202,29 +213,21 @@ function BudgetTabs(props) {
 		setMaxBudgetPeriodIndex(max);
 	};
 
-	// useEffect(
-	// 	() => {
-	// 		// if (props.curBudget)
-	// 		// 	getTransactions();
-	// 	},
-	// 	[props]
-	// );
-
 	useEffect(
 		() => {
 			setTransactions([]);
 			setSpendingByCategory([]);
 
-			if (props.curBudget)
+			if (props.curBudget) {
 				getTransactions();
 
-			if (props.curBudget.type === 'Custom') {
-				getCurrentDateRange();
-				getMaxBudgetPeriodIndex();
+				if (props.curBudget.type === 'Custom') {
+					getCurrentDateRange();
+					getMaxBudgetPeriodIndex();
+				}
 			}
 
 			setBudgetPeriodIndex(-1);
-			// console.log(spendingByCategory)
 		},
 		[props.curBudget]
 	);
@@ -289,7 +292,7 @@ function BudgetTabs(props) {
 											</ButtonGroup>
 										</Col>
 									</Row>
-									<Row>
+									<Row hidden={budgetPeriodIndex >= 0}>
 										<Col>
 											{daysRemaining === 1
 												?
@@ -319,23 +322,23 @@ function BudgetTabs(props) {
 									}
 								</div>
 								<Row>
-									<Col sm={3}/>
+									<Col sm={3} />
 									<Col >
-										<Button className="padRight buttonAdj" color="danger" onClick={() => { setDeleteModal(true) }}>Delete</Button>
+										<Button className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
 									</Col>
 									<Col>
 										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
 									<Col>
-									{props.favorite
-										?
-										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={() => unfavoriteBudget()}/>
-										:
-										<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#808080" onClick={() => favoriteBudget()}/>
-									}
+										{props.favorite
+											?
+											<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={() => unfavoriteBudget()} />
+											:
+											<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#808080" onClick={() => favoriteBudget()} />
+										}
 
 									</Col>
-									<Col sm={3}/>
+									<Col sm={3} />
 								</Row>
 								<Row className="addSpace" />
 							</Col>
@@ -368,19 +371,22 @@ function BudgetTabs(props) {
 								}
 							</Col>
 						</Row>
-						<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
-							<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
-							<ModalBody>
-								Are you sure you want to delete the budget '{item.name}'?
-        			</ModalBody>
-							<ModalFooter>
-								<Button color="danger" onClick={() => { props.deleteBudget(item.name) }}>Delete Budget</Button>
-								<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
-							</ModalFooter>
-						</Modal>
+
 					</TabPane>
+
 				)}
 			</TabContent>
+
+			<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
+				<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
+				<ModalBody>
+					Are you sure you want to delete the budget '{deleteName}'?
+        			</ModalBody>
+				<ModalFooter>
+					<Button color="danger" onClick={() => { props.deleteBudget(deleteName) }}>Delete Budget</Button>
+					<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
+				</ModalFooter>
+			</Modal>
 		</div>
 	);
 }

@@ -32,7 +32,7 @@ function Transactions() {
 
 	/**
 	 * Helper method to show each data point on the chart
-	 * @param {Object} e 
+	 * @param {Object} e
 	 */
 	const showHoverData = (e) => {
 		setHoverData(e.target.category);
@@ -56,7 +56,7 @@ function Transactions() {
 		let daysArray = [];	// Number of days array
 		let totalDaysArray = [];	// Total spending line
 		let incomeLine = [];	// Red line for the income you have
-		let runningTotal = 0;	// Variable for the total
+		let runningTotal = 0;	// Variable for the total transaction spending
 		let income;
 		let totalTitle = "Total Spending";
 		let dailyTitle = "Daily Spending";
@@ -77,6 +77,8 @@ function Transactions() {
 
 		}
 
+		// Variable to keep track of how much was spent in this budget before the given time frame
+		//let preTotal = 0;
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
 			// Add each transaction into its respective array index
@@ -84,9 +86,15 @@ function Transactions() {
 			let index = calcNumberDays(tmpObj.date, startDate);
 			if (index >= 0 && index < numDays && tmpObj.amount >= 0) {
 				daysArray[index] += tmpObj.amount;
+			} else if (index < 0) {
+				console.log(index + " " + tmpObj.amount)
+
+				runningTotal += tmpObj.amount;
 			}
 
 		}
+
+		console.log(runningTotal);
 
 		for (let y = 0; y < daysArray.length; y++) {
 			runningTotal += daysArray[y];
@@ -213,7 +221,7 @@ function Transactions() {
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
-				// handle success				
+				// handle success
 				for (let i in response.data) {
 					let date = new Date(response.data[i].date);
 					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
