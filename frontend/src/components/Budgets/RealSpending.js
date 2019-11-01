@@ -45,7 +45,7 @@ function RealSpending(props) {
 								{item.percentUsed > 100
 									?
 									<Progress className="leftText" bar animated color="danger" value={item.percentUsed}>{(item.percentUsed).toFixed(2)}%</Progress>
-									: props.budgetPeriodIndex === -1 && (((totalDays - props.daysRemaining)/totalDays)*100) < item.percentUsed
+									: props.budgetPeriodIndex === -1 && item.percentUsed >= 50 && (((totalDays - props.daysRemaining)/totalDays)*100) < item.percentUsed
 										?
 										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%  {" Warning: Current spending set to exceed limit before end of time"} </Progress>
 										: item.percentUsed >= 75
