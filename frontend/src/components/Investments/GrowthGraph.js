@@ -32,6 +32,7 @@ class GrowthGraph extends React.Component {
             company: "MSFT",
             companyName: this.props.companyName,
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
+            frequencyCounter: this.props.frequencyCounter,
             key: keys.AlphaVantageAPIKey,
             show: false,
             show2: false,
@@ -66,7 +67,7 @@ class GrowthGraph extends React.Component {
     }
 
     componentDidMount(){
-        console.log(this.props.data);
+        //console.log(this.props.data);
         let res = this.props.data;
         var dateKeys = Object.keys(res.data["Time Series (Daily)"]);
         var points = [];
@@ -75,13 +76,12 @@ class GrowthGraph extends React.Component {
             if(dateKeys[i] == this.state.investment["startDate"]){
                 break;
             }
-            else if(i%5 == 0){
+            else if(i%this.state.frequencyCounter == 0){
                 points.push({x: new Date(dateKeys[i] + " EST"), y: Math.floor((res.data["Time Series (Daily)"][dateKeys[i]]["4. close"])*this.state.investment["shares"])});
             }
         }
         var dataArr = []
         dataArr.push({type: "line", dataPoints: points});
-        console.log(dataArr);
         const options = {
             title: {
                 text: "Weekly investment growth for "+this.state.companyName+" (1 year)"
