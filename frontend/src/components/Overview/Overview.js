@@ -1,6 +1,7 @@
 import React from 'react';
 import Calendar from "../Calendar/Calendar";
 import Button from 'react-bootstrap/Button';
+import keys from '../../config/keys.js';
 import EventListModal from "../Calendar/EventListModal";
 import StocksGraph from '../Investments/StocksGraph';
 import GrowthGraph from '../Investments/GrowthGraph';
@@ -11,7 +12,6 @@ import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Loader from '../Loader/Loader';
 import {Card, CardTitle, CardText, CardBody} from 'reactstrap';
-
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
 
@@ -26,6 +26,7 @@ class Overview extends React.Component {
         uid: sessionStorage.getItem('user'),
         data: {},
         selectedCompanies: [],
+        key: keys.AlphaVantageAPIKey,
         companies: {
             "Amazon": {"id":"AMZN","tracked":false},
             "Apple": {"id":"AAPL","tracked":false},
@@ -77,13 +78,50 @@ class Overview extends React.Component {
     }
 
     getData = async (companyName) => {
-        let res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
-        var data = this.state.data;
-        data[companyName] = res;
-        this.setState({
-            data: data,
-        });
-    } 
+        let res;
+        res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
+        if(res.data.Note && res.data.Note.includes("API call frequency")){
+            //change API keys
+            if(this.state.key == keys.AlphaVantageAPIKey){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey2,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey2){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey3,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey3){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey4,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey4){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey5,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey5){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey6,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey6){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey,
+                },() => {this.getData(companyName)});
+            }
+            //alert("Changing Keys");
+        }
+        else{
+            var data = this.state.data;
+            data[companyName] = res;
+            this.setState({
+                data: data,
+            });
+        }
+    }
 
     emptyStocksGraph = () => {
         if(this.state.selectedCompanies.length == 0){
