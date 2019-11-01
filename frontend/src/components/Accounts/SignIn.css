@@ -26,6 +26,12 @@
     font-size: 30px;
 }
 
+.currency-label {
+    display: flex;
+    justify-content: left;
+    font-size: 20px;
+}
+
 .left {
     text-align: left;
 }
