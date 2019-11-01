@@ -1,5 +1,4 @@
 import {userModel} from '../utilities/mongooseModels';
-import email from '../config/email';
 import nodemailer from 'nodemailer';
 
 export function getUser(uid) {
@@ -178,13 +177,13 @@ export async function pushEmailNotifications() {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: email.email,
-        pass: email.pass
+        user: process.env.EMAIL,
+        pass: process.env.PASS
       }
     });
 
     const mailOptions = {
-      from: email.email,
+      from: process.env.EMAIL,
       to: user.email,
       subject: 'Cheddar Event Notifications',
       text: emailString
