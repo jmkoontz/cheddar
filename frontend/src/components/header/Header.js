@@ -28,8 +28,10 @@ class Header extends Component {
       tabValue = 8;
     } else if (!History.location.pathname.indexOf("/retirement")) {
       tabValue = 9;
+    } else if (!History.location.pathname.indexOf("/tracker")) {
+      tabValue = 10;
     }
-    
+
 
     this.state = {
       tabValue: tabValue
@@ -58,6 +60,8 @@ class Header extends Component {
       History.push("/assets");
     } else if (newValue === '9') {
       History.push("/retirement");
+    } else if (newValue === '10') {
+      History.push("/tracker");
     }
 
   };
@@ -82,6 +86,7 @@ class Header extends Component {
             <Nav.Link eventKey={5}>Transactions</Nav.Link>
             <Nav.Link eventKey={8}>Assets</Nav.Link>
             <Nav.Link eventKey={9}>Retirement</Nav.Link>
+            <Nav.Link eventKey={10}>Tracker</Nav.Link>
           </Nav>
           <Nav pullRight onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
             <Nav.Link eventKey={6}>👤</Nav.Link>

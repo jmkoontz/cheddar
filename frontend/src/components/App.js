@@ -11,6 +11,7 @@ import Investments from './Investments/Investments';
 import Retirement from './Investments/Retirement';
 import Debts from './Debts/Debts';
 import Transactions from './Transactions/Transactions';
+import Tracker from './Tracker/Tracker';
 import SignIn from './Accounts/SignIn';
 import firebase from '../firebase.js';
 import './App.css';
@@ -69,6 +70,7 @@ class App extends Component {
             <Route path="/debts" render={() => <Debts/>}/>
             <Route path="/repaymentcalc" render={() => <RepaymentDate/>}/>
             <Route path="/transactions" render={() => <Transactions/>}/>
+            <Route path="/tracker" render={() => <Tracker/>}/>
             <Route path="/account-settings" render={() => <AccountSettings/>}/>
             <Route path="/assets" render={() => <Assets/>}/>
             <Route path="/" render={() => <Redirect to="/"/>}/>
