@@ -13,13 +13,15 @@ import '../../css/Budgets.css';
 
 function BudgetTabs(props) {
 
-	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
+
 	const [transactions, setTransactions] = useState([]);
 	const [spendingByCategory, setSpendingByCategory] = useState([]);	// categories and spending
 
 	const [tableMode, setTableMode] = useState('all');  // display all transactions or just one category
 	const [tableCategory, setTableCategory] = useState(''); // category to display transactions for
 
+	const [deleteName, setDeleteName] = useState("");
+	const [deleteModal, setDeleteModal] = useState(false);	// Opens the modal to confirm if a user wants to delete a budget
 	const [startDate, setStartDate] = useState();	// start date for transactions to display
 	const [endDate, setEndDate] = useState();	// end date for transactions to display
 	const [currentStartDate, setCurrentStartDate] = useState(); // start of date range currently displayed
@@ -27,6 +29,12 @@ function BudgetTabs(props) {
 	const [daysRemaining, setDaysRemaining] = useState();	// days remaining in current period
 	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
+
+	// delete budget helper
+	const deleteHelper = (name) => {
+		setDeleteName(name);
+		setDeleteModal(!deleteModal);
+	}
 
 	// server call to unfavorite a budget
 	const unfavoriteBudget = () => {
@@ -121,6 +129,7 @@ function BudgetTabs(props) {
 			}
 		}
 
+		
 		setSpendingByCategory(arrayOfObjects);
 	};
 
@@ -204,14 +213,6 @@ function BudgetTabs(props) {
 		setMaxBudgetPeriodIndex(max);
 	};
 
-	// useEffect(
-	// 	() => {
-	// 		// if (props.curBudget)
-	// 		// 	getTransactions();
-	// 	},
-	// 	[props]
-	// );
-
 	useEffect(
 		() => {
 			setTransactions([]);
@@ -227,7 +228,6 @@ function BudgetTabs(props) {
 			}
 
 			setBudgetPeriodIndex(-1);
-			// console.log(spendingByCategory)
 		},
 		[props.curBudget]
 	);
@@ -324,7 +324,7 @@ function BudgetTabs(props) {
 								<Row>
 									<Col sm={3} />
 									<Col >
-										<Button className="padRight buttonAdj" color="danger" onClick={() => { setDeleteModal(true) }}>Delete</Button>
+										<Button className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
 									</Col>
 									<Col>
 										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
@@ -371,19 +371,22 @@ function BudgetTabs(props) {
 								}
 							</Col>
 						</Row>
-						<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
-							<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
-							<ModalBody>
-								Are you sure you want to delete the budget '{item.name}'?
-        			</ModalBody>
-							<ModalFooter>
-								<Button color="danger" onClick={() => { props.deleteBudget(item.name) }}>Delete Budget</Button>
-								<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
-							</ModalFooter>
-						</Modal>
+
 					</TabPane>
+
 				)}
 			</TabContent>
+
+			<Modal isOpen={deleteModal} toggle={() => { setDeleteModal(!deleteModal) }}>
+				<ModalHeader toggle={() => { setDeleteModal(!deleteModal) }}>Delete Budget</ModalHeader>
+				<ModalBody>
+					Are you sure you want to delete the budget '{deleteName}'?
+        			</ModalBody>
+				<ModalFooter>
+					<Button color="danger" onClick={() => { props.deleteBudget(deleteName) }}>Delete Budget</Button>
+					<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
+				</ModalFooter>
+			</Modal>
 		</div>
 	);
 }

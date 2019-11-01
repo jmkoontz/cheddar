@@ -54,13 +54,16 @@ export const debtSchema = new mongoose.Schema({
   nickname: String,
   initial: Number,
   currBalance: Number,
-  interestRate: Number
+  interestRate: Number,
+  minimumPayment: Number
 });
 
 export const investmentSchema = new mongoose.Schema({
     type: String,
     startingInvestment: Number,
     company: String,
+    favorite: Boolean,
+    shares: Number,
     startDate: String,
 });
 
