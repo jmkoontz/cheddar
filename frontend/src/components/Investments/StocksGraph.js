@@ -28,10 +28,11 @@ class StocksGraph extends React.Component {
         super(props);
         this.state = {
             data: [],
-            defaultRate: "Weekly",
+            defaultRate: this.props.rate,
             company: "MSFT",
             companyName: "Microsoft",
-            frequency: "TIME_SERIES_DAILY_ADJUSTED",
+            frequencyCounter: this.props.frequencyCounter,
+            frequency: this.props.frequency,
             key: keys.AlphaVantageAPIKey,
             show: false,
             show2: false,
@@ -66,7 +67,6 @@ class StocksGraph extends React.Component {
 
     componentDidMount(){
         const test = {uid: this.state.uid};
-        console.log(this.state.uid);
         axios.get("http://localhost:8080/Cheddar/Investments", {
             params: test,
                 }).then(res => {
@@ -83,46 +83,20 @@ class StocksGraph extends React.Component {
                     });
             //console.log(res);
         });
-        if(this.state.defaultRate == "Daily"){
-            if(this.state.frequency != "TIME_SERIES_DAILY_ADJUSTED"){
-                this.setState({frequency: "TIME_SERIES_DAILY_ADJUSTED"},
-                    () =>{
-                        //this.makeApiRequest();
-                    }
-                );
-            }
-            else{
-                //this.makeApiRequest();
-            }            
-        }
-        else if(this.state.defaultRate == "Weekly") {
-            if(this.state.frequency != "TIME_SERIES_WEEKLY_ADJUSTED"){
-                this.setState({frequency: "TIME_SERIES_WEEKLY_ADJUSTED"},
-                    () =>{
-                        //this.makeApiRequest();
-                    }
-                );
-            }
-            else{
-                //this.makeApiRequest();
-            }       
-        }
             this.getOptions(this.props.companyName,"Weekly");
     }
 
     getOptions = async (companyName,frequency) => {
+        console.log(this.props.data);
         let res = this.props.data;
-        console.log("RESPONSE");
-        console.log(res);
         var dateKeys = Object.keys(res.data["Time Series (Daily)"]);
         var points = [];
         var i = 0;
-        for(i=0;i<(52*5);i+=5){
+        for(i=0;i<(52*this.state.frequencyCounter);i+=this.props.frequencyCounter){
             points.push({x: new Date(dateKeys[i] + " EST"), y: Math.floor(res.data["Time Series (Daily)"][dateKeys[i]]["4. close"])});
         }
         var dataArr = []
         dataArr.push({type: "line", dataPoints: points});
-        console.log(dataArr);
         const options = {
             title: {
                 text: "Weekly "+companyName+" Closings for 1 Year"
@@ -137,8 +111,6 @@ class StocksGraph extends React.Component {
             data: dataArr,
         }
         var companyOptions = this.state.companyOptions;
-        console.log(companyName);
-        console.log(options);
         companyOptions[companyName] = options;
         this.setState({
             companyOptions: companyOptions,

@@ -77,10 +77,11 @@ class Investments extends React.Component {
         super(props);
         this.state = {
             data: {},
-            defaultRate: "Weekly",
+            defaultRate: "Daily",
             company: "MSFT",
             companyName: "Microsoft",
             frequency: "TIME_SERIES_DAILY_ADJUSTED",
+            frequencyCounter: 5,
             key: keys.AlphaVantageAPIKey,
             show: false,
             show2: false,
@@ -116,7 +117,6 @@ class Investments extends React.Component {
 
     componentDidMount(){
         const test = {uid: this.state.uid};
-        console.log(this.state.uid);
         axios.get("http://localhost:8080/Cheddar/Investments", {
             params: test,
                 }).then(res => {
@@ -132,10 +132,8 @@ class Investments extends React.Component {
                         investments: res.data.investments,
                     },() => {
                         var comps = this.state.selectedCompanies;
-                        console.log(comps);
                         let i =0;
                         for(i = 0;i < comps.length; i++){
-                            console.log(comps[i]);
                             this.getData(comps[i]);
                         }
                     });
@@ -282,7 +280,6 @@ class Investments extends React.Component {
         },() => {
             //this.makeApiRequest();
         });
-        console.log(param);
     }
 
     showModal = () => {
@@ -349,18 +346,17 @@ class Investments extends React.Component {
             });
             //console.log(res);
         }
+        this.getData(company);
         
     }
 
     updateInvestedAmount = (amount) => {
-        console.log(amount.target.value);
         this.setState({
             enteredInvestment: amount.target.value,
         });
     }
 
     updateInvestmentDate = (date) => {
-        console.log(date.target.value);
         this.setState({
             enteredInvestmentDate: date.target.value,
         });
@@ -395,7 +391,7 @@ class Investments extends React.Component {
             newInvestment: investment,
             enteredInvestment: 0,
             enteredInvestmentDate: "",
-        },()=>{console.log(this.state.newInvestment)});
+        });
         let i = 0;
         var proceed = true;
         var investments = this.state.investments;
@@ -408,8 +404,7 @@ class Investments extends React.Component {
             }
         }
         if(proceed){
-            console.log("TESTING");
-            console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
+            //console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
             this.state.investments.push(investment);
             axios.post("http://localhost:8080/Cheddar/Investments", {
                 "uid": this.state.uid,
@@ -434,13 +429,28 @@ class Investments extends React.Component {
     }
 
     setFrequency = (frequency) => {
+        var newFrequencyCounter;
+        if(frequency === "Weekly"){
+            newFrequencyCounter = 5;
+        }
+        else{
+            newFrequencyCounter = 1;
+        }
         this.setState({
             defaultRate: frequency,
-        });
+            data: {},
+            frequencyCounter: newFrequencyCounter,
+        },() => {
+            var comps = this.state.selectedCompanies;
+            let i =0;
+            for(i = 0;i < comps.length; i++){
+                this.getData(comps[i]);
+            }});
     }
 
     getData = async (companyName) => {
-        let res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
+        let res;
+        res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
         var data = this.state.data;
         data[companyName] = res;
         this.setState({
@@ -505,13 +515,10 @@ class Investments extends React.Component {
                             {
                                 (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.selectedCompanies.length > 0) ?
                                 this.state.selectedCompanies.map((name,index)=>{
-                                    console.log("HERE");
-                                    console.log("NAME: " + name);
-                                    console.log(this.state.data);
                                     return(
                                         <div>
-                                        <StocksGraph frequency={this.state.defaultRate} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
-                                        <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
+                                        <StocksGraph frequencyCounter={this.state.frequencyCounter} rate={this.state.defaultRate} frequency={this.state.frequency} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
+                                        <Button onClick={() => { this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                         </div>
                                     )
                                 }) : this.emptyGraph()
@@ -525,7 +532,7 @@ class Investments extends React.Component {
                                 this.state.investments.map((investment,index)=>{
                                     if(this.state.selectedCompanies.includes(investment["company"])){
                                     return(
-                                        <GrowthGraph frequency={this.state.defaultRate} investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
+                                        <GrowthGraph rate={this.state.defaultRate} frequency={this.state.frequency} frequencyCounter={this.state.frequencyCounter} investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
                                     )
                                     }
                                     else{
