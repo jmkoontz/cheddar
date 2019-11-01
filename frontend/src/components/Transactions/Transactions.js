@@ -77,8 +77,6 @@ function Transactions() {
 
 		}
 
-		// Variable to keep track of how much was spent in this budget before the given time frame
-		//let preTotal = 0;
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
 			// Add each transaction into its respective array index
