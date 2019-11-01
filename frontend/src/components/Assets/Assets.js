@@ -26,6 +26,9 @@ class Assets extends Component {
       child: null,
       assetValue: 0,
 
+      showOtherCurrency: false,
+      multiplier: 1,
+
       selectedCurrency: 'USD',
       currencyConverterOpen: false,
 
@@ -107,7 +110,50 @@ class Assets extends Component {
   selectCurrency = (ev) => {
     this.setState({
       selectedCurrency: ev.target.innerText,
+      showOtherCurrency: true,
     });
+
+    if(ev.target.innerText === 'USD'){
+      this.setState({
+        showOtherCurrency: false,
+      });
+    };
+  };
+
+  getAssetValue = () => {
+    if(!this.state.showOtherCurrency){
+      return "$" + this.state.assetValue;
+    }
+
+    switch(this.state.selectedCurrency){
+      case 'EUR':
+        return "€" + (this.state.assetValue * 0.9);
+
+      case 'JPY':
+        return "¥" + (this.state.assetValue * 108.04);
+
+      case 'GBP':
+        return "£" + (this.state.assetValue * 0.77);
+
+      case 'AUD':
+        return "A$" + (this.state.assetValue * 1.45);
+
+      case 'CAD':
+        return "C$" + (this.state.assetValue * 1.32);
+
+      case 'CHF':
+        return "Fr." + (this.state.assetValue * 0.99);
+
+      case 'CNH':
+        return "¥" + (this.state.assetValue * 7.04);
+
+      case 'SEK':
+        return "kr" + (this.state.assetValue * 9.63);
+
+      case 'NZD':
+        return "NZ$" + (this.state.assetValue * 1.56);
+    }
+
   };
 
   /*convertCurrency = () => {
@@ -125,7 +171,7 @@ class Assets extends Component {
       <div className='divArea'>
         <h3 className="titleSpace">Assets</h3>
         <Row>
-          <Label className='asset-label'>Total Asset Value: ${this.state.assetValue}</Label>
+          <Label className='asset-label'>Total Asset Value: {this.getAssetValue()}</Label>
         </Row>
         <Row>
           <Dropdown isOpen={this.state.currencyConverterOpen} toggle={this.currencyToggle}>
@@ -134,11 +180,15 @@ class Assets extends Component {
               <DropdownItem onClick={this.selectCurrency}>USD</DropdownItem>
               <DropdownItem onClick={this.selectCurrency}>EUR</DropdownItem>
               <DropdownItem onClick={this.selectCurrency}>JPY</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>GBP</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>AUD</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>CAD</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>CHF</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>CNH</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>SEK</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>NZD</DropdownItem>
             </DropdownMenu>
           </Dropdown>
-        </Row>
-        <Row>
-          <Button size='sm' onClick={this.goToRecurringPayments}>Go To Recurring Payments</Button>
         </Row>
 
         <hr/>
@@ -163,6 +213,7 @@ class Assets extends Component {
 
         <div className='right'>
           <Row>
+            <Button size='sm' onClick={this.goToRecurringPayments}>Go To Recurring Payments</Button>
             <Col>
               <Button className='signInButton' size='sm' onClick={this.openModal}>Add New Category</Button>
             </Col>
