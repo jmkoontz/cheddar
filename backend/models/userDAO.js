@@ -98,22 +98,23 @@ export async function getNotifications(uid, isEmail) {
         continue;
 
       let cmp;
+      const multiplier = 24 * 60 * 60 * 1000;
       switch (period) {
         case "month":
           cmp = new Date();
-          cmp.setMonth(today.getMonth() - 1);
+          cmp.setMonth(today.getMonth() + 1);
           break;
         case "twoWeek":
           cmp = new Date();
-          cmp.setDate(today.getDate() - 14);
+          cmp.setDate(today.getTime() + 14 * multiplier);
           break;
         case "week":
           cmp = new Date();
-          cmp.setDate(today.getDate() - 7);
+          cmp.setDate(today.getTime() + 7 * multiplier);
           break;
         case "day":
           cmp = new Date();
-          cmp.setDate(today.getDate() - 1);
+          cmp.setDate(today.getTime() + multiplier);
           break;
         case "dayOf":
           cmp = today;
@@ -125,7 +126,7 @@ export async function getNotifications(uid, isEmail) {
       cmp.setHours(0, 0, 0);
       cmp.setMilliseconds(0);
 
-      if (cmp <= event.start && event.start <= today) {
+      if (cmp >= event.start && event.start >= today) {
         notifications[event.id] = {
           id: event.id,
           title: event.title,
