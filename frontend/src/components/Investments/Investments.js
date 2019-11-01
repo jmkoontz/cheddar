@@ -494,14 +494,17 @@ class Investments extends React.Component {
                 
                 <Container fluid="true">
                     <Row>
-                        <Col>
+                        <Col md={3}>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                            
+                        </Col>
+                        <Col sm={3}>
                             <DropdownButton id="dropdown-basic-button" title="Dropdown button">
                                 <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
                                 <Dropdown.Item onSelect={ () => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
                             </DropdownButton>
                         </Col>
-                        <Col className="text-right">
+                        <Col md={6} className="text-right">
                             <Button variant="link" onClick={this.showModal2}>Tips</Button>
                         </Col>
                     </Row>
