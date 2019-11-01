@@ -142,7 +142,7 @@ class Overview extends React.Component {
                                         isFavorite = false;
                                         return(
                                             <div>
-                                                <StocksGraph data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
+                                                <StocksGraph frequencyCounter={5} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
                                             </div>
                                         )
                                     }
@@ -161,7 +161,7 @@ class Overview extends React.Component {
                                 this.state.investments.map((investment,index)=>{
                                     if(investment["favorite"] == true){
                                         return(
-                                            <GrowthGraph investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
+                                            <GrowthGraph frequencyCounter={5} investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
                                         )
                                     }
                                     else{
