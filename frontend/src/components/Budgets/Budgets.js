@@ -174,6 +174,7 @@ function Budgets() {
 				index = x;
 				tmpIncome = categoryArr[x].amount;
 			}
+			categoryArr[x].transactions = [];
 		}
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
