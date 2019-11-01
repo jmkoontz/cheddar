@@ -136,8 +136,8 @@ function Transactions() {
         layout: 'vertical',
         align: 'right',
         verticalAlign: 'top',
-        x: -40,
-        y: 80,
+        x: 0,
+        y: 100,
         floating: true,
         borderWidth: 1,
         backgroundColor:
