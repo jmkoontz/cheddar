@@ -5,6 +5,7 @@ import firebase from '../../firebase.js';
 import axios from 'axios';
 import './SignIn.css'
 import {fireauth} from "../../firebase";
+import CategoryTable from "../Assets/CategoryTable";
 
 class AccountSettings extends Component {
 
@@ -159,7 +160,7 @@ class AccountSettings extends Component {
     });
   };
 
-  selectCountry = (ev) => {
+  selectState = (ev) => {
     this.setState({
       selectedState: ev.target.innerText,
     });
@@ -212,7 +213,11 @@ class AccountSettings extends Component {
             <Dropdown size='lg' isOpen={this.state.countryOpen} toggle={this.countryToggle}>
               <DropdownToggle caret>{this.state.selectedState}</DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={this.selectCountry}> California</DropdownItem>
+                {this.state.states.map((name, i) => {
+                  return (
+                    <DropdownItem onClick={this.selectState}>{this.state.states[i]}</DropdownItem>
+                  );
+                })}
               </DropdownMenu>
             </Dropdown>
           </Col>
