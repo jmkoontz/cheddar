@@ -25,8 +25,38 @@ class RecurringPayments extends Component {
       dropdown: false,
       timePeriod: "Monthly",
 
+      show1: {
+        payment_name: "Rent",
+        amount: "1500",
+        date: "2019-11-25",
+        timePeriod: "Monthly"
+      },
+
+      show2: {
+        payment_name: "Car Payment",
+        amount: "250",
+        date: "2019-11-20",
+        timePeriod: "Monthly"
+      },
+
+      show3: {
+        payment_name: "Netflix",
+        amount: "10",
+        date: "2019-11-30",
+        timePeriod: "Monthly"
+      },
+
       payments: [],
+
     };
+
+    let payments = this.state.payments;
+    payments.push(this.state.show1);
+    payments.push(this.state.show2);
+    payments.push(this.state.show3);
+    this.setState({
+      payments: payments,
+    })
   }
 
   openModal = () => {
@@ -74,7 +104,9 @@ class RecurringPayments extends Component {
     payments.push(payment);
     this.setState({
       payments: payments,
+      modal: false,
     });
+    this.forceUpdate();
   };
 
   removeItem = (ref, i) => {
@@ -160,6 +192,7 @@ class RecurringPayments extends Component {
             <th>Amount</th>
             <th>Due Date</th>
             <th>Time Period</th>
+            <th>Edit</th>
             <th>Remove Payment</th>
           </tr>
           </thead>
@@ -172,6 +205,7 @@ class RecurringPayments extends Component {
                 <td>${this.state.payments[i].amount}</td>
                 <td>{this.state.payments[i].date}</td>
                 <td>{this.state.payments[i].timePeriod}</td>
+                <td><Button color='info'>O</Button></td>
                 <td><Button color='danger' onClick={() => this.removeItem(this, i)}>-</Button></td>
               </tr>
             );
