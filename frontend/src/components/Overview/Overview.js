@@ -83,6 +83,24 @@ class Overview extends React.Component {
             data: data,
         });
     } 
+
+    emptyStocksGraph = () => {
+        if(this.state.selectedCompanies.length == 0){
+            return null;
+        }
+        else{
+            return (<Loader/>)
+        }
+    }
+    emptyGrowthGraph = () => {
+        if(this.state.investments.length == 0){
+            return null;
+        }
+        else{
+            return (<Loader/>)
+        }
+    }
+
   render () {
     return (
       <div className="BigDivArea">
@@ -133,7 +151,7 @@ class Overview extends React.Component {
                                         )
                                     }
                                     
-                                }) : <Loader/>
+                                }) : this.emptyStocksGraph()
                             }              
                     </Col>
                     <Col className="card">
@@ -149,7 +167,7 @@ class Overview extends React.Component {
                                         return null
                                     }
                                     
-                                }) : <Loader/>
+                                }) : this.emptyGrowthGraph()
                             }
                     </Col>
                 </Row>

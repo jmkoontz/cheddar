@@ -448,7 +448,22 @@ class Investments extends React.Component {
         });
     }
 
-    
+    emptyGraph = () => {
+        if(this.state.selectedCompanies.length == 0){
+            return null;
+        }
+        else{
+            return (<Loader/>)
+        }
+    }
+    emptyGrowthGraph = () => {
+        if(this.state.investments.length == 0){
+            return null;
+        }
+        else{
+            return (<Loader/>)
+        }
+    }
 
     render () {
         const options = {
@@ -499,7 +514,7 @@ class Investments extends React.Component {
                                         <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                         </div>
                                     )
-                                }) : <Loader/>
+                                }) : this.emptyGraph()
                             }
                             
                                 
@@ -516,7 +531,7 @@ class Investments extends React.Component {
                                     else{
                                         return null
                                     }
-                                }) : <Loader/>
+                                }) : this.emptyGrowthGraph()
                             }
                                 
                             </Col>
