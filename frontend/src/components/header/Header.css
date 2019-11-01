@@ -16,6 +16,10 @@
 	width: 50px;
 }
 
-.nav-container a {
+.nav-container > span {
+	display: flex;
+}
+
+.nav-container span a {
 	align-self: center;
 }

@@ -6,6 +6,7 @@ import { Col } from 'reactstrap';
 import firebase from '../../firebase.js'
 
 import './Header.css';
+import Tip from "../Tip/Tip";
 
 class Header extends Component {
   constructor(props) {
@@ -74,19 +75,28 @@ class Header extends Component {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto nav-container" onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
             <Nav.Link eventKey={0}><span id={"icon-tab"}><img src={"Icon.png"} id={"icon"}/></span></Nav.Link>
-            <Nav.Link eventKey={0}>Overview</Nav.Link>
-            <Nav.Link eventKey={1}>Budgets</Nav.Link>
-            <Nav.Link eventKey={2}>Saving</Nav.Link>
-            <Nav.Link eventKey={3}>Investments</Nav.Link>
-            <Nav.Link eventKey={4}>Debts</Nav.Link>
-            <Nav.Link eventKey={5}>Transactions</Nav.Link>
-            <Nav.Link eventKey={8}>Assets</Nav.Link>
-            <Nav.Link eventKey={9}>Retirement</Nav.Link>
+            <span id={"overview-tab"}><Nav.Link eventKey={0}>Overview</Nav.Link></span>
+            <span id={"budgets-tab"}><Nav.Link eventKey={1}>Budgets</Nav.Link></span>
+            <span id={"saving-tab"}><Nav.Link eventKey={2}>Saving</Nav.Link></span>
+            <span id={"investments-tab"}><Nav.Link eventKey={3}>Investments</Nav.Link></span>
+            <span id={"debts-tab"}><Nav.Link eventKey={4}>Debts</Nav.Link></span>
+            <span id={"transactions-tab"}><Nav.Link eventKey={5}>Transactions</Nav.Link></span>
+            <span id={"assets-tab"}><Nav.Link eventKey={8}>Assets</Nav.Link></span>
+            <span id={"retirement-tab"}><Nav.Link eventKey={9}>Retirement</Nav.Link></span>
           </Nav>
           <Nav pullRight onSelect={this.handleTabChange} activeKey={this.state.tabValue}>
             <Nav.Link eventKey={6}>👤</Nav.Link>
             <Nav.Link eventKey={7}>Sign Out</Nav.Link>
           </Nav>
+
+          <Tip text={"View important details"} target={"overview-tab"}/>
+          <Tip text={"Create a budget"} target={"budgets-tab"}/>
+          <Tip text={"Start saving towards a goal"} target={"saving-tab"}/>
+          <Tip text={"Track important investments"} target={"investments-tab"}/>
+          <Tip text={"Create a plan to destroy debt"} target={"debts-tab"}/>
+          <Tip text={"Track your spending"} target={"transactions-tab"}/>
+          <Tip text={"List your biggest assets"} target={"assets-tab"}/>
+          <Tip text={"Plan for retirement"} target={"retirement-tab"}/>
         </Navbar.Collapse>
     );
   };
