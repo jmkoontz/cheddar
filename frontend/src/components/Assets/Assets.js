@@ -9,9 +9,11 @@ import {
   Row,
   Col,
   Label,
+  Dropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
+import History from "../../history";
 
 class Assets extends Component {
 
@@ -23,6 +25,9 @@ class Assets extends Component {
       modal: false,
       child: null,
       assetValue: 0,
+
+      selectedCurrency: 'USD',
+      currencyConverterOpen: false,
 
       show1: true,
       show2: true,
@@ -93,6 +98,27 @@ class Assets extends Component {
     });
   };
 
+  currencyToggle = () => {
+    this.setState({
+      currencyConverterOpen: !this.state.currencyConverterOpen,
+    });
+  };
+
+  selectCurrency = (ev) => {
+    this.setState({
+      selectedCurrency: ev.target.innerText,
+    });
+  };
+
+  /*convertCurrency = () => {
+    convertCurrency(1, 'USD', 'BRL').then(response => response);
+    console.log(response);
+  };*/
+
+  goToRecurringPayments = () => {
+    History.push("/recurring-payments");
+  };
+
   render(){
 
     return (
@@ -101,6 +127,20 @@ class Assets extends Component {
         <Row>
           <Label className='asset-label'>Total Asset Value: ${this.state.assetValue}</Label>
         </Row>
+        <Row>
+          <Dropdown isOpen={this.state.currencyConverterOpen} toggle={this.currencyToggle}>
+            <DropdownToggle caret>{this.state.selectedCurrency}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={this.selectCurrency}>USD</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>EUR</DropdownItem>
+              <DropdownItem onClick={this.selectCurrency}>JPY</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </Row>
+        <Row>
+          <Button size='sm' onClick={this.goToRecurringPayments}>Go To Recurring Payments</Button>
+        </Row>
+
         <hr/>
 
         <Modal isOpen={this.state.modal} toggle={this.closeModal}>
