@@ -451,11 +451,47 @@ class Investments extends React.Component {
     getData = async (companyName) => {
         let res;
         res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
-        var data = this.state.data;
-        data[companyName] = res;
-        this.setState({
-            data: data,
-        });
+        if(res.data.Note && res.data.Note.includes("API call frequency")){
+            //change API keys
+            if(this.state.key == keys.AlphaVantageAPIKey){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey2,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey2){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey3,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey3){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey4,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey4){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey5,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey5){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey6,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey6){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey,
+                },() => {this.getData(companyName)});
+            }
+            //alert("Changing Keys");
+        }
+        else{
+            var data = this.state.data;
+            data[companyName] = res;
+            this.setState({
+                data: data,
+            });
+        }
     }
 
     emptyGraph = () => {
@@ -494,14 +530,17 @@ class Investments extends React.Component {
                 
                 <Container fluid="true">
                     <Row>
-                        <Col>
+                        <Col md={3}>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                            
+                        </Col>
+                        <Col sm={3}>
                             <DropdownButton id="dropdown-basic-button" title="Dropdown button">
                                 <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
                                 <Dropdown.Item onSelect={ () => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
                             </DropdownButton>
                         </Col>
-                        <Col className="text-right">
+                        <Col md={6} className="text-right">
                             <Button variant="link" onClick={this.showModal2}>Tips</Button>
                         </Col>
                     </Row>
