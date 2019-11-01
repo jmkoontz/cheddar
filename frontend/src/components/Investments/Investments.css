@@ -2,6 +2,16 @@
     margin-bottom: 15px;
 }
 
+.test {
+    border: none;
+}
+
+.overview {
+    margin-top:100px;
+    width:100%;
+    border: none;
+}
+
 .cardContainer {
     width:100%;
 }
