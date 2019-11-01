@@ -13,6 +13,7 @@ import {
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
+import History from "../../history";
 
 class RecurringPayments extends Component {
 
@@ -88,6 +89,10 @@ class RecurringPayments extends Component {
     });
   };
 
+  goToAssets = () => {
+    History.push("/assets");
+  };
+
   /*convertCurrency = () => {
     convertCurrency(1, 'USD', 'BRL').then(response => response);
     console.log(response);
@@ -122,6 +127,7 @@ class RecurringPayments extends Component {
 
         <div className='right'>
           <Row>
+            <Button size='sm' onClick={this.goToAssets}>Go To Assets</Button>
             <Col>
               <Button className='signInButton' size='sm' onClick={this.openModal}>Add New Recurring Payment </Button>
             </Col>

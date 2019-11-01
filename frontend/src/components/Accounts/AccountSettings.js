@@ -25,7 +25,9 @@ class AccountSettings extends Component {
       current_password: null,
 
       countryOpen: false,
-      selectedCountry: "United States"
+
+      selectedState: "Indiana",
+      states: ["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Minor Outlying Islands", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "U.S. Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"],
     };
 
   }
@@ -159,7 +161,7 @@ class AccountSettings extends Component {
 
   selectCountry = (ev) => {
     this.setState({
-      selectedCountry: ev.target.innerText,
+      selectedState: ev.target.innerText,
     });
   };
 
@@ -208,11 +210,9 @@ class AccountSettings extends Component {
           </Col>
           <Col md='3'>
             <Dropdown size='lg' isOpen={this.state.countryOpen} toggle={this.countryToggle}>
-              <DropdownToggle caret>{this.state.selectedCountry}</DropdownToggle>
+              <DropdownToggle caret>{this.state.selectedState}</DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={this.selectCountry}>United States</DropdownItem>
-                <DropdownItem onClick={this.selectCountry}>Germany</DropdownItem>
-                <DropdownItem onClick={this.selectCountry}>Japan</DropdownItem>
+                <DropdownItem onClick={this.selectCountry}> California</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </Col>
