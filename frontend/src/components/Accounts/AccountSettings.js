@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col,   Dropdown, DropdownToggle, DropdownMenu, DropdownItem
+} from 'reactstrap';
 import firebase from '../../firebase.js';
 import axios from 'axios';
 import './SignIn.css'
@@ -22,6 +23,9 @@ class AccountSettings extends Component {
 
       reauthenticate_visible: false,
       current_password: null,
+
+      countryOpen: false,
+      selectedCountry: "United States"
     };
 
   }
@@ -147,6 +151,18 @@ class AccountSettings extends Component {
     return firebase.auth().currentUser.email;
   };
 
+  countryToggle = () => {
+    this.setState({
+      countryOpen: !this.state.countryOpen,
+    });
+  };
+
+  selectCountry = (ev) => {
+    this.setState({
+      selectedCountry: ev.target.innerText,
+    });
+  };
+
   render(){
     return(
 
@@ -186,9 +202,19 @@ class AccountSettings extends Component {
         </Modal>
 
         <Row>
-          <Col md='4'/>
+          <Col md='2'/>
           <Col md='4'>
             <Input type='text' readOnly bsSize='lg' placeholder={this.getEmail()}/>
+          </Col>
+          <Col md='3'>
+            <Dropdown size='lg' isOpen={this.state.countryOpen} toggle={this.countryToggle}>
+              <DropdownToggle caret>{this.state.selectedCountry}</DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={this.selectCountry}>United States</DropdownItem>
+                <DropdownItem onClick={this.selectCountry}>Germany</DropdownItem>
+                <DropdownItem onClick={this.selectCountry}>Japan</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </Col>
         </Row>
 
