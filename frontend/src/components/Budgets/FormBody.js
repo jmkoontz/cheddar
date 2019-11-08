@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupText, InputGroupAddon } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import '../../css/Budgets.css';
 import DropDownHelper from './DropDownHelper';
@@ -9,6 +9,7 @@ function FormBody(props) {
   const [dropDownObj, setDropDownObj] = useState({ hello: "wordl", name: "butt" });
   const [localCategories, setLocalCategories] = useState(props.categoryArr);  // Holds a local copy of the category array
   const [budName, setBudName] = useState(props.budgetName);
+  const [catName, setCatName] = useState(""); // name of custom category
 
   /**
      * Handles user input from the modal form and updates the state
@@ -44,6 +45,16 @@ function FormBody(props) {
   const handleNameChange = (event) => {
     setBudName(event.target.value);
     props.setBudgetName(event.target.value);
+  }
+
+  const handleCategoryNameChange = (event) => {
+    setCatName(event.target.value);
+  }
+
+  // create custom category
+  const handleCustomCategory = (event) => {
+    props.setDropDown(catName);
+    props.toggleDropDown(!props.dropdown);
   }
 
   useEffect(
@@ -92,7 +103,7 @@ function FormBody(props) {
             ?
             <Button onClick={props.resetDropDown} className={"addSpace"} color="primary" disabled>Add Category</Button>
             :
-            <Button onClick={props.resetDropDown} className={"addSpace"} color="primary">Add Category</Button>
+            <Button onClick={() => {props.resetDropDown(); setCatName("")}} className={"addSpace"} color="primary">Add Category</Button>
           }
         </Col>
         <Col className="buttonFix">
@@ -110,7 +121,12 @@ function FormBody(props) {
               <DropdownItem onClick={() => props.setDropDown("Housing")}>Housing</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Gas")}>Gas</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Utilities")}>Utilities</DropdownItem>
-              <DropdownItem onClick={() => props.setDropDown("Other")}>Other</DropdownItem>
+              <InputGroup>
+                <Input onChange={handleCategoryNameChange} type="text" placeholder="Custom" value={catName} />
+                <InputGroupAddon addonType="append">
+                  <Button disabled={catName.length === 0} onClick={handleCustomCategory}>Submit</Button>
+                </InputGroupAddon>
+              </InputGroup>
             </DropdownMenu>
           </Dropdown>
         </Col>
