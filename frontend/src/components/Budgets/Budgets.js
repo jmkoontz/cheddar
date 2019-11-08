@@ -230,7 +230,7 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
-
+		console.log(categoryArr)
 		let tmpName;
 		if (budgetName === curBudget.name) {
 			tmpName = "";

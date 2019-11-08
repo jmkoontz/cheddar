@@ -47,14 +47,30 @@ function FormBody(props) {
     props.setBudgetName(event.target.value);
   }
 
+  // change category name in add category dropdown
   const handleCategoryNameChange = (event) => {
     setCatName(event.target.value);
+  }
+
+  // handle change in custom category name when editing
+  const handleCategoryNameEdit = (index, event) => {
+    localCategories[index].name = event.target.value;
+    setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
+    props.setCategoryArr(localCategories);
   }
 
   // create custom category
   const handleCustomCategory = (event) => {
     props.setDropDown(catName);
     props.toggleDropDown(!props.dropdown);
+  }
+
+  // check if category is a custom category
+  const isCustomCategory = (name) => {
+    const presetNames = ['Income', 'Entertainment', 'Food and Groceries', 'Savings',
+      'Debt', 'Housing', 'Gas', 'Utilities'];
+
+    return !presetNames.includes(name);
   }
 
   useEffect(
@@ -77,7 +93,16 @@ function FormBody(props) {
 
         {localCategories.map((item, index) =>
           <FormGroup key={index}>
-            <Label for={"" + index}>{item.name}</Label>
+            {props.editModal && isCustomCategory(item.name)
+              ?
+              <Row>
+                <Col sm={4}>
+                  <Input onChange={(ev) => handleCategoryNameEdit(index, ev)} type="text" value={item.name} />
+                </Col>
+              </Row>
+              :
+              <Label for={"" + index}>{item.name}</Label>
+            }
             <Row>
               <Col sm={10}>
                 <Input
