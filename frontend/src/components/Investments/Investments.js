@@ -20,8 +20,9 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
-import Graphs from "./Graphs";
 import '../App.css';
+import StocksGraph from "./StocksGraph";
+import GrowthGraph from "./GrowthGraph";
 
 const tips = (
     <Modal.Body>
@@ -75,11 +76,12 @@ class Investments extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            data: [],
-            defaultRate: "Weekly",
+            data: {},
+            defaultRate: "Daily",
             company: "MSFT",
             companyName: "Microsoft",
-            frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
+            frequency: "TIME_SERIES_DAILY_ADJUSTED",
+            frequencyCounter: 5,
             key: keys.AlphaVantageAPIKey,
             show: false,
             show2: false,
@@ -88,6 +90,17 @@ class Investments extends React.Component {
                 "Apple": {"id":"AAPL","tracked":false},
                 "Google": {"id":"GOOG","tracked":false},
                 "Microsoft": {"id":"MSFT","tracked":false},
+                "American Eagle Outfitters": {"id":"AEO","tracked":false},
+                "Starbucks": {"id":"SBUX","tracked":false},
+                "Facebook": {"id":"FB","tracked":false},
+                "AT&T": {"id":"T","tracked":false},
+                "Netflix": {"id":"NFLX","tracked":false},
+                "Ford Motor Company": {"id":"F","tracked":false},
+                "Target": {"id":"TGT","tracked":false},
+                "Bank of America": {"id":"BAC","tracked":false},
+                "Exxon Mobil": {"id":"XOM","tracked":false},
+                "Tesla Inc": {"id":"TSLA","tracked":false},
+                "Yum! Brands Inc": {"id":"YUM","tracked":false},
             },
             investments: [],
             selectedCompanies: [],
@@ -95,6 +108,7 @@ class Investments extends React.Component {
             uid: sessionStorage.getItem('user'),
             enteredInvestment: 0,
             enteredInvestmentDate: "",
+            enteredInvestmentShares: 1,
             newInvestment: {},
             companyOptions: {},
         }
@@ -103,7 +117,6 @@ class Investments extends React.Component {
 
     componentDidMount(){
         const test = {uid: this.state.uid};
-        console.log(this.state.uid);
         axios.get("http://localhost:8080/Cheddar/Investments", {
             params: test,
                 }).then(res => {
@@ -117,6 +130,12 @@ class Investments extends React.Component {
                         companies: companies,
                         selectedCompanies: res.data.trackedCompanies,
                         investments: res.data.investments,
+                    },() => {
+                        var comps = this.state.selectedCompanies;
+                        let i =0;
+                        for(i = 0;i < comps.length; i++){
+                            this.getData(comps[i]);
+                        }
                     });
             //console.log(res);
         });
@@ -144,6 +163,7 @@ class Investments extends React.Component {
                 //this.makeApiRequest();
             }       
         }
+        let i=0;
     }
 
     shouldComponentUpdate(nextProps,nextState){
@@ -220,6 +240,39 @@ class Investments extends React.Component {
             case "Google":
                 name = "GOOG";
                 break;
+            case "American Eagle Outfitters":
+                name = "AEO";
+                break;
+            case "Starbucks":
+                name = "SBUX";
+                break;
+            case "Facebook":
+                name = "FB";
+                break;
+            case "AT&T":
+                name = "T";
+                break;
+            case "Netflix":
+                name = "NFLX";
+                break;
+            case "Ford Motor Company":
+                name = "F";
+                break;
+            case "Target":
+                name = "TGT";
+                break;
+            case "Bank of America":
+                name = "BAC";
+                break;
+            case "Exxon Mobil":
+                name = "XOM";
+                break;
+            case "Tesla Inc":
+                name = "TSLA";
+                break;
+            case "Yum! Brands Inc":
+                name = "YUM";
+                break;
         }
         this.setState({
             company: name,
@@ -227,7 +280,6 @@ class Investments extends React.Component {
         },() => {
             //this.makeApiRequest();
         });
-        console.log(param);
     }
 
     showModal = () => {
@@ -294,20 +346,36 @@ class Investments extends React.Component {
             });
             //console.log(res);
         }
+        this.getData(company);
         
     }
 
     updateInvestedAmount = (amount) => {
-        console.log(amount.target.value);
         this.setState({
             enteredInvestment: amount.target.value,
         });
     }
 
     updateInvestmentDate = (date) => {
-        console.log(date.target.value);
         this.setState({
             enteredInvestmentDate: date.target.value,
+        });
+    }
+
+    updateInvestmentShares = (shares) => {
+        this.setState({
+            enteredInvestmentShares: shares.target.value,
+        });
+    }
+
+    updateInvestmentFavorite = (favorite) => {
+        var value = false;
+        if(favorite.target.value == "on"){
+            value = true;
+        }
+
+        this.setState({
+            enteredInvestmentFavorite: value,
         });
     }
 
@@ -315,39 +383,133 @@ class Investments extends React.Component {
         let investment = {};
         investment["type"] = "stock";
         investment["startingInvestment"] = this.state.enteredInvestment;
+        investment["shares"] = this.state.enteredInvestmentShares;
         investment["startDate"] = this.state.enteredInvestmentDate;
+        investment["favorite"] = this.state.enteredInvestmentFavorite;
         investment["company"] = this.state.companyName;
         this.setState({
             newInvestment: investment,
             enteredInvestment: 0,
             enteredInvestmentDate: "",
-        },()=>{console.log(this.state.newInvestment)});
+        });
         let i = 0;
         var proceed = true;
+        var investments = this.state.investments;
         for(i=0;i<this.state.investments.length;i++){
             if(this.state.investments[i]){
                 if(this.state.investments[i].company && this.state.investments[i].company == this.state.companyName){
-                    proceed = false;
+                    investments = investments.splice(i,1);
+                    
                 }
             }
         }
         if(proceed){
-            console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
+            //console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
             this.state.investments.push(investment);
             axios.post("http://localhost:8080/Cheddar/Investments", {
                 "uid": this.state.uid,
-                "investments": this.state.investments,
+                "investments": investments,
             }).then(res => {
                 this.showInfoModal();
             });
         }
         else{
             alert("Investment already exists");
+            this.showInfoModal();
+            /*console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
+            this.state.investments.push(investment);
+            axios.post("http://localhost:8080/Cheddar/Investments", {
+                "uid": this.state.uid,
+                "investments": this.state.investments,
+            }).then(res => {
+                this.showInfoModal();
+            });*/
         }
         
     }
 
-    
+    setFrequency = (frequency) => {
+        var newFrequencyCounter;
+        if(frequency === "Weekly"){
+            newFrequencyCounter = 5;
+        }
+        else{
+            newFrequencyCounter = 1;
+        }
+        this.setState({
+            defaultRate: frequency,
+            data: {},
+            frequencyCounter: newFrequencyCounter,
+        },() => {
+            var comps = this.state.selectedCompanies;
+            let i =0;
+            for(i = 0;i < comps.length; i++){
+                this.getData(comps[i]);
+            }});
+    }
+
+    getData = async (companyName) => {
+        let res;
+        res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
+        if(res.data.Note && res.data.Note.includes("API call frequency")){
+            //change API keys
+            if(this.state.key == keys.AlphaVantageAPIKey){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey2,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey2){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey3,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey3){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey4,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey4){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey5,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey5){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey6,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey6){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey,
+                },() => {this.getData(companyName)});
+            }
+            //alert("Changing Keys");
+        }
+        else{
+            var data = this.state.data;
+            data[companyName] = res;
+            this.setState({
+                data: data,
+            });
+        }
+    }
+
+    emptyGraph = () => {
+        if(this.state.selectedCompanies.length == 0){
+            return null;
+        }
+        else{
+            return (<Loader/>)
+        }
+    }
+    emptyGrowthGraph = () => {
+        if(this.state.investments.length == 0){
+            return null;
+        }
+        else{
+            return (<Loader/>)
+        }
+    }
 
     render () {
         const options = {
@@ -368,10 +530,17 @@ class Investments extends React.Component {
                 
                 <Container fluid="true">
                     <Row>
-                        <Col>
+                        <Col md={3}>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                            
                         </Col>
-                        <Col className="text-right">
+                        <Col sm={3}>
+                            <DropdownButton id="dropdown-basic-button" title="Dropdown button">
+                                <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
+                                <Dropdown.Item onSelect={ () => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
+                            </DropdownButton>
+                        </Col>
+                        <Col md={6} className="text-right">
                             <Button variant="link" onClick={this.showModal2}>Tips</Button>
                         </Col>
                     </Row>
@@ -383,20 +552,34 @@ class Investments extends React.Component {
                         <Row>
                             <Col className="card">
                             {
+                                (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.selectedCompanies.length > 0) ?
                                 this.state.selectedCompanies.map((name,index)=>{
                                     return(
                                         <div>
-                                        <Graphs key={name+"Graph"} companyName={name} companyOptions={this.state.companyOptions}/>
-                                        <Button onClick={() => { console.log(name + "BUTTON"); this.showInfoModal(name)}}>Add/Edit Investment</Button>
+                                        <StocksGraph frequencyCounter={this.state.frequencyCounter} rate={this.state.defaultRate} frequency={this.state.frequency} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
+                                        <Button onClick={() => { this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                         </div>
                                     )
-                                })
+                                }) : this.emptyGraph()
                             }
                             
                                 
                             </Col>
                             <Col className="card">
-                                Growth Graph Here
+                            {
+                                (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.investments.length > 0) ?
+                                this.state.investments.map((investment,index)=>{
+                                    if(this.state.selectedCompanies.includes(investment["company"])){
+                                    return(
+                                        <GrowthGraph rate={this.state.defaultRate} frequency={this.state.frequency} frequencyCounter={this.state.frequencyCounter} investment={investment} companyName={investment["company"]} data={this.state.data[investment["company"]]} key={investment["company"]+"GrowthGraph"} companyName={investment["company"]}/>
+                                    )
+                                    }
+                                    else{
+                                        return null
+                                    }
+                                }) : this.emptyGrowthGraph()
+                            }
+                                
                             </Col>
                         </Row>
                     </Container>
@@ -450,10 +633,12 @@ class Investments extends React.Component {
                             <Form.Group controlId="formBasic">
                                 <Form.Label>Invested Amount</Form.Label>
                                 <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
+                                <Form.Label>Investment Shares</Form.Label>
+                                <Form.Control as="input" type="number" defaultValue={this.state.updateInvestmentShares} onChange={(event)=>{this.updateInvestmentShares(event)}}/>
                                 <Form.Label>Date Invested</Form.Label>
                                 <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
                                 <Form.Label>Favorite</Form.Label>
-                                <Form.Control as="input" type="checkbox" onChange={console.log("Favorite Checked/Unchecked")/*(event)=>{this.updateInvestmentDate(event)}*/}/>
+                                <Form.Control as="input" type="checkbox" onChange={(event)=>{this.updateInvestmentFavorite(event)}}/>
                             </Form.Group>
                             <Button variant="primary" onClick={() => this.updateInvestment()}>
                                 Submit
