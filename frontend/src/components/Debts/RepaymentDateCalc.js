@@ -159,7 +159,7 @@ class RepaymentDateCalc extends React.Component {
           <br/>
           <label>
             <b>Monthly Contribution</b><br/>$
-            <input name="monthlyContribution" type="number" value={this.state.monthlyContribution} onChange={this.handleChange} />
+            <input name="monthlyContribution" type="number" step="0.01" value={this.state.monthlyContribution} onChange={this.handleChange} />
           </label><br/>
         </form>
         <Button variant="secondary" onClick={() => this.setState({debt: '', debtId: '', month: '', year: '', monthlyContribution: ''})}>

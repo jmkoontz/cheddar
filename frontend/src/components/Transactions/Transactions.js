@@ -32,7 +32,7 @@ function Transactions() {
 
 	/**
 	 * Helper method to show each data point on the chart
-	 * @param {Object} e 
+	 * @param {Object} e
 	 */
 	const showHoverData = (e) => {
 		setHoverData(e.target.category);
@@ -77,8 +77,6 @@ function Transactions() {
 
 		}
 
-		// Variable to keep track of how much was spent in this budget before the given time frame
-		//let preTotal = 0;
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
 			// Add each transaction into its respective array index
@@ -221,7 +219,7 @@ function Transactions() {
 
 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
-				// handle success				
+				// handle success
 				for (let i in response.data) {
 					let date = new Date(response.data[i].date);
 					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
