@@ -84,7 +84,6 @@ function Budgets() {
 	 * @param {String: contains the tab index} newTab
 	 */
 	const setNewTab = (newTab) => {
-		//console.log(newTab);
 		setTab(newTab);
 		setCurBudget(budgetList[parseInt(newTab)]);
 		setFavorite(budgetList[parseInt(newTab)].favorite);
@@ -98,7 +97,6 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
-		console.log(budg)
 		if (budg) {
 			setFavorite(budg.favorite);
 		}
@@ -189,7 +187,6 @@ function Budgets() {
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
-				//console.log(response);
 				setModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
@@ -212,7 +209,6 @@ function Budgets() {
 		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
 		).then(function (response) {
 
-			//console.log(response);
 			setModal(false);
 			setCategoryArr([]);
 			setButtonDisplay(false);
@@ -230,7 +226,6 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
-		console.log(categoryArr)
 		let tmpName;
 		if (budgetName === curBudget.name) {
 			tmpName = "";
@@ -249,7 +244,6 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
-		//console.log(removedIncomeArr)
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 			{
 				name: tmpName,
@@ -257,7 +251,6 @@ function Budgets() {
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
-				console.log(response);
 				setEditModal(false);
 				setModal(false);
 				setButtonDisplay(false);

@@ -279,7 +279,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // get old transactions for a specific time period
+  // get old transactions for a specific budget period
   app.get('/Cheddar/Budgets/Budget/OldTransactions/:uid/:budgetName/:index', async (req, res) => {
     let data;
     try {

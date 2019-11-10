@@ -73,8 +73,7 @@ function BudgetTabs(props) {
 					response.data[i].shortDate = getShortDate(date);
 				}
 
-				//setTransactions(response.data);
-				categorizeData(response.data);
+				categorizeData(response.data, -1);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -90,19 +89,38 @@ function BudgetTabs(props) {
 					response.data[i].shortDate = getShortDate(date);
 				}
 
-				// setTransactions(response.data);
-				categorizeData(response.data);
+				// console.log(response.data)
+				console.log(props.curBudget)
+				categorizeData(response.data, index);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	}
 
-	const categorizeData = (transacts) => {
+	const categorizeData = (transacts, index) => {
 		// Create the category objects
 		setTransactions(transacts);
 		let arrayOfObjects = [];
 		let categories = props.curBudget.budgetCategories;
+
+		// use old set of categories rather than current set
+		if (index >= 0) {
+			let tempCategories = [];
+			for (let i in props.curBudget.budgetCategories) {
+				if (props.curBudget.budgetCategories[i].oldTransactions[index]) {
+					let tempCategory = {
+						name: props.curBudget.budgetCategories[i].name,
+						amount: props.curBudget.budgetCategories[i].oldTransactions[index].amount
+					};
+
+					tempCategories.push(tempCategory);
+				}
+			}
+
+			categories = tempCategories;
+			console.log(categories)
+		}
 
 		for (let x = 0; x < categories.length; x++) {
 			// Generate a new category object
@@ -129,7 +147,7 @@ function BudgetTabs(props) {
 			}
 		}
 
-		
+
 		setSpendingByCategory(arrayOfObjects);
 	};
 
