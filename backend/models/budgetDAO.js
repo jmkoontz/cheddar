@@ -650,7 +650,7 @@ export async function transferOldTransactions(uid) {
   let modified = false;
   for (let i in budgets) {
     // legacy compatibility
-    if (!budgets[i].nextUpdate || budgets[i].type !== 'Custom')
+    if (!budgets[i].nextUpdate || (budgets[i].type !== 'Custom' && budgets[i].type !== 'Percentage-Based'))
       continue;
 
     if (budgets[i].nextUpdate <= new Date(Date.now())) {
