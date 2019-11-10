@@ -177,10 +177,14 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
+		let tmpPickedCategory = pickedCategory;
+		if (pickedCategory === 'Standard')
+			tmpPickedCategory = 'Custom';
+
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
 				name: budgetName,
-				type: pickedCategory,
+				type: tmpPickedCategory,
 				income: tmpIncome,
 				timeFrame: pickedTimeFrame,
 				favorite: false,
@@ -331,17 +335,17 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									{/*TODO: clean this up and store it in a state variable*/}
-									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Standard")}>Standard Budget</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>
 						<Col sm={3} />
 						<Col sm={3}>
 							<Dropdown isOpen={timeFrameDropDown} toggle={() => toggleTimeFrameDropDown(!timeFrameDropDown)}>
-								<DropdownToggle disabled={editModal} className="smallText" caret>
+								<DropdownToggle hidden={pickedCategory === 'Fixed Amount'} disabled={editModal}
+										className="smallText" caret>
 									{pickedTimeFrame.charAt(0).toUpperCase() + pickedTimeFrame.slice(1)}
 								</DropdownToggle>
 								<DropdownMenu>
@@ -364,7 +368,7 @@ function Budgets() {
 									:
 									<div />
 								}
-								{pickedCategory === "Loan Payment"
+								{pickedCategory === "Percentage-Based"
 									?
 									<StudentLoan {...formInfo} />
 									: pickedCategory === "Custom"

@@ -89,8 +89,6 @@ function BudgetTabs(props) {
 					response.data[i].shortDate = getShortDate(date);
 				}
 
-				// console.log(response.data)
-				console.log(props.curBudget)
 				categorizeData(response.data, index);
 			})
 			.catch((error) => {
@@ -119,7 +117,6 @@ function BudgetTabs(props) {
 			}
 
 			categories = tempCategories;
-			console.log(categories)
 		}
 
 		for (let x = 0; x < categories.length; x++) {
