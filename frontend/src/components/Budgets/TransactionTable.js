@@ -30,7 +30,6 @@ function TransactionTable(props) {
   useEffect(
     () => {
       if (props.transactions) {
-        console.log(props.transactions)
         setTransactions(props.transactions);
         allTransactions = props.transactions;
       }

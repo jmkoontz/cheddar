@@ -118,6 +118,16 @@ export async function createBudget(uid, budget) {
   if (budgetNames.includes(budget.name))
     return Promise.reject('UserError: Budget with name \"' + budget.name + '\" already exists');
 
+  // protect against duplicate category names
+  for (let i in budget.budgetCategories) {
+    for (let j in budget.budgetCategories) {
+      if (i !== j) {
+        if (budget.budgetCategories[i].name.toLowerCase() === budget.budgetCategories[j].name.toLowerCase())
+          return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
+      }
+    }
+  }
+
   // set update date for budget
   let currentDate = new Date(Date.now());
   currentDate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), currentDate.getDate());
@@ -176,8 +186,19 @@ export async function editBudget(uid, budgetName, changes) {
   if (changes.income)
     updateClause.$set['budgets.$.income'] = changes.income;
 
-  if (changes.budgetCategories)
+  if (changes.budgetCategories) {
+    // protect against duplicate category names
+    for (let i in changes.budgetCategories) {
+      for (let j in changes.budgetCategories) {
+        if (i !== j) {
+          if (changes.budgetCategories[i].name.toLowerCase() === changes.budgetCategories[j].name.toLowerCase())
+            return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
+        }
+      }
+    }
+
     updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
+  }
 
   return userModel.findOneAndUpdate(
     findClause,
