@@ -197,9 +197,11 @@ function Budgets() {
 
 
 			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
+				if (error.response && error.response.data) {
+					console.log(error.response.data);
+					// setErrMsg(error);
+					// setCreationAlert(true);
+				}
 			});
 	};
 
@@ -228,7 +230,7 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
-
+		console.log(categoryArr)
 		let tmpName;
 		if (budgetName === curBudget.name) {
 			tmpName = "";
@@ -383,8 +385,6 @@ function Budgets() {
 												{/* Other categories will go here */}
 											</div>
 								}
-
-
 							</ModalBody>
 						</div>
 					}
@@ -409,7 +409,7 @@ function Budgets() {
 
 
 			</Modal>
-		
+
 
 		</div>
 	);
