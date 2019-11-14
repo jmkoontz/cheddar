@@ -427,7 +427,7 @@ function BudgetTabs(props) {
 				?
 				<div>
 					<Popover placement="right" isOpen={toolTipArray[toolIndex] && toolIndex === 0} target="Popover1" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>1/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Click the 'Add' button to add a new Budget.</p>
 							<Row>
@@ -441,7 +441,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 1} target="Popover2" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>2/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Click the 'Edit' button to make changes to a budget you already have.</p>
 							<Row>
@@ -455,7 +455,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 2} target="Popover3" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>3/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Click the 'Delete' button to remove a budget.</p>
 							<Row>
@@ -469,7 +469,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 3} target="Popover4" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>4/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>These progress bars show how much of your allotted money you have spent for each category</p>
 							<Row>
@@ -483,7 +483,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 4} target="Popover5" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>5/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Enter your transactions here so they appear on the Pie chart and progress bars</p>
 							<Row>
@@ -497,7 +497,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 5} target="Popover6" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>6/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Click the 'View Transactions' button to see a list of all the transactions you've made for this budget</p>
 							<Row>
@@ -511,7 +511,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 6} target="Popover7" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>7/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Use these buttons to toggle between time periods to see older transactions</p>
 							<Row>
@@ -525,7 +525,7 @@ function BudgetTabs(props) {
 						</PopoverBody>
 					</Popover>
 					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 7} target="Popover8" >
-						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverHeader>8/8 Tool Tip:</PopoverHeader>
 						<PopoverBody>
 							<p>Don't forget to favorite a budget so that it appears on your homepage and loads first when looking at your budgets</p>
 							<Row>
