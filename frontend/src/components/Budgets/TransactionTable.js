@@ -186,7 +186,7 @@ function TransactionTable(props) {
     <div>
       <Row>
         <Col sm="3">
-          <Button onClick={toggle} className="tableButton">
+          <Button id="Popover6" onClick={toggle} className="tableButton">
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
         </Col>
