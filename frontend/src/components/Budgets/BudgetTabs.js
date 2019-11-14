@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
 	Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Modal, ModalHeader,
-	ModalBody, ModalFooter, Button, ButtonGroup
+	ModalBody, ModalFooter, Button, ButtonGroup, Popover, PopoverHeader, PopoverBody
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight, faHeart } from '@fortawesome/free-solid-svg-icons';
@@ -29,6 +29,33 @@ function BudgetTabs(props) {
 	const [daysRemaining, setDaysRemaining] = useState();	// days remaining in current period
 	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
+
+	const [toolTipArray, setToolTipArray] = useState([false, false, false, false, false]);	// Array of the tool tip states
+	const [toolIndex, setToolIndex] = useState();	// Index to track what the current tool tip is
+
+	const getPop = (index) => {
+		return toolTipArray[index];
+	}
+
+	// helper for closing a tool tip, takes the index of the tool tip to toggle
+	const popClose = (index) => {
+		let tmpArray = JSON.parse(JSON.stringify(toolTipArray));
+		tmpArray[index] = !tmpArray[index];
+		setToolTipArray(tmpArray);
+		console.log(tmpArray);
+	}
+
+	// helper for opening the next tool tip, takes the index of the tool tip to toggle
+	const popNext = (index) => {
+		let newIndex = index + 1;
+		let tmpArray = JSON.parse(JSON.stringify(toolTipArray));
+		tmpArray[index] = !tmpArray[index];
+		tmpArray[newIndex] = !tmpArray[newIndex];
+		setToolTipArray(tmpArray);
+		setToolIndex(newIndex);
+		console.log(tmpArray);
+		console.log(newIndex);
+	}
 
 	// delete budget helper
 	const deleteHelper = (name) => {
@@ -129,7 +156,7 @@ function BudgetTabs(props) {
 			}
 		}
 
-		
+
 		setSpendingByCategory(arrayOfObjects);
 	};
 
@@ -228,6 +255,11 @@ function BudgetTabs(props) {
 			}
 
 			setBudgetPeriodIndex(-1);
+			if (props.curBudget) {
+				popClose(0);
+				setToolIndex(0);
+			}
+
 		},
 		[props.curBudget]
 	);
@@ -253,7 +285,7 @@ function BudgetTabs(props) {
 			</Row>
 			<Row>
 				<Col sm={3} />
-				<Col sm={6} >
+				<Col sm={6} id="Popover1">
 					<Nav tabs>
 						{props.budgetList.map((item, index) =>
 							<div key={index}>
@@ -267,6 +299,7 @@ function BudgetTabs(props) {
 						<NavItem >
 							<Button outline color="secondary" onClick={() => { props.setModal(true) }}>Add +</Button>
 						</NavItem>
+
 					</Nav>
 				</Col>
 				<Col sm={3} />
@@ -282,7 +315,7 @@ function BudgetTabs(props) {
 									<Row>
 										<Col>
 											<ButtonGroup>
-												<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
+												<Button id="Popover7" onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
 													<FontAwesomeIcon icon={faAngleLeft} />
 												</Button>
 												<Button disabled>{startDate} - {endDate}</Button>
@@ -324,12 +357,12 @@ function BudgetTabs(props) {
 								<Row>
 									<Col sm={3} />
 									<Col >
-										<Button className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
+										<Button id="Popover3" className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
 									</Col>
 									<Col>
-										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
+										<Button id="Popover2" className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
-									<Col>
+									<Col id="Popover8">
 										{props.favorite
 											?
 											<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={() => unfavoriteBudget()} />
@@ -344,7 +377,7 @@ function BudgetTabs(props) {
 							</Col>
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
-								<div className="addSpace">
+								<div id="Popover4" className="addSpace">
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
 										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}
@@ -363,9 +396,11 @@ function BudgetTabs(props) {
 							<Col sm={10}>
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
-									<TransactionTable {...props} transactions={transactions} tableMode={tableMode}
-										tableCategory={tableCategory} getTransactions={getTransactions}
-										budgetPeriodIndex={budgetPeriodIndex} />
+									<div >
+										<TransactionTable {...props} transactions={transactions} tableMode={tableMode}
+											tableCategory={tableCategory} getTransactions={getTransactions}
+											budgetPeriodIndex={budgetPeriodIndex} />
+									</div>
 									:
 									<p>Loading...</p>
 								}
@@ -387,6 +422,123 @@ function BudgetTabs(props) {
 					<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
 				</ModalFooter>
 			</Modal>
+
+			{props.curBudget
+				?
+				<div>
+					<Popover placement="right" isOpen={toolTipArray[toolIndex] && toolIndex === 0} target="Popover1" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Click the 'Add' button to add a new Budget.</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(0)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(0)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 1} target="Popover2" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Click the 'Edit' button to make changes to a budget you already have.</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(1)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(1)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 2} target="Popover3" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Click the 'Delete' button to remove a budget.</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(2)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(2)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 3} target="Popover4" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>These progress bars show how much of your allotted money you have spent for each category</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(3)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(3)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 4} target="Popover5" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Enter your transactions here so they appear on the Pie chart and progress bars</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(4)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(4)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 5} target="Popover6" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Click the 'View Transactions' button to see a list of all the transactions you've made for this budget</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(5)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(5)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 6} target="Popover7" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Use these buttons to toggle between time periods to see older transactions</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popNext(6)} color="primary">Next Tip</Button>
+								</Col>
+								<Col>
+									<Button onClick={() => popClose(6)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 7} target="Popover8" >
+						<PopoverHeader>Tool Tip:</PopoverHeader>
+						<PopoverBody>
+							<p>Don't forget to favorite a budget so that it appears on your homepage and loads first when looking at your budgets</p>
+							<Row>
+								<Col>
+									<Button onClick={() => popClose(7)}>Close</Button>
+								</Col>
+							</Row>
+						</PopoverBody>
+					</Popover>
+				</div>
+				:
+				null
+			}
 		</div>
 	);
 }
