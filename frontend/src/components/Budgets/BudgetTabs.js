@@ -31,7 +31,7 @@ function BudgetTabs(props) {
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
 
 	const [toolTipArray, setToolTipArray] = useState([false, false, false, false, false, false, false, false]);	// Array of the tool tip states
-	const [toolIndex, setToolIndex] = useState();	// Index to track what the current tool tip is
+	const [toolIndex, setToolIndex] = useState(0);	// Index to track what the current tool tip is
 	const [toolOn, setToolOn] = useState(false); // Boolean to determine if tool tips should be loaded
 
 	// helper for restarting the tool tips
@@ -297,12 +297,12 @@ function BudgetTabs(props) {
 							</div>
 						)}
 						<NavItem >
-							<Button id="Popover1" outline color="secondary" onClick={() => { props.setModal(true) }}>Add +</Button>
+							<Button id={"Popover1"} outline color="secondary" onClick={() => { props.setModal(true) }}>Add +</Button>
 						</NavItem>
 
 					</Nav>
 				</Col>
-				<Col sm={3}>
+				<Col sm={2}>
 					<Button onClick={resetTips} outline color="primary">Start Tool Tips</Button>
 				</Col>
 			</Row>
@@ -316,7 +316,7 @@ function BudgetTabs(props) {
 								<Col sm={4}>
 									<Row>
 										<Col>
-											<ButtonGroup id="Popover7">
+											<ButtonGroup id={"Popover7" + item.name}>
 												<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
 													<FontAwesomeIcon icon={faAngleLeft} />
 												</Button>
@@ -358,13 +358,13 @@ function BudgetTabs(props) {
 								</div>
 								<Row>
 									<Col sm={3} />
-									<Col id="Popover3">
+									<Col id={"Popover3" + item.name}>
 										<Button className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
 									</Col>
-									<Col id="Popover2">
+									<Col id={"Popover2" + item.name}>
 										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
-									<Col id="Popover8">
+									<Col id={"Popover8" + item.name}>
 										{props.favorite
 											?
 											<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={() => unfavoriteBudget()} />
@@ -379,10 +379,10 @@ function BudgetTabs(props) {
 							</Col>
 							<Col sm={5}>
 								<span className="label" id="title">Spending Progress</span>
-								<div id="Popover4" className="addSpace">
+								<div className="addSpace">
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
-										<RealSpending {...props} transactions={transactions} getTransactions={getTransactions}
+										<RealSpending {...props} itemName={item.name} transactions={transactions} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} currentStartDate={currentStartDate}
 											categorizeData={categorizeData} spendingByCategory={spendingByCategory}
 											daysRemaining={daysRemaining} />
@@ -399,7 +399,7 @@ function BudgetTabs(props) {
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
 									<div >
-										<TransactionTable {...props} transactions={transactions} tableMode={tableMode}
+										<TransactionTable itemName={item.name} {...props} transactions={transactions} tableMode={tableMode}
 											tableCategory={tableCategory} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} />
 									</div>
@@ -408,7 +408,109 @@ function BudgetTabs(props) {
 								}
 							</Col>
 						</Row>
+						{toolOn && props.curBudget && props.curBudget.name === item.name
+							?
+							<div>
 
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 1} target={"Popover2" + item.name} >
+									<PopoverHeader>2/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>Click the 'Edit' button to make changes to a budget you already have.</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popNext(1)} color="primary">Next Tip</Button>
+											</Col>
+											<Col>
+												<Button onClick={() => popClose(1)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 2} target={"Popover3" + item.name} >
+									<PopoverHeader>3/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>Click the 'Delete' button to remove a budget.</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popNext(2)} color="primary">Next Tip</Button>
+											</Col>
+											<Col>
+												<Button onClick={() => popClose(2)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 3} target={"Popover4" + item.name} >
+									<PopoverHeader>4/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>These progress bars show how much of your allotted money you have spent for each category</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popNext(3)} color="primary">Next Tip</Button>
+											</Col>
+											<Col>
+												<Button onClick={() => popClose(3)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 4} target={"Popover5" + item.name} >
+									<PopoverHeader>5/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>Enter your transactions here so they appear on the Pie chart and progress bars</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popNext(4)} color="primary">Next Tip</Button>
+											</Col>
+											<Col>
+												<Button onClick={() => popClose(4)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 5} target={"Popover6" + item.name} >
+									<PopoverHeader>6/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>Click the 'View Transactions' button to see a list of all the transactions you've made for this budget</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popNext(5)} color="primary">Next Tip</Button>
+											</Col>
+											<Col>
+												<Button onClick={() => popClose(5)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 6} target={"Popover7" + item.name} >
+									<PopoverHeader>7/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>Use these buttons to toggle between time periods to see older transactions</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popNext(6)} color="primary">Next Tip</Button>
+											</Col>
+											<Col>
+												<Button onClick={() => popClose(6)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 7} target={"Popover8" + item.name} >
+									<PopoverHeader>8/8 Tool Tip:</PopoverHeader>
+									<PopoverBody>
+										<p>Don't forget to favorite a budget so that it appears on your homepage and loads first when looking at your budgets</p>
+										<Row>
+											<Col>
+												<Button onClick={() => popClose(7)}>Close</Button>
+											</Col>
+										</Row>
+									</PopoverBody>
+								</Popover>
+							</div>
+							:
+							null
+						}
 					</TabPane>
 
 				)}
@@ -424,120 +526,22 @@ function BudgetTabs(props) {
 					<Button color="secondary" onClick={() => { setDeleteModal(!deleteModal) }}>Cancel</Button>
 				</ModalFooter>
 			</Modal>
-
 			{toolOn
 				?
-				<div>
-					<Popover placement="top" isOpen={toolTipArray[toolIndex] && toolIndex === 0} target="Popover1" >
-						<PopoverHeader>1/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Click the 'Add' button to add a new Budget.</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(0)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(0)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 1} target="Popover2" >
-						<PopoverHeader>2/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Click the 'Edit' button to make changes to a budget you already have.</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(1)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(1)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 2} target="Popover3" >
-						<PopoverHeader>3/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Click the 'Delete' button to remove a budget.</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(2)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(2)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 3} target="Popover4" >
-						<PopoverHeader>4/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>These progress bars show how much of your allotted money you have spent for each category</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(3)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(3)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 4} target="Popover5" >
-						<PopoverHeader>5/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Enter your transactions here so they appear on the Pie chart and progress bars</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(4)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(4)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 5} target="Popover6" >
-						<PopoverHeader>6/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Click the 'View Transactions' button to see a list of all the transactions you've made for this budget</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(5)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(5)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 6} target="Popover7" >
-						<PopoverHeader>7/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Use these buttons to toggle between time periods to see older transactions</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popNext(6)} color="primary">Next Tip</Button>
-								</Col>
-								<Col>
-									<Button onClick={() => popClose(6)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-					<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 7} target="Popover8" >
-						<PopoverHeader>8/8 Tool Tip:</PopoverHeader>
-						<PopoverBody>
-							<p>Don't forget to favorite a budget so that it appears on your homepage and loads first when looking at your budgets</p>
-							<Row>
-								<Col>
-									<Button onClick={() => popClose(7)}>Close</Button>
-								</Col>
-							</Row>
-						</PopoverBody>
-					</Popover>
-				</div>
+				<Popover placement="top" isOpen={toolTipArray[toolIndex] && toolIndex === 0} target={"Popover1"} >
+					<PopoverHeader>1/8 Tool Tip:</PopoverHeader>
+					<PopoverBody>
+						<p>Click the 'Add' button to add a new Budget.</p>
+						<Row>
+							<Col>
+								<Button onClick={() => popNext(0)} color="primary">Next Tip</Button>
+							</Col>
+							<Col>
+								<Button onClick={() => popClose(0)}>Close</Button>
+							</Col>
+						</Row>
+					</PopoverBody>
+				</Popover>
 				:
 				null
 			}
