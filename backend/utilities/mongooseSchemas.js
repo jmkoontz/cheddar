@@ -69,7 +69,8 @@ export const investmentSchema = new mongoose.Schema({
 
 export const allInvestmentsSchema = new mongoose.Schema({
     trackedCompanies: [String],
-    investments: [investmentSchema]
+    investments: [investmentSchema],
+    totalInvestment: Number,
 });
 
 export const retirementHistorySchema = new mongoose.Schema({

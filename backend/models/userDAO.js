@@ -37,7 +37,8 @@ export function createUser(user) {
         return Promise.reject('UserError: Each field must have information');
     }
   }
-
+  console.log("DEBUGGING");
+  console.log(user);
   return userModel.create(user)
     .then((res) => {
       return Promise.resolve(res);
