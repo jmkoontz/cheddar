@@ -302,8 +302,11 @@ function BudgetTabs(props) {
 
 					</Nav>
 				</Col>
+				<Col className="buttonFix" sm={1}>
+					<Button className="buttonFix" onClick={resetTips} outline color="primary">Start Tool Tips</Button>
+				</Col>
 				<Col sm={2}>
-					<Button onClick={resetTips} outline color="primary">Start Tool Tips</Button>
+					<Button className="buttonFix" outline color="danger">Disable Tool Tips</Button>
 				</Col>
 			</Row>
 			<TabContent className="padTop" activeTab={props.tab}>
@@ -316,7 +319,7 @@ function BudgetTabs(props) {
 								<Col sm={4}>
 									<Row>
 										<Col>
-											<ButtonGroup id={"Popover7" + item.name}>
+											<ButtonGroup id={"Popover7" + item._id}>
 												<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
 													<FontAwesomeIcon icon={faAngleLeft} />
 												</Button>
@@ -358,13 +361,13 @@ function BudgetTabs(props) {
 								</div>
 								<Row>
 									<Col sm={3} />
-									<Col id={"Popover3" + item.name}>
+									<Col id={"Popover3" + item._id}>
 										<Button className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
 									</Col>
-									<Col id={"Popover2" + item.name}>
+									<Col id={"Popover2" + item._id}>
 										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
-									<Col id={"Popover8" + item.name}>
+									<Col id={"Popover8" + item._id}>
 										{props.favorite
 											?
 											<FontAwesomeIcon className="tableHeader" size="3x" icon={faHeart} color="#ffc0cb" onClick={() => unfavoriteBudget()} />
@@ -382,7 +385,7 @@ function BudgetTabs(props) {
 								<div className="addSpace">
 									{index === parseInt(props.tab) && props.curBudget && transactions
 										?
-										<RealSpending {...props} itemName={item.name} transactions={transactions} getTransactions={getTransactions}
+										<RealSpending {...props} itemName={item._id} transactions={transactions} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} currentStartDate={currentStartDate}
 											categorizeData={categorizeData} spendingByCategory={spendingByCategory}
 											daysRemaining={daysRemaining} />
@@ -399,7 +402,7 @@ function BudgetTabs(props) {
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
 									<div >
-										<TransactionTable itemName={item.name} {...props} transactions={transactions} tableMode={tableMode}
+										<TransactionTable itemName={item._id} {...props} transactions={transactions} tableMode={tableMode}
 											tableCategory={tableCategory} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} />
 									</div>
@@ -412,7 +415,7 @@ function BudgetTabs(props) {
 							?
 							<div>
 
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 1} target={"Popover2" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 1} target={"Popover2" + item._id} >
 									<PopoverHeader>2/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>Click the 'Edit' button to make changes to a budget you already have.</p>
@@ -426,7 +429,7 @@ function BudgetTabs(props) {
 										</Row>
 									</PopoverBody>
 								</Popover>
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 2} target={"Popover3" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 2} target={"Popover3" + item._id} >
 									<PopoverHeader>3/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>Click the 'Delete' button to remove a budget.</p>
@@ -440,7 +443,7 @@ function BudgetTabs(props) {
 										</Row>
 									</PopoverBody>
 								</Popover>
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 3} target={"Popover4" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 3} target={"Popover4" + item._id} >
 									<PopoverHeader>4/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>These progress bars show how much of your allotted money you have spent for each category</p>
@@ -454,7 +457,7 @@ function BudgetTabs(props) {
 										</Row>
 									</PopoverBody>
 								</Popover>
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 4} target={"Popover5" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 4} target={"Popover5" + item._id} >
 									<PopoverHeader>5/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>Enter your transactions here so they appear on the Pie chart and progress bars</p>
@@ -468,7 +471,7 @@ function BudgetTabs(props) {
 										</Row>
 									</PopoverBody>
 								</Popover>
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 5} target={"Popover6" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 5} target={"Popover6" + item._id} >
 									<PopoverHeader>6/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>Click the 'View Transactions' button to see a list of all the transactions you've made for this budget</p>
@@ -482,7 +485,7 @@ function BudgetTabs(props) {
 										</Row>
 									</PopoverBody>
 								</Popover>
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 6} target={"Popover7" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 6} target={"Popover7" + item._id} >
 									<PopoverHeader>7/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>Use these buttons to toggle between time periods to see older transactions</p>
@@ -496,7 +499,7 @@ function BudgetTabs(props) {
 										</Row>
 									</PopoverBody>
 								</Popover>
-								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 7} target={"Popover8" + item.name} >
+								<Popover placement="bottom" isOpen={toolTipArray[toolIndex] && toolIndex === 7} target={"Popover8" + item._id} >
 									<PopoverHeader>8/8 Tool Tip:</PopoverHeader>
 									<PopoverBody>
 										<p>Don't forget to favorite a budget so that it appears on your homepage and loads first when looking at your budgets</p>
