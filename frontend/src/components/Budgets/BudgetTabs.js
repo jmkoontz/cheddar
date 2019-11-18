@@ -302,8 +302,11 @@ function BudgetTabs(props) {
 
 					</Nav>
 				</Col>
+				<Col className="buttonFix" sm={1}>
+					<Button className="buttonFix" onClick={resetTips} outline color="primary">Start Tool Tips</Button>
+				</Col>
 				<Col sm={2}>
-					<Button onClick={resetTips} outline color="primary">Start Tool Tips</Button>
+					<Button className="buttonFix" outline color="danger">Disable Tool Tips</Button>
 				</Col>
 			</Row>
 			<TabContent className="padTop" activeTab={props.tab}>

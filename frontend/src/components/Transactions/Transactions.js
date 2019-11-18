@@ -20,6 +20,7 @@ function Transactions() {
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState(); // Time the backend understand
 	const [startDate, setStartDate] = useState(); // Time the backend understand     new Date((new Date()).getTime() - (24 * 3600 * 1000))
+	const [archivedList, setArchivedList] = useState();	// List of the archived dates
 	// Chart states
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of each day's spending
@@ -277,6 +278,11 @@ function Transactions() {
 	};
 
 	/**
+	 * Server call to get archived data for all budgets
+	 */
+	//const 
+
+	/**
 	 * Server call to get all Budgets
 	 */
 	const getBudgets = () => {
@@ -286,6 +292,9 @@ function Transactions() {
 				// handle success
 
 				setBudgetList([...response.data, { name: "All Budgets" }]);
+				for (let i in response.data) {
+					
+				}
 				setRawBudgetList(response.data);
 				setLoading(false);
 			})
