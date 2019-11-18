@@ -242,7 +242,11 @@ function Transactions() {
  	*/
 	const getBudgetTransactions = (name) => {
 
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
+		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()+1}`;
+		let query = queryOne + queryTwo;
+
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`)
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
