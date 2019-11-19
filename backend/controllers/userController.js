@@ -21,17 +21,6 @@ export default (app) => {
       retirement: {
         total: 0,
         history: [],
-      },
-      toolTips: {
-        overview: true,
-        budget: true,
-        savings: true,
-        investments: true,
-        debts: true,
-        transactions: true,
-        assets: true,
-        retirement: true,
-        tracker: true
       }
     };
 
