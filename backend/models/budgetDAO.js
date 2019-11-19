@@ -27,7 +27,7 @@ export async function getAllBudgets(uid, external) {
 
 export function getBudgetNames(uid) {
   const returnClause = {
-    '_id': 0, // exclude _id
+    '_id': 1, // exclude _id
     'budgets.name': 1
   };
 
