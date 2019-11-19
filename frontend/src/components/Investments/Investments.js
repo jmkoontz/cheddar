@@ -140,6 +140,15 @@ class Investments extends React.Component {
         });
     }
 
+        shouldComponentUpdate(nextProps,nextState){
+        
+        if(this.state.key != nextState.key){
+            return false;
+        }
+        else if(this.state.key == nextState.key){
+            return true;
+        }
+    }
 
 //function to update state with stock abbreviation for a particular company
     test = (param) => {
@@ -366,9 +375,9 @@ class Investments extends React.Component {
                     <Row>
                         <Col>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
-                            <DropdownButton id="dropdown-basic-button" title="Dropdown button">
-                                <Dropdown.Item onSelect={this.setFrequency("Daily")}>Daily</Dropdown.Item>
-                                <Dropdown.Item onSelect={this.setFrequency("Weekly")}>Weekly</Dropdown.Item>
+                            <DropdownButton id="dropdown-basic-button" title="Frequency">
+                                <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
+                                <Dropdown.Item onSelect={() => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
                             </DropdownButton>
                         </Col>
                         <Col className="text-right">
