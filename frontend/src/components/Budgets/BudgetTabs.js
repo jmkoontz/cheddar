@@ -92,9 +92,9 @@ function BudgetTabs(props) {
 
 	// server call to check if the tooltip is enabled tor disabled
 	const checkToolTip = () => {
-		axios.get(`http://localhost:8080/Cheddar/Budgets/ToolTips/${props.userID}`)
+		axios.get(`http://localhost:8080/Cheddar/ToolTips/${props.userID}`)
 			.then((response) => {
-				props.getBudgets();
+				setToolEnable(response.data.budgets)
 			})
 			.catch((error) => {
 				console.log(error);
@@ -288,7 +288,7 @@ function BudgetTabs(props) {
 		() => {
 			setTransactions([]);
 			setSpendingByCategory([]);
-			//checkToolTip();
+			checkToolTip();
 
 			if (props.curBudget) {
 				getTransactions();
