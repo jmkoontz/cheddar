@@ -15,6 +15,29 @@ export function getUser(uid) {
     });
 }
 
+export function getToolTips(uid) {
+  const findClause = {
+    '_id': uid
+  };
+
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'toolTips': 1
+  };
+
+  return userModel.findOne(findClause, returnClause)
+    .then((user) => {
+      if (user && user.toolTips) {
+        return Promise.resolve(user.toolTips);
+      } else {
+        return Promise.reject('UserError: User not found');
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export function getAllUsers() {
   return userModel.find({})
     .then((users) => {

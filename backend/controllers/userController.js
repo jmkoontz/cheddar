@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getUser, createUser, editUser, deleteUser} from '../models/userDAO';
+import {getUser, getToolTips, createUser, editUser, deleteUser} from '../models/userDAO';
 
 export default (app) => {
   app.post('/Cheddar/CreateAccount', async (req, res) => {
@@ -51,6 +51,18 @@ export default (app) => {
     try {
       console.log('it worked');
       data = 'Hello the';
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get a user's tooltips
+  app.get('/Cheddar/ToolTips/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await getToolTips(req.params.uid);
     } catch (err) {
       data = {error: parseError(err)};
     }
