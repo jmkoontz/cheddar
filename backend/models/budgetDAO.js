@@ -625,7 +625,7 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
     //transactions = [...transactions, tmp];
   }
 
-  console.log(transactions);
+  //console.log(transactions);
 
   transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
   //console.log(transactions);

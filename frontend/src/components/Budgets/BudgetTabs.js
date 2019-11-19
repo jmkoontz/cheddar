@@ -38,8 +38,7 @@ function BudgetTabs(props) {
 
 	// helper for restarting the tool tips
 	const resetTips = () => {
-		console.log("Reseting the tips");
-		//popClose(toolIndex);
+		;
 		setToolIndex(0);
 		setToolTipArray([true, false, false, false, false, false, false, false]);
 		setToolOn(true);
@@ -47,16 +46,11 @@ function BudgetTabs(props) {
 
 	// helper to tell user that tool tips are disabled after closing
 	const popClose = (index) => {
-		console.log("Showing tool tip message");
-		//let tmpArray = toolTipArray;
-		//tmpArray[index] = !tmpArray[index];
-		//setToolTipArray(tmpArray);
 		setToolClose(true);
 	}
 
 	// helper for closing a tool tip, takes the index of the tool tip to toggle
 	const popFinish = (index) => {
-		console.log("Finishing");
 		let tmpArray = toolTipArray;
 		tmpArray[index] = !tmpArray[index];
 		setToolTipArray(tmpArray);
@@ -87,7 +81,18 @@ function BudgetTabs(props) {
 
 	// server call to disable tool tips
 	const disableTips = () => {
-		axios.put(`http://localhost:8080/Cheddar/Budgets/ToolTips/${props.userID}`)
+		axios.put(`http://localhost:8080/Cheddar/Budgets/DisableToolTips/${props.userID}`)
+			.then((response) => {
+				props.getBudgets();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	// server call to check if the tooltip is enabled tor disabled
+	const checkToolTip = () => {
+		axios.get(`http://localhost:8080/Cheddar/Budgets/ToolTips/${props.userID}`)
 			.then((response) => {
 				props.getBudgets();
 			})
@@ -279,16 +284,11 @@ function BudgetTabs(props) {
 		setMaxBudgetPeriodIndex(max);
 	};
 
-	// server call to check if the tooltip is enabled tor disabled
-	const checkToolTip = () => {
-
-	}
-
 	useEffect(
 		() => {
 			setTransactions([]);
 			setSpendingByCategory([]);
-			checkToolTip();
+			//checkToolTip();
 
 			if (props.curBudget) {
 				getTransactions();
