@@ -24,8 +24,8 @@ export default (app) => {
       },
       toolTips: {
         overview: true,
-        budget: true,
-        savings: true,
+        budgets: true,
+        saving: true,
         investments: true,
         debts: true,
         transactions: true,
