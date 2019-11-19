@@ -7,7 +7,7 @@ import {
   addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
   getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
   getTransactionsInBudgetAndDateRange, unfavoriteBudget, favoriteBudget, getBudget,
-  transferOldTransactions, getOldTransactions
+  transferOldTransactions, getOldTransactions, disableToolTips
 } from '../models/budgetDAO';
 
 export default (app) => {
@@ -25,6 +25,18 @@ export default (app) => {
     let data;
     try {
       data = await createBudget(req.params.uid, budget);
+    } catch (err) {
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // disable tooltips on budget page 
+  app.put('/Cheddar/Budgets/DisableToolTips/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await disableToolTips(req.params.uid);
     } catch (err) {
       data = { error: parseError(err) };
     }
@@ -64,7 +76,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // Unfavorite a budget
+  // unfavorite a budget
   app.put('/Cheddar/Budgets/Unfavorite/:uid/:budgetName', async (req, res) => {
     let data;
     try {
@@ -141,7 +153,7 @@ export default (app) => {
     try {
       data = await getAllBudgets(req.params.uid, true);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -285,7 +297,7 @@ export default (app) => {
     try {
       data = await getOldTransactions(req.params.uid, req.params.budgetName, req.params.index);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -297,7 +309,7 @@ export default (app) => {
     try {
       data = await transferOldTransactions(req.params.uid);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);

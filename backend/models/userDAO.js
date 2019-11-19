@@ -17,7 +17,7 @@ export function getUser(uid) {
 
 export function getToolTips(uid) {
   const findClause = {
-    '_id': uid
+    '_id': uid,
   };
 
   const returnClause = {
