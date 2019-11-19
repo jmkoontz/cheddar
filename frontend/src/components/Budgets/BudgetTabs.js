@@ -38,7 +38,6 @@ function BudgetTabs(props) {
 
 	// helper for restarting the tool tips
 	const resetTips = () => {
-		;
 		setToolIndex(0);
 		setToolTipArray([true, false, false, false, false, false, false, false]);
 		setToolOn(true);
@@ -54,9 +53,8 @@ function BudgetTabs(props) {
 		let tmpArray = toolTipArray;
 		tmpArray[index] = !tmpArray[index];
 		setToolTipArray(tmpArray);
-		setToolOn(false);	// TODO replace this with a server call
 		setToolClose(false);
-		//disableTips();
+		disableTips();
 	}
 
 	// helper for opening the previous tool tip, takes the index of the tool tip to toggle
@@ -83,7 +81,8 @@ function BudgetTabs(props) {
 	const disableTips = () => {
 		axios.put(`http://localhost:8080/Cheddar/Budgets/DisableToolTips/${props.userID}`)
 			.then((response) => {
-				props.getBudgets();
+				//console.log(response.data)
+				setToolOn(false);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -95,6 +94,12 @@ function BudgetTabs(props) {
 		axios.get(`http://localhost:8080/Cheddar/ToolTips/${props.userID}`)
 			.then((response) => {
 				setToolEnable(response.data.budgets)
+				if (response.data.budgets) {
+					setToolIndex(0);
+					setToolTipArray([true, false, false, false, false, false, false, false]);
+					setToolOn(true);
+				}
+
 			})
 			.catch((error) => {
 				console.log(error);
