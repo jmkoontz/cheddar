@@ -36,11 +36,12 @@ function BudgetTabs(props) {
 	const [toolEnable, setToolEnable] = useState(false); // Global to determine if tool tips are enabled or disabled
 	const [toolClose, setToolClose] = useState(false);	// Boolean to determine if final tool tip should be shown
 
-	// helper for restarting the tool tips
+	// helper for restarting the tool tips, TODO remove this
 	const resetTips = () => {
 		setToolIndex(0);
 		setToolTipArray([true, false, false, false, false, false, false, false]);
 		setToolOn(true);
+		enableTips();
 	}
 
 	// helper to tell user that tool tips are disabled after closing
@@ -82,6 +83,18 @@ function BudgetTabs(props) {
 		axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${props.userID}/budgets`)
 			.then((response) => {
 				setToolOn(false);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	// server call to disable tool tips, TODO remove this
+	const enableTips = () => {
+		axios.put(`http://localhost:8080/Cheddar/EnableToolTips/${props.userID}/budgets`)
+			.then((response) => {
+				console.log(response.data)
+				setToolOn(true);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -471,7 +484,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -510,7 +523,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -548,7 +561,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -586,7 +599,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -624,7 +637,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -662,7 +675,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -700,7 +713,7 @@ function BudgetTabs(props) {
 														<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 													</Col>
 													<Col>
-														<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+														<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 													</Col>
 												</Row>
 											</div>
@@ -757,7 +770,7 @@ function BudgetTabs(props) {
 										<Button onClick={() => setToolClose(!toolClose)} color="primary">Go Back</Button>
 									</Col>
 									<Col>
-										<Button onClick={() => popFinish(toolIndex)} color="danger">Exit</Button>
+										<Button onClick={() => popFinish(toolIndex)} color="danger">Finish</Button>
 									</Col>
 								</Row>
 							</div>
