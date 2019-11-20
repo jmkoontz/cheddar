@@ -7,7 +7,7 @@ import {
   addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
   getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
   getTransactionsInBudgetAndDateRange, unfavoriteBudget, favoriteBudget, getBudget,
-  transferOldTransactions, getOldTransactions, disableToolTips
+  transferOldTransactions, getOldTransactions
 } from '../models/budgetDAO';
 
 export default (app) => {
@@ -25,18 +25,6 @@ export default (app) => {
     let data;
     try {
       data = await createBudget(req.params.uid, budget);
-    } catch (err) {
-      data = { error: parseError(err) };
-    }
-
-    buildResponse(res, data);
-  });
-
-  // disable tooltips on budget page 
-  app.put('/Cheddar/Budgets/DisableToolTips/:uid', async (req, res) => {
-    let data;
-    try {
-      data = await disableToolTips(req.params.uid);
     } catch (err) {
       data = { error: parseError(err) };
     }
