@@ -98,7 +98,6 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
-		console.log(budg)
 		if (budg) {
 			setFavorite(budg.favorite);
 		}
