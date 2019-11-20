@@ -15,6 +15,29 @@ export function getUser(uid) {
     });
 }
 
+export function getToolTips(uid) {
+  const findClause = {
+    '_id': uid,
+  };
+
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'toolTips': 1
+  };
+
+  return userModel.findOne(findClause, returnClause)
+    .then((user) => {
+      if (user && user.toolTips) {
+        return Promise.resolve(user.toolTips);
+      } else {
+        return Promise.reject('UserError: User not found');
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export function getAllUsers() {
   return userModel.find({})
     .then((users) => {
@@ -57,6 +80,33 @@ export function editUser(uid, changes) {
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function disableToolTips(uid, page) {
+
+  const findClause = {
+    '_id': uid,
+  };
+
+  let tmpStr = `toolTips.${page}`;
+  let tmpObj = {};
+  tmpObj[tmpStr] = false;
+
+  let updateClause = {$set: tmpObj};
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    updateClause,
+    { 'new': true })
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
 
       return Promise.resolve(updatedUser);
     })
