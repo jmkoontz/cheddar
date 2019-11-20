@@ -461,7 +461,7 @@ function BudgetTabs(props) {
 									<div >
 										<TransactionTable itemName={item._id} {...props} transactions={transactions} tableMode={tableMode}
 											tableCategory={tableCategory} getTransactions={getTransactions}
-											budgetPeriodIndex={budgetPeriodIndex} />
+											budgetPeriodIndex={budgetPeriodIndex}/>
 									</div>
 									:
 									<p>Loading...</p>

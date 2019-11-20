@@ -93,8 +93,6 @@ function Transactions() {
 
 		}
 
-		console.log(runningTotal);
-
 		for (let y = 0; y < daysArray.length; y++) {
 			runningTotal += daysArray[y];
 			totalDaysArray[y] = runningTotal;
@@ -395,7 +393,7 @@ function Transactions() {
 				<Col sm={10}>
 					{!loading
 						?
-						<TransactionTable {...propData} transactions={transactions} />
+						<TransactionTable {...propData} curBudget={selectedBudget} transactions={transactions} />
 						:
 						<div />
 					}

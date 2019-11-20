@@ -78,7 +78,7 @@ function DateFinder(props) {
               ?
               <DropdownMenu>
                 {props.budgetList.map((item, index) =>
-                  <DropdownItem key={index} onClick={() => {setSelectedBudget(item.name); props.setSelectedBudget(item.name)}}>{item.name}</DropdownItem>
+                  <DropdownItem key={index} onClick={() => {setSelectedBudget(item.name); props.setSelectedBudget(item)}}>{item.name}</DropdownItem>
                 )}
               </DropdownMenu>
               :
