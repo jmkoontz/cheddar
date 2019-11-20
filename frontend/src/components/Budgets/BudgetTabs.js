@@ -103,6 +103,7 @@ function BudgetTabs(props) {
 			})
 			.catch((error) => {
 				console.log(error);
+				setToolEnable(false);
 			});
 	}
 
