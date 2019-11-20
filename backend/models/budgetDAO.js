@@ -27,7 +27,7 @@ export async function getAllBudgets(uid, external) {
 
 export function getBudgetNames(uid) {
   const returnClause = {
-    '_id': 0, // exclude _id
+    '_id': 1, // exclude _id
     'budgets.name': 1
   };
 
@@ -625,7 +625,7 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
     //transactions = [...transactions, tmp];
   }
 
-  console.log(transactions);
+  //console.log(transactions);
 
   transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
   //console.log(transactions);
