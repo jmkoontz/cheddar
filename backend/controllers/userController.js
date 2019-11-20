@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import { parseError, buildResponse } from '../utilities/controllerFunctions';
-import { getUser, getToolTips, createUser, editUser, deleteUser, disableToolTips } from '../models/userDAO';
+import { getUser, getToolTips, createUser, editUser, deleteUser, disableToolTips, enableToolTips } from '../models/userDAO';
 
 export default (app) => {
   app.post('/Cheddar/CreateAccount', async (req, res) => {
@@ -75,6 +75,18 @@ export default (app) => {
     let data;
     try {
       data = await disableToolTips(req.params.uid, req.params.page);
+    } catch (err) {
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // enable tooltips on budget page 
+  app.put('/Cheddar/EnableToolTips/:uid/:page', async (req, res) => {
+    let data;
+    try {
+      data = await enableToolTips(req.params.uid, req.params.page);
     } catch (err) {
       data = { error: parseError(err) };
     }
