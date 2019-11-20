@@ -79,9 +79,9 @@ function BudgetTabs(props) {
 
 	// server call to disable tool tips
 	const disableTips = () => {
-		axios.put(`http://localhost:8080/Cheddar/Budgets/DisableToolTips/${props.userID}`)
+		axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${props.userID}/budgets`)
 			.then((response) => {
-				//console.log(response.data)
+				console.log(response.data)
 				setToolOn(false);
 			})
 			.catch((error) => {

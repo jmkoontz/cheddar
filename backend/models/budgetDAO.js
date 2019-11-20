@@ -275,27 +275,6 @@ export function unfavoriteBudget(uid, budgetName) {
     });
 }
 
-export async function disableToolTips(uid) {
-
-  const findClause = {
-    '_id': uid,
-  };
-
-  return userModel.findOneAndUpdate(
-    findClause,
-    { '$set': { 'toolTips.budgets': false } },
-    { 'new': true })
-    .then((updatedUser) => {
-      if (updatedUser == null)
-        return Promise.reject('UserError: User or budget not found');
-
-      return Promise.resolve(updatedUser);
-    })
-    .catch((err) => {
-      return Promise.reject(err);
-    });
-}
-
 export function deleteBudget(uid, budgetName) {
   return userModel.findOneAndUpdate(
     { '_id': uid },
