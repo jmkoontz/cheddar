@@ -10,7 +10,7 @@ export function getAllInvestments(uid){
     
     return userModel.findOne({_id: uid}, returnClause)
     .then((user) => {
-        console.log(user['investments']);
+        //console.log(user['investments']);
         if (user)
         return Promise.resolve(user['investments']);
         else
@@ -39,7 +39,14 @@ export function addTrackedCompanies(companies,uid){
 }
 
 export function addInvestment(investments,uid){
-    let updateClause = {$set: {'investments.investments':investments}};
+
+    let i = 0;
+    var total =0;
+    for(i=0;i<investments.length;i++){
+        total += (investments[i].currentShareValue*investments[i].shares);
+    }
+
+    let updateClause = {$set: {'investments.investments':investments, 'investments.totalInvestment':total}};
     return userModel.findOneAndUpdate(
         {_id: uid},
         updateClause,

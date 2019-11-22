@@ -40,6 +40,7 @@ class Retirement extends React.Component {
                 amount: 0,
                 date: "",
             },
+            totalInvestment: 0,
         }
     }
 
@@ -72,6 +73,15 @@ class Retirement extends React.Component {
                     prevContribution: res.data.history[length-1],
                 });
             }
+        });
+
+        axios.get("http://localhost:8080/Cheddar/Investments", {
+            params: test,
+        }).then(res => {
+            this.setState({
+                totalInvestment: res.data.totalInvestment,
+                });
+            //console.log(res);
         });
     }
 
@@ -194,65 +204,3 @@ class Retirement extends React.Component {
 
 export default Retirement;
 
-/*
-<Container>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-    </Row>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-        </Col>
-    </Row>
-</Container>
-
-
-
-
-
-<Modal show={this.state.show} onHide={this.showModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Modal heading
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicCheckbox">
-                        {Object.keys(this.state.companies).map((name)=>{
-                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
-                        })}
-                    </Form.Group>
-                    <Button variant="primary" type="submit" onClick={this.showModal}>
-                        Submit
-                    </Button>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.showModal}>Close</Button>
-                </Modal.Footer>
-                </Modal>
-*/
