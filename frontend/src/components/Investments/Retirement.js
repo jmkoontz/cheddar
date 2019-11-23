@@ -66,21 +66,24 @@ class Retirement extends React.Component {
             }
             else{
                 var length = res.data.history.length;
+                var prevContribution = this.state.prevContribution;
+                if(res.data.history.length > 1){
+                    prevContribution = res.data.history[length-1];
+                }
                 this.setState({
                     totalRetirement: res.data.total,
                     retirementHistory: res.data.history,
                     buttonText: buttonText,
-                    prevContribution: res.data.history[length-1],
+                    prevContribution: prevContribution,
                 });
             }
         });
-
-        axios.get("http://localhost:8080/Cheddar/Investments", {
+        axios.get("http://localhost:8080/Cheddar/Investments/TotalInvestment", {
             params: test,
-        }).then(res => {
-            this.setState({
-                totalInvestment: res.data.totalInvestment,
-                });
+                }).then(res => {
+                    this.setState({
+                        totalInvestment: res.data.totalInvestment
+                    },()=>{console.log("TOTAL INVESTMENT: " + this.state.totalInvestment)});
             //console.log(res);
         });
     }
@@ -156,13 +159,19 @@ class Retirement extends React.Component {
 				type: "stackedBar",
 				name: "Previous Total",
 				dataPoints: [
-					{y: this.state.totalRetirement, label: "Previous Total" },
+					{y: this.state.totalRetirement - parseInt(this.state.prevContribution.amount), label: "Previous Total" },
 				]
             },{
 				type: "stackedBar",
 				name: "Latest Contribution",
 				dataPoints: [
 					{y: parseInt(this.state.prevContribution.amount), label: "Recent Contribution"  },
+				]
+            },{
+				type: "stackedBar",
+				name: "Investments",
+				dataPoints: [
+					{y: this.state.totalInvestment, label: "Investments"  },
 				]
             }]
         }

@@ -78,6 +78,25 @@ export function editInvestment(investment,uid){
       });
 }
 
+export function getTotalInvestment(uid){
+    const returnClause = {
+        '_id': 0,
+        'investments.totalInvestment': 1
+    }
+    return userModel.findOne({_id: uid}, returnClause)
+    .then((user) => {
+        console.log(user['investments']);
+        if (user)
+        return Promise.resolve(user['investments']);
+        else
+        return Promise.reject('UserError: User not found');
+    })
+    .catch((err) => {
+        return Promise.reject(err);
+    });    
+
+}
+
 export function deleteInvestment(investment){
 
 }
