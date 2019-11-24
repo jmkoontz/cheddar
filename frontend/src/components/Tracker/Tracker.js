@@ -40,40 +40,56 @@ function Transactions() {
 
 		for (let x = 0; x < budgetList.length - 1; x++) {
 			for(let y = 0; y < budgetList[x].budgetCategories.length; y++) {
+				if(budgetList[x].budgetCategories[y].name === "Entertainment") {
+					categoryAmounts[0] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
+					categoryAmounts[1] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Savings") {
+					categoryAmounts[2] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Debt") {
+					categoryAmounts[3] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Housing") {
+					categoryAmounts[4] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Gas") {
+					categoryAmounts[5] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Utilities") {
+					categoryAmounts[6] += budgetList[x].budgetCategories[y].amount;
+				}
+				if(budgetList[x].budgetCategories[y].name === "Other") {
+					categoryAmounts[7] += budgetList[x].budgetCategories[y].amount;
+				}
 				for(let z = 0; z < budgetList[x].budgetCategories[y].transactions.length; z++) {
 					for(let k = 0; k < transactions.length; k++) {
 						if(transactions[k]._id === budgetList[x].budgetCategories[y].transactions[z]) {
 							if(budgetList[x].budgetCategories[y].name === "Entertainment") {
 								categories[0] += transactions[k].amount;
-								categoryAmounts[0] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
 								categories[1] += transactions[k].amount;
-								categoryAmounts[1] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Savings") {
 								categories[2] += transactions[k].amount;
-								categoryAmounts[2] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Debt") {
 								categories[3] += transactions[k].amount;
-								categoryAmounts[3] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Housing") {
 								categories[4] += transactions[k].amount;
-								categoryAmounts[4] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Gas") {
 								categories[5] += transactions[k].amount;
-								categoryAmounts[5] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Utilities") {
 								categories[6] += transactions[k].amount;
-								categoryAmounts[6] += budgetList[x].budgetCategories[y].amount;
 							}
 							if(budgetList[x].budgetCategories[y].name === "Other") {
 								categories[7] += transactions[k].amount;
-								categoryAmounts[7] += budgetList[x].budgetCategories[y].amount;
 							}
 							break;
 						}
@@ -120,8 +136,8 @@ function Transactions() {
         layout: 'vertical',
         align: 'right',
         verticalAlign: 'top',
-        x: -40,
-        y: 80,
+        x: 0,
+        y: 100,
         floating: true,
         borderWidth: 1,
         backgroundColor:

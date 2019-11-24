@@ -174,6 +174,7 @@ function Budgets() {
 				index = x;
 				tmpIncome = categoryArr[x].amount;
 			}
+			categoryArr[x].transactions = [];
 		}
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
@@ -258,6 +259,7 @@ function Budgets() {
 				setEditModal(false);
 				setModal(false);
 				setButtonDisplay(false);
+				setCategoryArr([]);
 				setCurBudget();
 				getBudgets();
 

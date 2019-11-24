@@ -18,6 +18,7 @@ import './App.css';
 import CreateAccount from "./Accounts/CreateAccount";
 import AccountSettings from "./Accounts/AccountSettings";
 import Assets from "./Assets/Assets";
+import RecurringPayments from "./Assets/RecurringPayments";
 
 class App extends Component {
 
@@ -73,6 +74,7 @@ class App extends Component {
             <Route path="/tracker" render={() => <Tracker/>}/>
             <Route path="/account-settings" render={() => <AccountSettings/>}/>
             <Route path="/assets" render={() => <Assets/>}/>
+            <Route path="/recurring-payments" render={() => <RecurringPayments/>}/>
             <Route path="/" render={() => <Redirect to="/"/>}/>
           </Switch>
 
