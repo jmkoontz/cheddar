@@ -71,7 +71,7 @@ function TransactionForm(props) {
         <CardHeader>
           <p className={"addSpace"}>Enter New Transaction</p>
         </CardHeader>
-        <CardBody >
+        <CardBody id={"Popover5" + props.itemName}>
           <Form className="textLeft">
             <Row>
               <Col sm={3}>

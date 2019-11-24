@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
-import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getUser, createUser, editUser, deleteUser} from '../models/userDAO';
+import { parseError, buildResponse } from '../utilities/controllerFunctions';
+import { getUser, getToolTips, createUser, editUser, deleteUser, disableToolTips, enableToolTips } from '../models/userDAO';
 
 export default (app) => {
   app.post('/Cheddar/CreateAccount', async (req, res) => {
@@ -21,6 +21,17 @@ export default (app) => {
       retirement: {
         total: 0,
         history: [],
+      },
+      toolTips: {
+        overview: true,
+        budgets: true,
+        saving: true,
+        investments: true,
+        debts: true,
+        transactions: true,
+        assets: true,
+        retirement: true,
+        tracker: true
       }
     };
 
@@ -28,7 +39,7 @@ export default (app) => {
     try {
       data = await createUser(user);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -41,7 +52,43 @@ export default (app) => {
       console.log('it worked');
       data = 'Hello the';
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get a user's tooltips
+  app.get('/Cheddar/ToolTips/:uid', async (req, res) => {
+    let data;
+    try {
+      data = await getToolTips(req.params.uid);
+    } catch (err) {
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // disable tooltips on budget page 
+  app.put('/Cheddar/DisableToolTips/:uid/:page', async (req, res) => {
+    let data;
+    try {
+      data = await disableToolTips(req.params.uid, req.params.page);
+    } catch (err) {
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // enable tooltips on budget page 
+  app.put('/Cheddar/EnableToolTips/:uid/:page', async (req, res) => {
+    let data;
+    try {
+      data = await enableToolTips(req.params.uid, req.params.page);
+    } catch (err) {
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -60,7 +107,7 @@ export default (app) => {
     try {
       data = await editUser(req.params.uid, changes);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -72,7 +119,7 @@ export default (app) => {
     try {
       data = await deleteUser(req.params.uid)
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
