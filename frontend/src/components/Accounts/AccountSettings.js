@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col,   Dropdown, DropdownToggle, DropdownMenu, DropdownItem
+} from 'reactstrap';
 import firebase from '../../firebase.js';
 import axios from 'axios';
 import './SignIn.css'
 import {fireauth} from "../../firebase";
+import CategoryTable from "../Assets/CategoryTable";
 
 class AccountSettings extends Component {
 
@@ -22,6 +24,11 @@ class AccountSettings extends Component {
 
       reauthenticate_visible: false,
       current_password: null,
+
+      countryOpen: false,
+
+      selectedState: "Indiana",
+      states: ["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Minor Outlying Islands", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "U.S. Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"],
     };
 
   }
@@ -147,6 +154,18 @@ class AccountSettings extends Component {
     return firebase.auth().currentUser.email;
   };
 
+  countryToggle = () => {
+    this.setState({
+      countryOpen: !this.state.countryOpen,
+    });
+  };
+
+  selectState = (ev) => {
+    this.setState({
+      selectedState: ev.target.innerText,
+    });
+  };
+
   render(){
     return(
 
@@ -186,9 +205,21 @@ class AccountSettings extends Component {
         </Modal>
 
         <Row>
-          <Col md='4'/>
+          <Col md='2'/>
           <Col md='4'>
             <Input type='text' readOnly bsSize='lg' placeholder={this.getEmail()}/>
+          </Col>
+          <Col md='3'>
+            <Dropdown size='lg' isOpen={this.state.countryOpen} toggle={this.countryToggle}>
+              <DropdownToggle caret>{this.state.selectedState}</DropdownToggle>
+              <DropdownMenu>
+                {this.state.states.map((name, i) => {
+                  return (
+                    <DropdownItem onClick={this.selectState}>{this.state.states[i]}</DropdownItem>
+                  );
+                })}
+              </DropdownMenu>
+            </Dropdown>
           </Col>
         </Row>
 
