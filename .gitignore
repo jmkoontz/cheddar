@@ -4,3 +4,4 @@ node_modules/
 **/keys
 *.log
 backend/config/email.json
+frontend/src/config/keys.js

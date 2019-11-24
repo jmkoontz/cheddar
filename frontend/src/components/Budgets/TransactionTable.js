@@ -30,7 +30,6 @@ function TransactionTable(props) {
   useEffect(
     () => {
       if (props.transactions) {
-        console.log(props.transactions)
         setTransactions(props.transactions);
         allTransactions = props.transactions;
       }
@@ -187,7 +186,7 @@ function TransactionTable(props) {
     <div>
       <Row>
         <Col sm="3">
-          <Button onClick={toggle} className="tableButton">
+          <Button id={"Popover6" + props.itemName} onClick={toggle} className="tableButton">
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
         </Col>
