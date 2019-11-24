@@ -8,6 +8,7 @@ import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Table from 'react-bootstrap/Table';
 import './Investments.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -24,6 +25,7 @@ import { isNullOrUndefined } from 'util';
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+const date = new Date();
 class Retirement extends React.Component {
     constructor(props){
         super(props);
@@ -41,6 +43,7 @@ class Retirement extends React.Component {
                 date: "",
             },
             totalInvestment: 0,
+            showTotalInvestment: false,
         }
     }
 
@@ -142,20 +145,15 @@ class Retirement extends React.Component {
         });
     }
 
+    showTotalInvestment = () => {
+        this.setState({
+            showTotalInvestment: !this.state.showTotalInvestment,
+        });
+    }
+
 
     render () {
-
-        const options = {
-			theme: "light2",
-			title:{
-				text: "Total Contributions"
-			},
-
-			axisX: {
-                valueFormatString: "",
-                interval: 0,
-			},
-			data: [{
+        var data = [{
 				type: "stackedBar",
 				name: "Previous Total",
 				dataPoints: [
@@ -173,7 +171,22 @@ class Retirement extends React.Component {
 				dataPoints: [
 					{y: this.state.totalInvestment, label: "Investments"  },
 				]
-            }]
+            }];
+        if(!this.state.showTotalInvestment){
+            data.pop();
+        }
+
+        const options = {
+			theme: "light2",
+			title:{
+				text: "Total Contributions"
+			},
+
+			axisX: {
+                valueFormatString: "",
+                interval: 0,
+			},
+			data: data,
         }
         console.log(options.data);
         return (
@@ -182,6 +195,9 @@ class Retirement extends React.Component {
                 <Button variant="primary" onClick={() => this.showModal()}>
                     {this.state.buttonText}
                 </Button>
+                <Form>
+                    <Form.Check type="checkbox" label={"Include Investments"} onChange={() => {this.showTotalInvestment()}}/>
+                </Form>
                 <Modal show={this.state.showModal} onHide={this.showModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
@@ -194,7 +210,7 @@ class Retirement extends React.Component {
                         <Form.Label>Contributed Amount</Form.Label>
                         <Form.Control as="input" type="number" defaultValue={this.state.addedAmount} onChange={(event)=>{this.updateAddedAmount(event)}}/>
                         <Form.Label>Date Contributed</Form.Label>
-                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateAddedDate(event)}}/>
+                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} max={""+date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()} onChange={(event)=>{this.updateAddedDate(event)}}/>
                     </Form.Group>
                     <Button variant="primary" onClick={() => this.addContribution()}>
                         Submit
@@ -206,6 +222,29 @@ class Retirement extends React.Component {
                 <CanvasJSChart options = {options}
 				/* onRef={ref => this.chart = ref} */
 			    />
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        this.state.retirementHistory.map((obj,index) => {
+                            var number = index+1;
+                            return (
+                                <tr>
+                                    <td>{number}</td>
+                                    <td>{obj["date"]}</td>
+                                    <td>{obj["amount"]}</td>
+                                </tr>       
+                            )
+                        })
+                    }
+                    </tbody>
+                </Table>
             </div>
         );
     }
