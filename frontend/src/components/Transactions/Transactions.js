@@ -20,6 +20,7 @@ function Transactions() {
 	const [transactions, setTransactions] = useState(); // Transcations between two dates
 	const [endDate, setEndDate] = useState(); // Time the backend understand
 	const [startDate, setStartDate] = useState(); // Time the backend understand     new Date((new Date()).getTime() - (24 * 3600 * 1000))
+	const [archivedList, setArchivedList] = useState();	// List of the archived dates
 	// Chart states
 	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of each day's spending
@@ -241,7 +242,11 @@ function Transactions() {
  	*/
 	const getBudgetTransactions = (name) => {
 
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
+		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()+1}`;
+		let query = queryOne + queryTwo;
+
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`)
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
@@ -277,6 +282,11 @@ function Transactions() {
 	};
 
 	/**
+	 * Server call to get archived data for all budgets
+	 */
+	//const 
+
+	/**
 	 * Server call to get all Budgets
 	 */
 	const getBudgets = () => {
@@ -286,6 +296,9 @@ function Transactions() {
 				// handle success
 
 				setBudgetList([...response.data, { name: "All Budgets" }]);
+				for (let i in response.data) {
+					
+				}
 				setRawBudgetList(response.data);
 				setLoading(false);
 			})

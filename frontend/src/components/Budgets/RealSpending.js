@@ -38,6 +38,7 @@ function RealSpending(props) {
 				<p>Loading...</p>
 				:
 				<div> {/** Loop thru budget categories prop and compare the amount with the objects  */}
+					<div id={"Popover4" + props.itemName}/>
 					{props.spendingByCategory && props.spendingByCategory.length && props.spendingByCategory.map((item, index) =>
 						<div className="padTop" key={index}>
 							<p>{item.name}: ${item.spent.toFixed(2)} / ${item.allocated.toFixed(2)}</p>

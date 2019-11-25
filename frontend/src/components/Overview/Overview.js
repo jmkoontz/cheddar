@@ -12,6 +12,7 @@ import Col from 'react-bootstrap/Col';
 import axios from 'axios';
 import Loader from '../Loader/Loader';
 import {Card, CardTitle, CardBody} from 'reactstrap';
+import TipSequence from '../TipSequence/TipSequence';
 
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
@@ -155,24 +156,56 @@ class Overview extends React.Component {
   render () {
     return (
       <div className="BigDivArea">
-        <h3 className="titleSpace">Financial Overview</h3>
+        <h3 className="titleSpace" id={"overview-title"}>Financial Overview</h3>
 
-        <div id={'calendar-button-row'}>
-          <Button className={'calendar-button'} onClick={() => {this.eventListModal.current.open()}}>All Expenses</Button>
-          <Button id={"notification-schedule-button"} className={'calendar-button'} onClick={() => {this.notificationModal.current.open()}}>Set Notifications</Button>
-          <Tip text={"Set a schedule for your notifications"} target={"notification-schedule-button"}/>
-        </div>
-        <EventListModal
-          ref={this.eventListModal}
-          onClose={() => {this.calendar.current.displayEvents()}}
-        />
-        <NotificationModal
-          ref={this.notificationModal}
-          onClose={() => {this.calendar.current.displayEvents()}}
-        />
+        <Container>
+          <Row>
+            <Col xs={9}>
+              <div id={'calendar-button-row'}>
+                <Button className={'calendar-button'} id={'expenses-list-button'} onClick={() => {this.eventListModal.current.open()}}>All Expenses</Button>
+                <Button id={"notification-schedule-button"} className={'calendar-button'} onClick={() => {this.notificationModal.current.open()}}>Set Notifications</Button>
+                <Tip text={"Set a schedule for your notifications"} target={"notification-schedule-button"}/>
+              </div>
 
-        <Calendar ref={this.calendar}/>
-        <div className="overview">
+              <EventListModal
+                ref={this.eventListModal}
+                onClose={() => {this.calendar.current.displayEvents()}}
+              />
+              <NotificationModal
+                ref={this.notificationModal}
+                onClose={() => {this.calendar.current.displayEvents()}}
+              />
+
+              <Calendar ref={this.calendar}/>
+            </Col>
+
+            <Col xs={3} id={"info-column"}>
+              <Row>
+                <Card body>
+                  <CardTitle>
+                    Your Top Asset
+                  </CardTitle>
+                  <CardBody>
+                    House: $140000
+                  </CardBody>
+                </Card>
+              </Row>
+
+              <Row>
+                <Card body>
+                  <CardTitle className='card-title'>
+                    Your Top Recurring Payment
+                  </CardTitle>
+                  <CardBody>
+                    Rent: $1500 due on 2019-11-25
+                  </CardBody>
+                </Card>
+              </Row>
+            </Col>
+          </Row>
+        </Container>
+
+        <div className="investments-overview" id={"investments-overview"}>
           <Container fluid="true">
             <Row>
               <Col className="card">
@@ -226,35 +259,33 @@ class Overview extends React.Component {
           </Container>
         </div>
 
-        <hr/>
-
-        <Row>
-          <Col md='6'>
-            <Card>
-              <CardBody>
-                <CardTitle>
-                  Your Top Asset
-                </CardTitle>
-                <CardBody>
-                  House: $140000
-                </CardBody>
-              </CardBody>
-            </Card>
-          </Col>
-
-          <Col md='6'>
-            <Card>
-              <CardBody>
-                <CardTitle className='card-title'>
-                  Your Top Recurring Payment
-                </CardTitle>
-                <CardBody>
-                  Rent: $1500 due on 2019-11-25
-                </CardBody>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+        <TipSequence
+          page={"overview"}
+          tips={[
+            {
+              text: "The overview page is your one stop shop for discovering the basics of your financial life!",
+              target: "overview-title"
+            }, {
+              text: "Add future expenses to the calendar to know what is coming up next",
+              target: "calendar-container",
+              placement: "left"
+            }, {
+              text: "View a formatted list of all expenses on the calendar",
+              target: "expenses-list-button",
+              placement: "left"
+            }, {
+              text: "Set a schedule to be notified of your different expenses",
+              target: "notification-schedule-button",
+              placement: "left"
+            }, {
+              text: "Check some of the biggest financial numbers that you should be aware of",
+              target: "info-column"
+            }, {
+              text: "Get a concise overview of your investment performance",
+              target: "investments-overview"
+            }
+          ]}
+        />
 
       </div>
     );
