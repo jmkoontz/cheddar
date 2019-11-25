@@ -58,7 +58,7 @@ function RealSpending(props) {
 							</Progress>
 						</div>
 					)}
-					{props.budgetPeriodIndex === -1
+					{props.budgetPeriodIndex === -1 && !props.isDisabled
 						?
 						<TransactionForm {...props} currentStartDate={props.currentStartDate} />
 						:

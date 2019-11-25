@@ -213,8 +213,8 @@ function TransactionTable(props) {
                 <span hidden={sortKey !== 'category' || !sortCategoryAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
                 <span hidden={sortKey !== 'category' || sortCategoryAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
-              <th hidden={props.budgetPeriodIndex >= 0} className="tableHeader" >Edit{' '}</th>
-              <th hidden={props.budgetPeriodIndex >= 0} className="tableHeader" >Delete{' '}</th>
+              <th hidden={props.budgetPeriodIndex >= 0 || props.isDisabled} className="tableHeader" >Edit{' '}</th>
+              <th hidden={props.budgetPeriodIndex >= 0 || props.isDisabled} className="tableHeader" >Delete{' '}</th>
             </tr>
           </thead>
           <tbody>
@@ -225,8 +225,8 @@ function TransactionTable(props) {
                 <td>${transactions[index].amount.toFixed(2)}</td>
                 <td>{transactions[index].shortDate}</td>
                 <td>{transactions[index].category}</td>
-                <td hidden={props.budgetPeriodIndex >= 0}><Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
-                <td hidden={props.budgetPeriodIndex >= 0}><Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}><Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}><Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
               </tr>
             }
             )}
