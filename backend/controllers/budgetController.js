@@ -16,6 +16,7 @@ export default (app) => {
     let budget = {
       name: req.body.name,
       type: req.body.type,
+      endDate: req.body.endDate,
       income: req.body.income,
       timeFrame: req.body.timeFrame,
       favorite: req.body.favorite,
