@@ -27,6 +27,8 @@ function BudgetTabs(props) {
 	const [currentStartDate, setCurrentStartDate] = useState(); // start of date range currently displayed
 	const [currentEndDate, setCurrentEndDate] = useState(); // end of date range currently displayed
 	const [daysRemaining, setDaysRemaining] = useState();	// days remaining in current period
+	const [moneyRemaining, setMoneyRemaining] = useState();	// money remaining for fixed amount budgets
+	const [isDisabled, setIsDisabled] = useState(false);	// whether a fixed amount budget is disabled
 	const [budgetPeriodIndex, setBudgetPeriodIndex] = useState(-1);	// time period index for oldTransactions
 	const [maxBudgetPeriodIndex, setMaxBudgetPeriodIndex] = useState(0);	// maximum index for oldTransactions
 
@@ -162,8 +164,7 @@ function BudgetTabs(props) {
 					response.data[i].shortDate = getShortDate(date);
 				}
 
-				//setTransactions(response.data);
-				categorizeData(response.data);
+				categorizeData(response.data, -1);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -179,19 +180,35 @@ function BudgetTabs(props) {
 					response.data[i].shortDate = getShortDate(date);
 				}
 
-				// setTransactions(response.data);
-				categorizeData(response.data);
+				categorizeData(response.data, index);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	}
 
-	const categorizeData = (transacts) => {
+	const categorizeData = (transacts, index) => {
 		// Create the category objects
 		setTransactions(transacts);
 		let arrayOfObjects = [];
 		let categories = props.curBudget.budgetCategories;
+
+		// use old set of categories rather than current set
+		if (index >= 0) {
+			let tempCategories = [];
+			for (let i in props.curBudget.budgetCategories) {
+				if (props.curBudget.budgetCategories[i].oldTransactions[index]) {
+					let tempCategory = {
+						name: props.curBudget.budgetCategories[i].name,
+						amount: props.curBudget.budgetCategories[i].oldTransactions[index].amount
+					};
+
+					tempCategories.push(tempCategory);
+				}
+			}
+
+			categories = tempCategories;
+		}
 
 		for (let x = 0; x < categories.length; x++) {
 			// Generate a new category object
@@ -206,6 +223,8 @@ function BudgetTabs(props) {
 			arrayOfObjects = [...arrayOfObjects, newCateObj];
 		}
 
+		let tmpMoneyRemaining = props.curBudget.income;	// income for fixed amount budgets
+
 		for (let x = 0; x < transacts.length; x++) {
 			for (let y = 0; y < arrayOfObjects.length; y++) {
 				if (transacts[x].category === arrayOfObjects[y].name) {
@@ -214,10 +233,19 @@ function BudgetTabs(props) {
 					item.spent += transacts[x].amount;
 					item.percentUsed = (item.spent / item.allocated) * 100;
 					item.transactions = [...item.transactions, transacts[x]];
+					tmpMoneyRemaining -= transacts[x].amount;
 				}
 			}
 		}
 
+		if (props.curBudget.type === 'Fixed Amount') {
+			if (tmpMoneyRemaining < 0)
+				tmpMoneyRemaining = 0;
+
+			tmpMoneyRemaining = tmpMoneyRemaining.toFixed(2);
+
+			setMoneyRemaining(tmpMoneyRemaining);
+		}
 
 		setSpendingByCategory(arrayOfObjects);
 	};
@@ -266,7 +294,16 @@ function BudgetTabs(props) {
 		let nextUpdateDate = new Date(props.curBudget.nextUpdate);
 		let start;
 		let end = new Date(nextUpdateDate);
-		end.setUTCDate(end.getUTCDate() - 1);
+		// end.setUTCDate(end.getUTCDate() - 1);
+
+		if (props.curBudget.type === 'Fixed Amount') {
+			if (end < currentDate)
+				setIsDisabled(true);
+
+			setEndDate(getShortDate(end));
+			setDaysRemaining(calculateDateDifference(getShortDate(end)));
+			return;
+		}
 
 		if (props.curBudget.timeFrame === 'monthly') {
 			start = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), 1);
@@ -288,7 +325,12 @@ function BudgetTabs(props) {
 	// calculate number of days remaining in current period
 	const calculateDateDifference = (date) => {
 		const diff = Date.parse(date) - Date.now();
-		return Math.round(diff / (1000 * 60 * 60 * 24)) + 2;	// +2: 1 day to round up, 1 to count last day
+		let roundedDiff = Math.round(diff / (1000 * 60 * 60 * 24)) + 2;	// +2: 1 day to round up, 1 to count last day
+
+		if (roundedDiff < 0)
+			roundedDiff = 0;
+
+		return roundedDiff;
 	};
 
 	// get and set the maximum index of old budget periods
@@ -310,15 +352,11 @@ function BudgetTabs(props) {
 
 			if (props.curBudget) {
 				getTransactions();
-
-				if (props.curBudget.type === 'Custom') {
-					getCurrentDateRange();
-					getMaxBudgetPeriodIndex();
-				}
+				getCurrentDateRange();
+				getMaxBudgetPeriodIndex();
 			}
 
 			setBudgetPeriodIndex(-1);
-
 
 		},
 		[props.curBudget]
@@ -369,7 +407,7 @@ function BudgetTabs(props) {
 			<TabContent className="padTop" activeTab={props.tab}>
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
-						{item.type === 'Custom'
+						{item.type === 'Custom' || item.type === 'Percentage-Based'
 							?
 							<Row>
 								<Col sm={4} />
@@ -400,13 +438,41 @@ function BudgetTabs(props) {
 								</Col>
 								<Col sm={4} />
 							</Row>
-							:
-							null
+							: item.type === 'Fixed Amount'
+								?
+								<Row>
+									<Col>
+										<Row>
+											<Col>
+												{isDisabled
+													?
+													<span>Budget Ended on {endDate}</span>
+													:
+													<span>Budget Ends on {endDate}</span>
+												}
+											</Col>
+										</Row>
+										<Row>
+											<Col>
+												{daysRemaining === 1
+													?
+													<p>{daysRemaining} day and ${moneyRemaining} remaining</p>
+													:
+													<p>{daysRemaining} days and ${moneyRemaining} remaining</p>
+												}
+											</Col>
+										</Row>
+									</Col>
+								</Row>
+								:
+								null
 						}
 						<Row>
 							<Col sm={1} />
 							<Col sm={5}>
-								<span className="label" id="title">{item.name}</span>
+								<span className="label" id="title">{item.name}
+									<span hidden={!isDisabled}> (Expired)</span>
+								</span>
 								<div className="padTop">
 									{index === parseInt(props.tab) && props.curBudget && spendingByCategory
 										?
@@ -422,7 +488,7 @@ function BudgetTabs(props) {
 										<Button className="padRight buttonAdj" color="danger" onClick={() => { deleteHelper(item.name) }}>Delete</Button>
 									</Col>
 									<Col id={"Popover2" + item._id}>
-										<Button className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
+										<Button disabled={isDisabled} className="buttonAdj" color="primary" onClick={props.openEditModal}>Edit</Button>
 									</Col>
 									<Col id={"Popover8" + item._id}>
 										{props.favorite
@@ -445,7 +511,7 @@ function BudgetTabs(props) {
 										<RealSpending {...props} itemName={item._id} transactions={transactions} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} currentStartDate={currentStartDate}
 											categorizeData={categorizeData} spendingByCategory={spendingByCategory}
-											daysRemaining={daysRemaining} />
+											daysRemaining={daysRemaining} isDisabled={isDisabled} />
 										:
 										<p>Loading...</p>
 									}
@@ -461,7 +527,7 @@ function BudgetTabs(props) {
 									<div >
 										<TransactionTable itemName={item._id} {...props} transactions={transactions} tableMode={tableMode}
 											tableCategory={tableCategory} getTransactions={getTransactions}
-											budgetPeriodIndex={budgetPeriodIndex} />
+											budgetPeriodIndex={budgetPeriodIndex} isDisabled={isDisabled} />
 									</div>
 									:
 									<p>Loading...</p>

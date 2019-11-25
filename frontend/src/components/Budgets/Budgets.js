@@ -6,7 +6,6 @@ import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
 import FormBody from "./FormBody";
-import FixedAmount from "./FixedAmount";
 
 function Budgets() {
 
@@ -24,6 +23,7 @@ function Budgets() {
 	const [editModal, setEditModal] = useState(false); // Boolean to say if I'm editing the budget
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
+	const [endDate, setEndDate] = useState();	// end date for fixed amount budgets
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
 	const [pickedTimeFrame, setPickedTimeFrame] = useState("monthly");
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
@@ -84,7 +84,6 @@ function Budgets() {
 	 * @param {String: contains the tab index} newTab
 	 */
 	const setNewTab = (newTab) => {
-		//console.log(newTab);
 		setTab(newTab);
 		setCurBudget(budgetList[parseInt(newTab)]);
 		setFavorite(budgetList[parseInt(newTab)].favorite);
@@ -112,12 +111,16 @@ function Budgets() {
 		setEditModal(true);
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
+
 		let tmpIncome = {
 			name: "Income",
 			amount: curBudget.income
 		}
-		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
 
+		if (curBudget.type === "Fixed Amount")
+			tmpIncome.name = "Amount (Lump Sum)";
+
+		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
 	}
 
 	// Server calls below here
@@ -169,7 +172,7 @@ function Budgets() {
 		let tmpIncome;
 		let index = 0;
 		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income") {
+			if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
 				index = x;
 				tmpIncome = categoryArr[x].amount;
 			}
@@ -178,17 +181,21 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
+		let tmpPickedCategory = pickedCategory;
+		if (pickedCategory === 'Standard')
+			tmpPickedCategory = 'Custom';
+
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
 			{
 				name: budgetName,
-				type: pickedCategory,
+				type: tmpPickedCategory,
+				endDate: endDate,
 				income: tmpIncome,
 				timeFrame: pickedTimeFrame,
 				favorite: false,
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
-				//console.log(response);
 				setModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
@@ -211,7 +218,6 @@ function Budgets() {
 		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
 		).then(function (response) {
 
-			//console.log(response);
 			setModal(false);
 			setCategoryArr([]);
 			setButtonDisplay(false);
@@ -229,7 +235,6 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
-		console.log(categoryArr)
 		let tmpName;
 		if (budgetName === curBudget.name) {
 			tmpName = "";
@@ -240,7 +245,7 @@ function Budgets() {
 		let tmpIncome;
 		let index = 0;
 		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income") {
+			if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
 				index = x;
 				tmpIncome = categoryArr[x].amount;
 			}
@@ -248,7 +253,6 @@ function Budgets() {
 
 		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
-		//console.log(removedIncomeArr)
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 			{
 				name: tmpName,
@@ -256,7 +260,6 @@ function Budgets() {
 				budgetCategories: removedIncomeArr
 			}).then(function (response) {
 
-				console.log(response);
 				setEditModal(false);
 				setModal(false);
 				setButtonDisplay(false);
@@ -285,6 +288,8 @@ function Budgets() {
 		//handleCategoryChange: handleCategoryChange,
 		budgetName: budgetName,
 		setBudgetName: setBudgetName,
+		endDate: endDate,
+		setEndDate: setEndDate,
 		removeCategory: removeCategory,
 		resetDropDown: resetDropDown,
 		toggleDropDown: toggleDropDown,
@@ -337,17 +342,17 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									{/*TODO: clean this up and store it in a state variable*/}
-									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Standard")}>Standard Budget</DropdownItem>
 									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
+									<DropdownItem onClick={() => setPickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>
 						<Col sm={3} />
 						<Col sm={3}>
 							<Dropdown isOpen={timeFrameDropDown} toggle={() => toggleTimeFrameDropDown(!timeFrameDropDown)}>
-								<DropdownToggle disabled={editModal} className="smallText" caret>
+								<DropdownToggle hidden={pickedCategory === 'Fixed Amount'} disabled={editModal}
+										className="smallText" caret>
 									{pickedTimeFrame.charAt(0).toUpperCase() + pickedTimeFrame.slice(1)}
 								</DropdownToggle>
 								<DropdownMenu>
@@ -370,15 +375,15 @@ function Budgets() {
 									:
 									<div />
 								}
-								{pickedCategory === "Loan Payment"
+								{pickedCategory === "Percentage-Based"
 									?
 									<StudentLoan {...formInfo} />
-									: pickedCategory === "Custom"
+									: pickedCategory === "Standard" || pickedCategory === "Custom"
 										?
 										<FormBody {...formInfo} />
 										: pickedCategory === "Fixed Amount"
 											?
-											<FixedAmount {...formInfo} />
+											<FormBody {...formInfo} type={pickedCategory} />
 											:
 											<div>
 												{/* Other categories will go here */}
