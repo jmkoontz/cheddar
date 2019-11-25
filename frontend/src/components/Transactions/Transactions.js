@@ -393,7 +393,7 @@ function Transactions() {
 				<Col sm={10}>
 					{!loading
 						?
-						<TransactionTable {...propData} curBudget={selectedBudget} transactions={transactions} />
+						<TransactionTable {...propData} parent={"transactions"} curBudget={selectedBudget} transactions={transactions} />
 						:
 						<div />
 					}

@@ -38,7 +38,7 @@ function TransactionTable(props) {
 
       if (props.curBudget.timeFrame) {
         let frame = props.curBudget.timeFrame;
-        let nextUpdate =  new Date(props.curBudget.nextUpdate);
+        let nextUpdate = new Date(props.curBudget.nextUpdate);
         let initialDay;
         if (frame === "monthly") {
           initialDay = new Date(nextUpdate - 2629800000);
@@ -230,8 +230,8 @@ function TransactionTable(props) {
                 <span hidden={sortKey !== 'category' || !sortCategoryAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
                 <span hidden={sortKey !== 'category' || sortCategoryAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
-              <th hidden={props.budgetPeriodIndex >= 0} className="tableHeader" >Edit{' '}</th>
-              <th hidden={props.budgetPeriodIndex >= 0} className="tableHeader" >Delete{' '}</th>
+              <th hidden={props.budgetPeriodIndex >= 0 || props.isDisabled} className="tableHeader" >Edit{' '}</th>
+              <th hidden={props.budgetPeriodIndex >= 0 || props.isDisabled} className="tableHeader" >Delete{' '}</th>
             </tr>
           </thead>
           <tbody>
@@ -242,26 +242,34 @@ function TransactionTable(props) {
                 <td>${transactions[index].amount.toFixed(2)}</td>
                 <td>{transactions[index].shortDate}</td>
                 <td>{transactions[index].category}</td>
-                {/* {console.log(new Date(transactions[index].date))} */}
-                {earliestDay <= new Date(transactions[index].date)
+
+                {props.parent === "budgets"
                   ?
-                  <td hidden={props.budgetPeriodIndex >= 0}><Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
-                  :
-                  <td/>
+                  <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}> <Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                  : props.parent === "transactions" && earliestDay <= new Date(transactions[index].date)
+                    ?
+                    <td> <Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                    :
+                    <td />
                 }
-                {earliestDay <= new Date(transactions[index].date)
+
+                {props.parent === "budgets"
                   ?
-                  <td hidden={props.budgetPeriodIndex >= 0}><Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
-                  :
-                  <td/>
+                  <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}> <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                  : props.parent === "transactions" && earliestDay <= new Date(transactions[index].date)
+                    ?
+                    <td> <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                    :
+                    <td />
                 }
+
 
               </tr>
             }
             )}
           </tbody>
         </Table>
-      </Collapse>
+      </Collapse >
       <Modal isOpen={modal} toggle={closeHandler}>
         {editMode
           ?

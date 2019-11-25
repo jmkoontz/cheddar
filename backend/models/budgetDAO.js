@@ -129,19 +129,31 @@ export async function createBudget(uid, budget) {
   }
 
   // set update date for budget
-  let currentDate = new Date(Date.now());
-  currentDate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), currentDate.getDate());
-  if (budget.timeFrame === 'monthly') {
-    if (currentDate.getUTCMonth() === 11)
-      budget.nextUpdate = new Date(currentDate.getFullYear() + 1, 0, 1);
-    else
-      budget.nextUpdate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth() + 1, 1);
-  } else if (budget.timeFrame === 'biweekly') {
-    const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
-    budget.nextUpdate = new Date(Date.parse(currentDate) + twoWeeksOffset);
-  } else if (budget.timeFrame === 'weekly') {
-    const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
-    budget.nextUpdate = new Date(Date.parse(currentDate) + oneWeekOffset);
+  if (budget.type === 'Fixed Amount') {
+    const oneDayOffset = 1000 * 60 * 60 * 24;
+    budget.endDate = new Date(budget.endDate);
+
+    if (budget.endDate < new Date(Date.now()))
+      return Promise.reject('UserError: Fixed Amount budget cannot have have an end date earlier than the current date');
+
+    budget.endDate = new Date(budget.endDate.getFullYear(), budget.endDate.getUTCMonth(), budget.endDate.getDate());
+    budget.nextUpdate = new Date(Date.parse(budget.endDate) + oneDayOffset);
+    delete budget.endDate;  // remove endDate before creating budget
+  } else {
+    let currentDate = new Date(Date.now());
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), currentDate.getDate());
+    if (budget.timeFrame === 'monthly') {
+      if (currentDate.getUTCMonth() === 11)
+        budget.nextUpdate = new Date(currentDate.getFullYear() + 1, 0, 1);
+      else
+        budget.nextUpdate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth() + 1, 1);
+    } else if (budget.timeFrame === 'biweekly') {
+      const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
+      budget.nextUpdate = new Date(Date.parse(currentDate) + twoWeeksOffset);
+    } else if (budget.timeFrame === 'weekly') {
+      const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
+      budget.nextUpdate = new Date(Date.parse(currentDate) + oneWeekOffset);
+    }
   }
 
   return userModel.findOneAndUpdate(
@@ -640,6 +652,9 @@ export async function getOldTransactions(uid, budgetName, index) {
     return Promise.reject(error);
   }
 
+  if (budget.type === 'Fixed Amount')
+    return Promise.resolve([]);
+
   let transactions = [];
   let transactionIdList = [];
   let transactionCategoryList = [];
@@ -685,7 +700,7 @@ export async function transferOldTransactions(uid) {
   let modified = false;
   for (let i in budgets) {
     // legacy compatibility
-    if (!budgets[i].nextUpdate || budgets[i].type !== 'Custom')
+    if (!budgets[i].nextUpdate || budgets[i].type === 'Fixed Amount')
       continue;
 
     if (budgets[i].nextUpdate <= new Date(Date.now())) {
