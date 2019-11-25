@@ -325,7 +325,7 @@ function BudgetTabs(props) {
 	// calculate number of days remaining in current period
 	const calculateDateDifference = (date) => {
 		const diff = Date.parse(date) - Date.now();
-		let roundedDiff = Math.round(diff / (1000 * 60 * 60 * 24)) + 2;	// +2: 1 day to round up, 1 to count last day
+		let roundedDiff = Math.round(diff / (1000 * 60 * 60 * 24)) + 1;	// +2: 1 day to round up, 1 to count last day
 
 		if (roundedDiff < 0)
 			roundedDiff = 0;
