@@ -16,13 +16,13 @@ function RealSpending(props) {
 		() => {
 
 			let total;
-			if(props.curBudget.timeFrame == "monthly") {
+			if (props.curBudget.timeFrame == "monthly") {
 				total = 31;
 			}
-			else if(props.curBudget.timeFrame == "biweekly") {
+			else if (props.curBudget.timeFrame == "biweekly") {
 				total = 14;
 			}
-			else if(props.curBudget.timeFrame == "weekly") {
+			else if (props.curBudget.timeFrame == "weekly") {
 				total = 7;
 			}
 			setTotalDays(total);
@@ -38,7 +38,7 @@ function RealSpending(props) {
 				<p>Loading...</p>
 				:
 				<div> {/** Loop thru budget categories prop and compare the amount with the objects  */}
-					<div id={"Popover4" + props.itemName}/>
+					<div id={"Popover4" + props.itemName} />
 					{props.spendingByCategory && props.spendingByCategory.length && props.spendingByCategory.map((item, index) =>
 						<div className="padTop" key={index}>
 							<p>{item.name}: ${item.spent.toFixed(2)} / ${item.allocated.toFixed(2)}</p>
@@ -46,7 +46,7 @@ function RealSpending(props) {
 								{item.percentUsed > 100
 									?
 									<Progress className="leftText" bar animated color="danger" value={item.percentUsed}>{(item.percentUsed).toFixed(2)}%</Progress>
-									: props.budgetPeriodIndex === -1 && item.percentUsed >= 50 && (((totalDays - props.daysRemaining)/totalDays)*100) < item.percentUsed
+									: props.budgetPeriodIndex === -1 && item.percentUsed >= 50 && (((totalDays - props.daysRemaining) / totalDays) * 100) < item.percentUsed
 										?
 										<Progress className="leftText" bar animated color="warning" value={item.percentUsed} >{(item.percentUsed).toFixed(2)}%  {" Warning: Current spending set to exceed limit before end of time"} </Progress>
 										: item.percentUsed >= 75
@@ -59,12 +59,14 @@ function RealSpending(props) {
 							</Progress>
 						</div>
 					)}
-					{props.budgetPeriodIndex === -1 && !props.isDisabled
-						?
-						<TransactionForm {...props} currentStartDate={props.currentStartDate} />
-						:
-						null
-					}
+					<div id={"Popover5" + props.itemName}>
+						{props.budgetPeriodIndex === -1 && !props.isDisabled
+							?
+							<TransactionForm {...props} currentStartDate={props.currentStartDate} />
+							:
+							null
+						}
+					</div>
 				</div>
 			}
 		</div>

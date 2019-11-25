@@ -407,6 +407,7 @@ function BudgetTabs(props) {
 			<TabContent className="padTop" activeTab={props.tab}>
 				{props.budgetList.map((item, index) =>
 					<TabPane tabId={index.toString()} key={index}>
+						<div id={"Popover7" + item._id} />
 						{item.type === 'Custom' || item.type === 'Percentage-Based'
 							?
 							<Row>
@@ -414,7 +415,7 @@ function BudgetTabs(props) {
 								<Col sm={4}>
 									<Row>
 										<Col>
-											<ButtonGroup id={"Popover7" + item._id}>
+											<ButtonGroup >
 												<Button onClick={() => toggleTimePeriod(budgetPeriodIndex + 1)} disabled={budgetPeriodIndex >= maxBudgetPeriodIndex}>
 													<FontAwesomeIcon icon={faAngleLeft} />
 												</Button>
@@ -747,7 +748,7 @@ function BudgetTabs(props) {
 											</div>
 											:
 											<div>
-												<p>Use these buttons to toggle between time periods to see older transactions</p>
+												<p>Check here for information about time periods and to see older transactions</p>
 												<Row>
 													<Col sm={6}>
 														<ButtonGroup>
