@@ -25,6 +25,7 @@ function Budgets() {
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [endDate, setEndDate] = useState();	// end date for fixed amount budgets
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
+	const [income, setIncome] = useState(0);	// income for budget
 	const [pickedTimeFrame, setPickedTimeFrame] = useState("monthly");
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	const [timeFrameDropDown, toggleTimeFrameDropDown] = useState(false);
@@ -65,7 +66,8 @@ function Budgets() {
 		let obj = {
 			"name": selectedDrop,
 			"amount": 0,
-			"transactions": []
+			"transactions": [],
+			"percentage": 0
 		};
 		setCategoryArr([...categoryArr, obj]); // TODO allow users to set a category
 		setDropDown("Select a Category");
@@ -112,15 +114,18 @@ function Budgets() {
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
 
-		let tmpIncome = {
-			name: "Income",
-			amount: curBudget.income
-		}
+		setIncome(curBudget.income);
+		setCategoryArr(curBudget.budgetCategories);
 
-		if (curBudget.type === "Fixed Amount")
-			tmpIncome.name = "Amount (Lump Sum)";
-
-		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
+		// let tmpIncome = {
+		// 	name: "Income",
+		// 	amount: curBudget.income
+		// }
+		//
+		// if (curBudget.type === "Fixed Amount")
+		// 	tmpIncome.name = "Amount (Lump Sum)";
+		//
+		// setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
 	}
 
 	// Server calls below here
@@ -169,17 +174,19 @@ function Budgets() {
 	const createBudget = () => {
 		toggleAlert();
 
-		let tmpIncome;
-		let index = 0;
-		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
-				index = x;
-				tmpIncome = categoryArr[x].amount;
-			}
-			categoryArr[x].transactions = [];
-		}
+		// let tmpIncome;
+		// let index = 0;
+		// for (let x = 0; x < categoryArr.length; x++) {
+		// 	if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
+		// 		index = x;
+		// 		tmpIncome = categoryArr[x].amount;
+		// 	}
+		// 	categoryArr[x].transactions = [];
+		// }
+		//
+		// let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+		delete categoryArr.percentage;
 
 		let tmpPickedCategory = pickedCategory;
 		if (pickedCategory === 'Standard')
@@ -190,10 +197,10 @@ function Budgets() {
 				name: budgetName,
 				type: tmpPickedCategory,
 				endDate: endDate,
-				income: tmpIncome,
+				income: income,
 				timeFrame: pickedTimeFrame,
 				favorite: false,
-				budgetCategories: removedIncomeArr
+				budgetCategories: categoryArr
 			}).then(function (response) {
 
 				setModal(false);
@@ -242,22 +249,24 @@ function Budgets() {
 			tmpName = budgetName;
 		}
 
-		let tmpIncome;
-		let index = 0;
-		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
-				index = x;
-				tmpIncome = categoryArr[x].amount;
-			}
-		}
+		delete categoryArr.percentage;
 
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+		// let tmpIncome;
+		// let index = 0;
+		// for (let x = 0; x < categoryArr.length; x++) {
+		// 	if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
+		// 		index = x;
+		// 		tmpIncome = categoryArr[x].amount;
+		// 	}
+		// }
+		//
+		// let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
 
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 			{
 				name: tmpName,
-				income: tmpIncome,
-				budgetCategories: removedIncomeArr
+				income: income,
+				budgetCategories: categoryArr
 			}).then(function (response) {
 
 				setEditModal(false);
@@ -296,6 +305,8 @@ function Budgets() {
 		selectedDrop: selectedDrop,
 		setDropDown: setDropDown,
 		dropdown: dropdown,
+		income: income,
+		setIncome: setIncome,
 		categoryArr: categoryArr,
 		setCategoryArr: setCategoryArr,
 		tab: tab,
@@ -375,9 +386,10 @@ function Budgets() {
 									:
 									<div />
 								}
-								{pickedCategory === "Percentage-Based"
+								<FormBody {...formInfo} type={pickedCategory} />
+								{/*pickedCategory === "Percentage-Based"
 									?
-									<StudentLoan {...formInfo} />
+									<FormBody {...formInfo} type={pickedCategory} />
 									: pickedCategory === "Standard" || pickedCategory === "Custom"
 										?
 										<FormBody {...formInfo} />
@@ -386,9 +398,8 @@ function Budgets() {
 											<FormBody {...formInfo} type={pickedCategory} />
 											:
 											<div>
-												{/* Other categories will go here */}
 											</div>
-								}
+								*/}
 							</ModalBody>
 						</div>
 					}

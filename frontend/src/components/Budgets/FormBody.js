@@ -8,10 +8,33 @@ import DropDownHelper from './DropDownHelper';
 
 function FormBody(props) {
 
-  const [dropDownObj, setDropDownObj] = useState({ hello: "wordl", name: "butt" });
+  const [dropDownObj, setDropDownObj] = useState();
+  const [localIncome, setLocalIncome] = useState(props.income); // holds a local copy of income
   const [localCategories, setLocalCategories] = useState(props.categoryArr);  // Holds a local copy of the category array
   const [budName, setBudName] = useState(props.budgetName);
   const [catName, setCatName] = useState(""); // name of custom category
+
+  // handle change in income
+  const handleIncomeChange = (event) => {
+    if (!parseInt(event.target.value) && event.target.value.length !== 0) return;
+
+    if (event.target.value.length === 0)
+      event.target.value = 0;
+
+    const tmpIncome = parseInt(event.target.value);
+
+    if (props.type === 'Percentage-Based') {
+      for (let i in localCategories) {
+        const percentage = localCategories[i].percentage / 100.0;
+        localCategories[i].amount = percentage * tmpIncome;
+      }
+
+      setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
+      props.setCategoryArr(localCategories);
+    }
+
+    props.setIncome(tmpIncome);
+  };
 
   /**
      * Handles user input from the modal form and updates the state
@@ -38,6 +61,23 @@ function FormBody(props) {
     }
     setLocalCategories(arr);
     props.setCategoryArr(arr);
+  }
+
+  // handle percentage change for category of percentage-based budget
+  const handlePercentageChange = (index, event) => {
+    if (!parseInt(event.target.value) && event.target.value.length !== 0) return;
+
+    if (event.target.value.length === 0)
+      event.target.value = 0;
+
+    const tmpPercentage = parseFloat(event.target.value);
+    localCategories[index].percentage = tmpPercentage;
+
+    const percentage = tmpPercentage / 100.0;
+    localCategories[index].amount = parseFloat((percentage * props.income).toFixed(2)); // TODO fix extra decimal issue
+
+    setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
+    props.setCategoryArr(localCategories);
   }
 
   /**
@@ -68,8 +108,8 @@ function FormBody(props) {
 
   // check if category is a custom category
   const isCustomCategory = (name) => {
-    const presetNames = ['Income', 'Amount (Lump Sum)', 'Entertainment', 'Food and Groceries',
-      'Savings', 'Debt', 'Housing', 'Gas', 'Utilities'];
+    const presetNames = ['Entertainment', 'Food and Groceries', 'Savings', 'Debt',
+        'Housing', 'Gas', 'Utilities'];
 
     return !presetNames.includes(name);
   }
@@ -105,6 +145,17 @@ function FormBody(props) {
           null
         }
 
+        <FormGroup>
+          <Label for="income">Income</Label>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>$</InputGroupText>
+            </InputGroupAddon>
+            <Input onChange={handleIncomeChange} type="text" id="income"
+                required="required" value={props.income} />
+          </InputGroup>
+        </FormGroup>
+
         {localCategories.map((item, index) =>
           <FormGroup key={index}>
             {props.editModal && isCustomCategory(item.name)
@@ -117,21 +168,47 @@ function FormBody(props) {
               :
               <Label for={"" + index}>{item.name}</Label>
             }
-            <Row>
-              <Col sm={10}>
-                <Input
-                  onChange={handleCategoryChange}
-                  type="text"
-                  id={index}
-                  placeholder="Amount"
-                  required="required"
-                  value={item.amount}
-                />
-              </Col>
-              <Col sm={2}>
-                <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
-              </Col>
-            </Row>
+            {props.type === "Percentage-Based"
+              ?
+              <Row>
+                <Col sm={3}>
+                  <InputGroup>
+                    <Input onChange={(ev) => handlePercentageChange(index, ev)} type="text" id={index}
+                        required="required" value={item.percentage} />
+                    <InputGroupAddon addonType="append">
+                      <InputGroupText>%</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Col>
+                <Col sm={6}>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>$</InputGroupText>
+                    </InputGroupAddon>
+                    <Input disabled onChange={handleCategoryChange} type="text" id={index}
+                        required="required" value={item.amount} />
+                  </InputGroup>
+                </Col>
+                <Col sm={2}>
+                  <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
+                </Col>
+              </Row>
+              :
+              <Row>
+                <Col sm={10}>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>$</InputGroupText>
+                    </InputGroupAddon>
+                    <Input onChange={handleCategoryChange} type="text" id={index}
+                        required="required" value={item.amount} />
+                  </InputGroup>
+                </Col>
+                <Col sm={2}>
+                  <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
+                </Col>
+              </Row>
+            }
           </FormGroup>
         )}
 
@@ -146,18 +223,11 @@ function FormBody(props) {
           }
         </Col>
         <Col className="buttonFix">
-          {/* <DropDownHelper {...props} dropDownObj={dropDownObj}/> */}
           <Dropdown isOpen={props.dropdown} toggle={() => props.toggleDropDown(!props.dropdown)}>
             <DropdownToggle caret>
               {props.selectedDrop}
             </DropdownToggle>
             <DropdownMenu>
-              {props.type === "Fixed Amount"
-                ?
-                <DropdownItem onClick={() => props.setDropDown("Amount (Lump Sum)")}>Amount (Lump Sum)</DropdownItem>
-                :
-                <DropdownItem onClick={() => props.setDropDown("Income")}>Income</DropdownItem>
-              }
               <DropdownItem onClick={() => props.setDropDown("Entertainment")}>Entertainment</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Savings")}>Savings</DropdownItem>
