@@ -65,7 +65,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // Unfavorite a budget
+  // unfavorite a budget
   app.put('/Cheddar/Budgets/Unfavorite/:uid/:budgetName', async (req, res) => {
     let data;
     try {
@@ -142,7 +142,7 @@ export default (app) => {
     try {
       data = await getAllBudgets(req.params.uid, true);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -286,7 +286,7 @@ export default (app) => {
     try {
       data = await getOldTransactions(req.params.uid, req.params.budgetName, req.params.index);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -298,7 +298,7 @@ export default (app) => {
     try {
       data = await transferOldTransactions(req.params.uid);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);

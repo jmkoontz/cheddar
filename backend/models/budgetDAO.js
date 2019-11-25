@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
-import {userModel} from '../utilities/mongooseModels';
-import {addTransaction, getTransactions} from './transactionDAO';
+import { userModel } from '../utilities/mongooseModels';
+import { addTransaction, getTransactions } from './transactionDAO';
 
 export async function getAllBudgets(uid, external) {
   const returnClause = {
-    '_id': 0, // exclude _id
+    '_id': 1, // include _id
     'budgets': 1
   };
 
@@ -13,7 +13,7 @@ export async function getAllBudgets(uid, external) {
   if (external)
     await transferOldTransactions(uid);
 
-  return userModel.findOne({_id: uid}, returnClause)
+  return userModel.findOne({ _id: uid }, returnClause)
     .then((user) => {
       if (user && user.budgets)
         return Promise.resolve(user.budgets);
@@ -27,11 +27,11 @@ export async function getAllBudgets(uid, external) {
 
 export function getBudgetNames(uid) {
   const returnClause = {
-    '_id': 0, // exclude _id
+    '_id': 1, // exclude _id
     'budgets.name': 1
   };
 
-  return userModel.findOne({_id: uid}, returnClause)
+  return userModel.findOne({ _id: uid }, returnClause)
     .then((user) => {
       if (user && user.budgets) {
         let namesList = [];
@@ -75,11 +75,11 @@ export function getBudget(uid, budgetName) {
 export function getBudgetCategoryNames(uid, budgetName) {
   const returnClause = {
     '_id': 0, // exclude _id
-    'budgets': {'$elemMatch': {'name': budgetName}},
+    'budgets': { '$elemMatch': { 'name': budgetName } },
     'budgets.budgetCategories.name': 1
   };
 
-  return userModel.findOne({_id: uid}, returnClause)
+  return userModel.findOne({ _id: uid }, returnClause)
     .then((user) => {
       if (user && user.budgets && user.budgets[0].budgetCategories) {
         let namesList = [];
@@ -157,9 +157,9 @@ export async function createBudget(uid, budget) {
   }
 
   return userModel.findOneAndUpdate(
-    {_id: uid},
-    {'$addToSet': {'budgets': budget}},
-    {'new': true})
+    { _id: uid },
+    { '$addToSet': { 'budgets': budget } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User not found');
@@ -172,7 +172,7 @@ export async function createBudget(uid, budget) {
 }
 
 export async function editBudget(uid, budgetName, changes) {
-  let updateClause = {$set: {}};
+  let updateClause = { $set: {} };
 
   if (changes.name !== "") {
     // get names of budgets
@@ -215,7 +215,7 @@ export async function editBudget(uid, budgetName, changes) {
   return userModel.findOneAndUpdate(
     findClause,
     updateClause,
-    {'new': true})
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -252,8 +252,8 @@ export async function favoriteBudget(uid, budgetName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$set': {'budgets': budgets}},
-    {'new': true})
+    { '$set': { 'budgets': budgets } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -274,8 +274,8 @@ export function unfavoriteBudget(uid, budgetName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$set': {'budgets.$.favorite': false}},
-    {'new': true})
+    { '$set': { 'budgets.$.favorite': false } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -289,9 +289,9 @@ export function unfavoriteBudget(uid, budgetName) {
 
 export function deleteBudget(uid, budgetName) {
   return userModel.findOneAndUpdate(
-    {'_id': uid},
-    {'$pull': {'budgets': {'name': budgetName}}},
-    {'new': true})
+    { '_id': uid },
+    { '$pull': { 'budgets': { 'name': budgetName } } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -332,8 +332,8 @@ export async function addBudgetCategory(uid, budgetName, category) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$addToSet': {'budgets.$.budgetCategories': category}},
-    {'new': true})
+    { '$addToSet': { 'budgets.$.budgetCategories': category } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User not found');
@@ -346,7 +346,7 @@ export async function addBudgetCategory(uid, budgetName, category) {
 }
 
 export async function editBudgetCategory(uid, budgetName, categoryName, changes) {
-  let updateClause = {$set: {}};
+  let updateClause = { $set: {} };
 
   if (changes.name) {
     // get names of budget categories
@@ -368,12 +368,12 @@ export async function editBudgetCategory(uid, budgetName, categoryName, changes)
     updateClause.$set['budgets.$[budget].budgetCategories.$[category].amount'] = changes.amount;
 
   const options = {
-    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'arrayFilters': [{ 'budget.name': budgetName }, { 'category.name': categoryName }],
     'new': true
   };
 
   return userModel.findOneAndUpdate(
-    {'_id': uid},
+    { '_id': uid },
     updateClause,
     options)
     .then((updatedUser) => {
@@ -395,8 +395,8 @@ export function deleteBudgetCategory(uid, budgetName, categoryName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$pull': {'budgets.$.budgetCategories': {'name': categoryName}}},
-    {'new': true})
+    { '$pull': { 'budgets.$.budgetCategories': { 'name': categoryName } } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -421,13 +421,13 @@ export function addTransactionToBudget(uid, budgetName, categoryName, transactio
   transaction._id = new mongoose.Types.ObjectId();
 
   const options = {
-    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'arrayFilters': [{ 'budget.name': budgetName }, { 'category.name': categoryName }],
     'new': true
   };
 
   return userModel.findOneAndUpdate(
-    {'_id': uid},
-    {'$push': {'budgets.$[budget].budgetCategories.$[category].transactions': transaction._id}},
+    { '_id': uid },
+    { '$push': { 'budgets.$[budget].budgetCategories.$[category].transactions': transaction._id } },
     options)
     .then(async (updatedUser) => {
       if (updatedUser == null)
@@ -448,13 +448,13 @@ export function addTransactionToBudget(uid, budgetName, categoryName, transactio
 
 export function removeTransactionFromBudget(uid, budgetName, categoryName, transactionId) {
   const options = {
-    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'arrayFilters': [{ 'budget.name': budgetName }, { 'category.name': categoryName }],
     'new': true
   };
 
   return userModel.findOneAndUpdate(
-    {'_id': uid},
-    {'$pull': {'budgets.$[budget].budgetCategories.$[category].transactions':  mongoose.Types.ObjectId(transactionId)}},
+    { '_id': uid },
+    { '$pull': { 'budgets.$[budget].budgetCategories.$[category].transactions': mongoose.Types.ObjectId(transactionId) } },
     options)
     .then((updatedUser) => {
       if (updatedUser == null)
@@ -470,12 +470,12 @@ export function removeTransactionFromBudget(uid, budgetName, categoryName, trans
 export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
   const returnClause = {
     '_id': 0, // exclude _id
-    'budgets': {'$elemMatch': {'name': budgetName, 'budgetCategories.name': categoryName}},
+    'budgets': { '$elemMatch': { 'name': budgetName, 'budgetCategories.name': categoryName } },
     'budgets.budgetCategories': 1
   };
 
   return userModel.findOne(
-    {'_id': uid},
+    { '_id': uid },
     returnClause)
     .then(async (user) => {
       if (user && user.budgets && user.budgets[0].budgetCategories) {
@@ -534,12 +534,12 @@ export async function getTransactionsInBudgetCategoryAndDateRange(uid, budgetNam
 export function getTransactionsInBudget(uid, budgetName) {
   const returnClause = {
     '_id': 0, // exclude _id
-    'budgets': {'$elemMatch': {'name': budgetName}},
+    'budgets': { '$elemMatch': { 'name': budgetName } },
     'budgets.budgetCategories': 1
   };
 
   return userModel.findOne(
-    {'_id': uid},
+    { '_id': uid },
     returnClause)
     .then(async (user) => {
       if (user && user.budgets && user.budgets[0].budgetCategories) {
@@ -587,7 +587,9 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
     return Promise.reject('UserError: No start date specified');
 
   let transactions = [];
+  let budget = {};
   try {
+    budget = await getBudget(uid, budgetName);
     transactions = await getTransactionsInBudget(uid, budgetName);
   } catch (error) {
     return Promise.reject(error);
@@ -604,8 +606,41 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
+  // Determine max index based on user's start date
+  let maxIndex = 0;
+  for (let i in budget.budgetCategories) {
+    if (budget.budgetCategories[i].oldTransactions) {
+      for (let j in budget.budgetCategories[i].oldTransactions) {
+        if (new Date(budget.budgetCategories[i].oldTransactions[j].startDate) < startDate) {
+          maxIndex = j;
+          break;
+        }
+      }
+    }
+  }
 
+  // Loop through and call getOldTransactions for each index based on startDate
+
+  for (let i = 0; i <= maxIndex; i++) {
+    let tmp = [];
+    try {
+      tmp = await getOldTransactions(uid, budgetName, i);
+      console.log(tmp);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+
+    // append new transactions to the list
+    for (let i in tmp) {
+      transactions.push(tmp[i])
+    }
+    //transactions = [...transactions, tmp];
+  }
+
+  //console.log(transactions);
+
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
+  //console.log(transactions);
   return Promise.resolve(transactions);
 }
 
@@ -713,9 +748,9 @@ export async function transferOldTransactions(uid) {
 
     if (modified) {
       return userModel.findOneAndUpdate(
-        {'_id': uid},
-        {'$set': {budgets: budgets}},
-        {'new': true})
+        { '_id': uid },
+        { '$set': { budgets: budgets } },
+        { 'new': true })
         .then((updatedUser) => {
           if (updatedUser == null)
             return Promise.reject('UserError: User not found');
