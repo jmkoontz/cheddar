@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, FormGroup, Label, Input, InputGroup, InputGroupText, InputGroupAddon } from 'reactstrap';
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+
 import '../../css/Budgets.css';
 import DropDownHelper from './DropDownHelper';
 
@@ -24,7 +26,6 @@ function FormBody(props) {
     } else {
       newObj.amount = 0;
     }
-
 
     let arr = [];
 
@@ -67,15 +68,15 @@ function FormBody(props) {
 
   // check if category is a custom category
   const isCustomCategory = (name) => {
-    const presetNames = ['Income', 'Entertainment', 'Food and Groceries', 'Savings',
-      'Debt', 'Housing', 'Gas', 'Utilities'];
+    const presetNames = ['Income', 'Amount (Lump Sum)', 'Entertainment', 'Food and Groceries',
+      'Savings', 'Debt', 'Housing', 'Gas', 'Utilities'];
 
     return !presetNames.includes(name);
   }
 
   useEffect(
     () => {
-      if (props.pickedCategory === "Custom") {
+      if (props.pickedCategory === "Custom" || props.pickedCategory === "Fixed Amount") {
         props.setButtonDisplay(true);
       }
       setLocalCategories(props.categoryArr);
@@ -90,6 +91,19 @@ function FormBody(props) {
           <Label for="name">Name</Label>
           <Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" value={budName} />
         </FormGroup>
+
+        {props.type === "Fixed Amount" && !props.editModal
+          ?
+          <FormGroup>
+            <Label for="date">End Date</Label>
+            <Col>
+              <DatePicker id="date" selected={props.endDate} onChange={d => props.setEndDate(new Date(d))}
+                  minDate={new Date()} required={true} />
+            </Col>
+          </FormGroup>
+          :
+          null
+        }
 
         {localCategories.map((item, index) =>
           <FormGroup key={index}>
@@ -138,7 +152,12 @@ function FormBody(props) {
               {props.selectedDrop}
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => props.setDropDown("Income")}>Income</DropdownItem>
+              {props.type === "Fixed Amount"
+                ?
+                <DropdownItem onClick={() => props.setDropDown("Amount (Lump Sum)")}>Amount (Lump Sum)</DropdownItem>
+                :
+                <DropdownItem onClick={() => props.setDropDown("Income")}>Income</DropdownItem>
+              }
               <DropdownItem onClick={() => props.setDropDown("Entertainment")}>Entertainment</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Savings")}>Savings</DropdownItem>
