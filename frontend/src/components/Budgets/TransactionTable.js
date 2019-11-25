@@ -202,7 +202,7 @@ function TransactionTable(props) {
   return (
     <div>
       <Row>
-        <Col sm="3">
+        <Col sm="3" id={"transaction-table"}>
           <Button id={"Popover6" + props.itemName} onClick={toggle} className="tableButton">
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
