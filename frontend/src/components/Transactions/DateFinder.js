@@ -39,7 +39,7 @@ function DateFinder(props) {
   }
 
   return (
-    <Card>
+    <Card id={"transaction-finder"}>
       <CardHeader>
         Enter Date Range
 			</CardHeader>

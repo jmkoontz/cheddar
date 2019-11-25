@@ -87,14 +87,17 @@ function SelectBudgetForm(props) {
 
   useEffect(
     () => {
-      setBudgetList(props.rawBudgetList);
+      if (props.rawBudgetList.length) {
+        setBudgetList(props.rawBudgetList);
+      }
+     
     },
     [props]
   );
 
   return (
     <div >
-      <Card className="heavyPadTop cardSize">
+      <Card id={"transaction-add"} className="heavyPadTop cardSize">
         <CardHeader>
           <p className={"addSpace"}>Enter New Transaction</p>
         </CardHeader>
