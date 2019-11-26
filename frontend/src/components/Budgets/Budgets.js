@@ -49,6 +49,7 @@ function Budgets() {
 		setPickedCategory("Select a Budget Type");
 		setPickedTimeFrame("monthly");
 		setBudgetName("");
+		setIncome(0);
 	}
 
   /**
@@ -80,6 +81,26 @@ function Budgets() {
 		setErrMsg("");
 		setCreationAlert(false);
 	}
+
+	// switch budget types
+	const changePickedCategory = (category) => {
+		setPickedCategory(category);
+		setCategoryArr([]);
+		setPickedTimeFrame('monthly');
+		setBudgetName('');
+		setIncome(0);
+
+		if (category === 'Percentage-Based') {
+			let obj = {
+				'name': 'Savings',
+				'amount': 0,
+				'transactions': [],
+				'percentage': 100
+			};
+
+			setCategoryArr([obj]);
+		}
+	};
 
 	/**
 	 * Helper to set the next budget and tab
@@ -353,9 +374,9 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									<DropdownItem onClick={() => setPickedCategory("Standard")}>Standard Budget</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Standard")}>Standard Budget</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>

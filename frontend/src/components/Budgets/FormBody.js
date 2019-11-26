@@ -13,6 +13,7 @@ function FormBody(props) {
   const [localCategories, setLocalCategories] = useState(props.categoryArr);  // Holds a local copy of the category array
   const [budName, setBudName] = useState(props.budgetName);
   const [catName, setCatName] = useState(""); // name of custom category
+  const [totalPercentage, setTotalPercentage] = useState(0); // total percentage allocated
 
   // handle change in income
   const handleIncomeChange = (event) => {
@@ -70,11 +71,19 @@ function FormBody(props) {
     if (event.target.value.length === 0)
       event.target.value = 0;
 
+    const oldPercentage = localCategories[index].percentage;
     const tmpPercentage = parseFloat(event.target.value);
-    localCategories[index].percentage = tmpPercentage;
+    const tmpTotalPercentage = totalPercentage + tmpPercentage - oldPercentage;
 
-    const percentage = tmpPercentage / 100.0;
-    localCategories[index].amount = parseFloat((percentage * props.income).toFixed(2)); // TODO fix extra decimal issue
+    localCategories[index].percentage = tmpPercentage;
+    localCategories[index].amount = parseFloat((tmpPercentage * props.income / 100.0).toFixed(2)); // TODO fix extra decimal issue
+
+    // update savings category
+    if (index !== 0) {
+      setTotalPercentage(tmpTotalPercentage);
+      localCategories[0].percentage = Math.max(100 - tmpTotalPercentage, 0);
+      localCategories[0].amount = parseFloat((localCategories[0].percentage * props.income / 100.0).toFixed(2));
+    }
 
     setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
     props.setCategoryArr(localCategories);
@@ -124,6 +133,13 @@ function FormBody(props) {
     [props.categoryArr]
   );
 
+  useEffect(
+    () => {
+      setBudName(props.budgetName);
+    },
+    [props.budgetName]
+  );
+
   return (
     <div>
       <Form onSubmit={props.createBudget}>
@@ -146,7 +162,12 @@ function FormBody(props) {
         }
 
         <FormGroup>
-          <Label for="income">Income</Label>
+          {props.type === "Fixed Amount"
+            ?
+            <Label for="income">Amount (Lump Sum)</Label>
+            :
+            <Label for="income">Income</Label>
+          }
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <InputGroupText>$</InputGroupText>
@@ -171,10 +192,10 @@ function FormBody(props) {
             {props.type === "Percentage-Based"
               ?
               <Row>
-                <Col sm={3}>
+                <Col sm={4}>
                   <InputGroup>
                     <Input onChange={(ev) => handlePercentageChange(index, ev)} type="text" id={index}
-                        required="required" value={item.percentage} />
+                        required="required" value={item.percentage} disabled={item.name === "Savings"} />
                     <InputGroupAddon addonType="append">
                       <InputGroupText>%</InputGroupText>
                     </InputGroupAddon>
@@ -190,7 +211,9 @@ function FormBody(props) {
                   </InputGroup>
                 </Col>
                 <Col sm={2}>
-                  <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
+                  <Button block onClick={() => props.removeCategory(index)}
+                      color="danger" hidden={item.name === "Savings"}>-
+                  </Button>
                 </Col>
               </Row>
               :
@@ -211,7 +234,6 @@ function FormBody(props) {
             }
           </FormGroup>
         )}
-
       </Form>
       <Row>
         <Col sm={4}>
@@ -230,7 +252,7 @@ function FormBody(props) {
             <DropdownMenu>
               <DropdownItem onClick={() => props.setDropDown("Entertainment")}>Entertainment</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
-              <DropdownItem onClick={() => props.setDropDown("Savings")}>Savings</DropdownItem>
+              <DropdownItem hidden={props.type === "Percentage-Based"} onClick={() => props.setDropDown("Savings")}>Savings</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Debt")}>Debt</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Housing")}>Housing</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Gas")}>Gas</DropdownItem>
@@ -245,7 +267,6 @@ function FormBody(props) {
           </Dropdown>
         </Col>
       </Row>
-
     </div >
   );
 };
