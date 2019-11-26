@@ -44,6 +44,7 @@ function Budgets() {
 	 */
 	const closeModal = () => {
 		setModal(false);
+		setEditModal(false);
 		setCreationAlert(false);
 		setCategoryArr([]);
 		setPickedCategory("Select a Budget Type");
@@ -135,7 +136,7 @@ function Budgets() {
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
 		setIncome(curBudget.income);
-		setCategoryArr(curBudget.budgetCategories);
+		setCategoryArr(JSON.parse(JSON.stringify(curBudget.budgetCategories)));
 	}
 
 	// Server calls below here
@@ -165,16 +166,10 @@ function Budgets() {
 				setLoading(false);
 			})
 			.catch((error) => {
-				console.log(error);
-				//TODO: error handling for budgets failing to load
-				// if (error.response && error.response.data) {
-				//   console.log(error.response.data.error);
-				//   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
-				//     //self.createIt();
-				//   }
-				// } else {
-				//   console.log(error);
-				// }
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	};
 
@@ -188,7 +183,7 @@ function Budgets() {
 			delete categoryArr.percentage;
 
 		let tmpPickedCategory = pickedCategory;
-		if (pickedCategory === 'Standard')
+		if (pickedCategory === 'Standard')	// legacy compatibility
 			tmpPickedCategory = 'Custom';
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
@@ -202,6 +197,7 @@ function Budgets() {
 				budgetCategories: categoryArr
 			}).then(function (response) {
 				setModal(false);
+				setEditModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
 				setBudgetName('');
@@ -209,9 +205,8 @@ function Budgets() {
 				getBudgets();
 			}).catch(function (error) {
 				if (error.response && error.response.data) {
-					console.log(error.response.data);
-					// setErrMsg(error);
-					// setCreationAlert(true);
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
 				}
 			});
 	};
@@ -224,6 +219,7 @@ function Budgets() {
 		).then(function (response) {
 
 			setModal(false);
+			setEditModal(false);
 			setCategoryArr([]);
 			setButtonDisplay(false);
 			setBudgetName('');
@@ -232,9 +228,10 @@ function Budgets() {
 			getBudgets();
 
 		}).catch(function (error) {
-			//setErrMsg(error);
-			//setCreationAlert(true);
-			console.log(error);
+			if (error.response && error.response.data) {
+				setErrMsg(error.response.data.error.message);
+				setCreationAlert(true);
+			}
 		});
 	}
 
@@ -255,6 +252,7 @@ function Budgets() {
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 			{
 				name: tmpName,
+				type: curBudget.type,
 				income: income,
 				budgetCategories: categoryArr
 			}).then(function (response) {
@@ -269,9 +267,10 @@ function Budgets() {
 				getBudgets();
 
 			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	}
 
@@ -316,7 +315,6 @@ function Budgets() {
 		favorite: favorite,
 		getBudgets: getBudgets,
 		setCurBudget: setCurBudget
-
 	};
 
 	return (
@@ -370,26 +368,13 @@ function Budgets() {
 						:
 						<div>
 							<ModalBody>
+								<FormBody {...formInfo} type={pickedCategory} />
 								{creationError
 									?
 									<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
 									:
-									<div />
+									<div/>
 								}
-								<FormBody {...formInfo} type={pickedCategory} />
-								{/*pickedCategory === "Percentage-Based"
-									?
-									<FormBody {...formInfo} type={pickedCategory} />
-									: pickedCategory === "Standard" || pickedCategory === "Custom"
-										?
-										<FormBody {...formInfo} />
-										: pickedCategory === "Fixed Amount"
-											?
-											<FormBody {...formInfo} type={pickedCategory} />
-											:
-											<div>
-											</div>
-								*/}
 							</ModalBody>
 						</div>
 					}

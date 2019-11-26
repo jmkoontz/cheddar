@@ -75,6 +75,9 @@ function FormBody(props) {
     const tmpPercentage = parseFloat(event.target.value);
     const tmpTotalPercentage = totalPercentage + tmpPercentage - oldPercentage;
 
+    console.log(oldPercentage + ', ' + tmpPercentage + ', ' + tmpTotalPercentage + ', ' + totalPercentage)
+    if (tmpPercentage > 100) return;
+
     localCategories[index].percentage = tmpPercentage;
     localCategories[index].amount = parseFloat((tmpPercentage * props.income / 100.0).toFixed(2)); // TODO fix extra decimal issue
 
@@ -107,6 +110,7 @@ function FormBody(props) {
     localCategories[index].name = event.target.value;
     setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
     props.setCategoryArr(localCategories);
+    console.log(localCategories[index].name)
   }
 
   // create custom category
@@ -127,6 +131,16 @@ function FormBody(props) {
     () => {
       props.setButtonDisplay(true);
       setLocalCategories(props.categoryArr);
+
+      // calculate percentage allocated when editing
+      if (props.type === 'Percentage-Based' && props.editModal) {
+        let tmpTotalPercentage = 0;
+        for (let i in props.categoryArr) {
+          if (props.categoryArr[i].name !== 'Savings')
+            tmpTotalPercentage += props.categoryArr[i].percentage;
+        }
+        setTotalPercentage(tmpTotalPercentage);
+      }
     },
     [props.categoryArr]
   );
