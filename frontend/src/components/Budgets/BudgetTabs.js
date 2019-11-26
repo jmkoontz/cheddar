@@ -294,7 +294,7 @@ function BudgetTabs(props) {
 		let nextUpdateDate = new Date(props.curBudget.nextUpdate);
 		let start;
 		let end = new Date(nextUpdateDate);
-		// end.setUTCDate(end.getUTCDate() - 1);
+		end.setUTCDate(end.getUTCDate() - 1);
 
 		if (props.curBudget.type === 'Fixed Amount') {
 			if (end < currentDate)

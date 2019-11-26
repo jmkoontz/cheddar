@@ -38,6 +38,7 @@ export default (app) => {
     let changes = {
       name: req.body.name,
       type: req.body.type,
+      endDate: req.body.endDate,
       income: req.body.income,
       favorite: req.body.favorite,
       budgetCategories: req.body.budgetCategories
