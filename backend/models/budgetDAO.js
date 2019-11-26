@@ -141,6 +141,9 @@ export async function createBudget(uid, budget) {
 
       if (totalPercentage > 100)
         return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
+
+      if (budget.budgetCategories[i].percentage === 0)
+        return Promise.reject('UserError: Each category must have at least 1 percent of income allocated to it');
     }
   }
 
@@ -228,17 +231,31 @@ export async function editBudget(uid, budgetName, changes) {
       }
     }
 
-    if (changes.type && changes.type === 'Percentage-Based') {
+    if (changes.type === 'Percentage-Based') {
       let totalPercentage = 0;
       for (let i in changes.budgetCategories) {
         totalPercentage += changes.budgetCategories[i].percentage;
 
         if (totalPercentage > 100)
           return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
+
+        if (changes.budgetCategories[i].percentage === 0)
+          return Promise.reject('UserError: Each category must have at least 1 percent of income allocated to it');
       }
     }
 
     updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
+  }
+
+  if (changes.endDate && changes.type === 'Fixed Amount') {
+    const oneDayOffset = 1000 * 60 * 60 * 24;
+    changes.endDate = new Date(changes.endDate);
+
+    if (changes.endDate < new Date(Date.now()))
+      return Promise.reject('UserError: Fixed Amount budget cannot have have an end date earlier than the current date');
+
+    changes.endDate = new Date(changes.endDate.getFullYear(), changes.endDate.getUTCMonth(), changes.endDate.getDate());
+    updateClause.$set['budgets.$.nextUpdate'] = new Date(Date.parse(changes.endDate) + oneDayOffset);
   }
 
   return userModel.findOneAndUpdate(

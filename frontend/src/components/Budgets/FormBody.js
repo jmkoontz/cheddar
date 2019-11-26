@@ -160,11 +160,11 @@ function FormBody(props) {
           <Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" value={budName} />
         </FormGroup>
 
-        {props.type === "Fixed Amount" && !props.editModal
+        {props.type === "Fixed Amount"
           ?
           <FormGroup>
             <Label for="date">End Date</Label>
-            <Col>
+            <Col className="removePadding">
               <DatePicker id="date" selected={props.endDate} onChange={d => props.setEndDate(new Date(d))}
                   minDate={new Date()} required={true} />
             </Col>

@@ -137,6 +137,12 @@ function Budgets() {
 		setBudgetName(curBudget.name);
 		setIncome(curBudget.income);
 		setCategoryArr(JSON.parse(JSON.stringify(curBudget.budgetCategories)));
+
+		if (curBudget.type === 'Fixed Amount') {
+			let end = new Date(curBudget.nextUpdate);
+			end.setUTCDate(end.getUTCDate() - 1);
+			setEndDate(end);
+		}
 	}
 
 	// Server calls below here
@@ -239,6 +245,8 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
+		toggleAlert();
+
 		let tmpName;
 		if (budgetName === curBudget.name) {
 			tmpName = "";
@@ -253,6 +261,7 @@ function Budgets() {
 			{
 				name: tmpName,
 				type: curBudget.type,
+				endDate: endDate,
 				income: income,
 				budgetCategories: categoryArr
 			}).then(function (response) {
