@@ -99,6 +99,9 @@ export function getBudgetCategoryNames(uid, budgetName) {
 export async function createBudget(uid, budget) {
   for (let i in budget) {
     if (budget.hasOwnProperty(i)) {
+      if (i === 'endDate' && budget.type !== 'Fixed Amount')
+        continue;
+
       if (budget[i] === undefined)
         return Promise.reject('UserError: One or more fields are missing');
       else if (budget[i] === '')
