@@ -14,7 +14,8 @@ export const budgetCategorySchema = new mongoose.Schema({
   name: String,
   amount: Number,
   transactions: [mongoose.Schema.Types.ObjectId],
-  oldTransactions: []
+  oldTransactions: [],
+  percentage: Number
 });
 
 export const budgetSchema = new mongoose.Schema({
