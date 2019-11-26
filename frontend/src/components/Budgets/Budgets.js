@@ -90,15 +90,16 @@ function Budgets() {
 		setBudgetName('');
 		setIncome(0);
 
+		// add savings category by default
 		if (category === 'Percentage-Based') {
-			let obj = {
+			let savingsObj = {
 				'name': 'Savings',
 				'amount': 0,
 				'transactions': [],
 				'percentage': 100
 			};
 
-			setCategoryArr([obj]);
+			setCategoryArr([savingsObj]);
 		}
 	};
 
@@ -123,7 +124,6 @@ function Budgets() {
 		if (budg) {
 			setFavorite(budg.favorite);
 		}
-
 	}
 
 	/**
@@ -134,19 +134,8 @@ function Budgets() {
 		setEditModal(true);
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
-
 		setIncome(curBudget.income);
 		setCategoryArr(curBudget.budgetCategories);
-
-		// let tmpIncome = {
-		// 	name: "Income",
-		// 	amount: curBudget.income
-		// }
-		//
-		// if (curBudget.type === "Fixed Amount")
-		// 	tmpIncome.name = "Amount (Lump Sum)";
-		//
-		// setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
 	}
 
 	// Server calls below here
@@ -195,19 +184,8 @@ function Budgets() {
 	const createBudget = () => {
 		toggleAlert();
 
-		// let tmpIncome;
-		// let index = 0;
-		// for (let x = 0; x < categoryArr.length; x++) {
-		// 	if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
-		// 		index = x;
-		// 		tmpIncome = categoryArr[x].amount;
-		// 	}
-		// 	categoryArr[x].transactions = [];
-		// }
-		//
-		// let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
-
-		delete categoryArr.percentage;
+		if (pickedCategory !== 'Percentage-Based')
+			delete categoryArr.percentage;
 
 		let tmpPickedCategory = pickedCategory;
 		if (pickedCategory === 'Standard')
@@ -223,13 +201,12 @@ function Budgets() {
 				favorite: false,
 				budgetCategories: categoryArr
 			}).then(function (response) {
-
 				setModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
+				setBudgetName('');
+				setIncome(0);
 				getBudgets();
-
-
 			}).catch(function (error) {
 				if (error.response && error.response.data) {
 					console.log(error.response.data);
@@ -249,6 +226,8 @@ function Budgets() {
 			setModal(false);
 			setCategoryArr([]);
 			setButtonDisplay(false);
+			setBudgetName('');
+			setIncome(0);
 			setCurBudget();
 			getBudgets();
 
@@ -270,18 +249,8 @@ function Budgets() {
 			tmpName = budgetName;
 		}
 
-		delete categoryArr.percentage;
-
-		// let tmpIncome;
-		// let index = 0;
-		// for (let x = 0; x < categoryArr.length; x++) {
-		// 	if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
-		// 		index = x;
-		// 		tmpIncome = categoryArr[x].amount;
-		// 	}
-		// }
-		//
-		// let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+		if (curBudget.type !== 'Percentage-Based')
+			delete categoryArr.percentage;
 
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 			{
@@ -294,6 +263,8 @@ function Budgets() {
 				setModal(false);
 				setButtonDisplay(false);
 				setCategoryArr([]);
+				setBudgetName('');
+				setIncome(0);
 				setCurBudget();
 				getBudgets();
 
@@ -314,8 +285,6 @@ function Budgets() {
 		editBudget: editBudget,
 		deleteBudget: deleteBudget,
 		createBudget: createBudget,
-		//handleNameChange: handleNameChange,
-		//handleCategoryChange: handleCategoryChange,
 		budgetName: budgetName,
 		setBudgetName: setBudgetName,
 		endDate: endDate,

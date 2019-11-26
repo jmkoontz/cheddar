@@ -125,9 +125,7 @@ function FormBody(props) {
 
   useEffect(
     () => {
-      if (props.pickedCategory === "Custom" || props.pickedCategory === "Fixed Amount") {
-        props.setButtonDisplay(true);
-      }
+      props.setButtonDisplay(true);
       setLocalCategories(props.categoryArr);
     },
     [props.categoryArr]
@@ -267,7 +265,7 @@ function FormBody(props) {
           </Dropdown>
         </Col>
       </Row>
-    </div >
+    </div>
   );
 };
 
