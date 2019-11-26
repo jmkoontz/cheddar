@@ -124,10 +124,23 @@ export async function createBudget(uid, budget) {
   // protect against duplicate category names
   for (let i in budget.budgetCategories) {
     for (let j in budget.budgetCategories) {
+      if (budget.budgetCategories[i].name.length === 0)
+        return Promise.reject('UserError: Every budget category must have a name');
+
       if (i !== j) {
         if (budget.budgetCategories[i].name.toLowerCase() === budget.budgetCategories[j].name.toLowerCase())
           return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
       }
+    }
+  }
+
+  if (budget.type === 'Percentage-Based') {
+    let totalPercentage = 0;
+    for (let i in budget.budgetCategories) {
+      totalPercentage += budget.budgetCategories[i].percentage;
+
+      if (totalPercentage > 100)
+        return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
     }
   }
 
@@ -205,10 +218,23 @@ export async function editBudget(uid, budgetName, changes) {
     // protect against duplicate category names
     for (let i in changes.budgetCategories) {
       for (let j in changes.budgetCategories) {
+        if (changes.budgetCategories[i].name.length === 0)
+          return Promise.reject('UserError: Every budget category must have a name');
+
         if (i !== j) {
           if (changes.budgetCategories[i].name.toLowerCase() === changes.budgetCategories[j].name.toLowerCase())
             return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
         }
+      }
+    }
+
+    if (changes.type && changes.type === 'Percentage-Based') {
+      let totalPercentage = 0;
+      for (let i in changes.budgetCategories) {
+        totalPercentage += changes.budgetCategories[i].percentage;
+
+        if (totalPercentage > 100)
+          return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
       }
     }
 
