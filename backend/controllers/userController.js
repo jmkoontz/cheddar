@@ -49,8 +49,7 @@ export default (app) => {
   app.get('/Cheddar/:uid', async (req, res) => {
     let data;
     try {
-      console.log('it worked');
-      data = 'Hello the';
+      data = await getUser(req.params.uid)
     } catch (err) {
       data = { error: parseError(err) };
     }
