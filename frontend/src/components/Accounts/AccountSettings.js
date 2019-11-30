@@ -6,7 +6,6 @@ import firebase from '../../firebase.js';
 import axios from 'axios';
 import './SignIn.css'
 import { fireauth } from "../../firebase";
-import CategoryTable from "../Assets/CategoryTable";
 import ToggleButtons from "./ToggleButtons";
 
 class AccountSettings extends Component {
