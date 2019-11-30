@@ -526,7 +526,7 @@ function BudgetTabs(props) {
 								{index === parseInt(props.tab) && props.curBudget && transactions
 									?
 									<div >
-										<TransactionTable itemName={item._id} {...props} transactions={transactions} tableMode={tableMode}
+										<TransactionTable parent={"budgets"} itemName={item._id} {...props} transactions={transactions} tableMode={tableMode}
 											tableCategory={tableCategory} getTransactions={getTransactions}
 											budgetPeriodIndex={budgetPeriodIndex} isDisabled={isDisabled} />
 									</div>

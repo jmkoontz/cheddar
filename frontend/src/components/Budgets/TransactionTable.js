@@ -24,6 +24,8 @@ function TransactionTable(props) {
   const [transactionName, setTransactionName] = useState(""); // The edited name of a transaction
   const [transactionAmount, setTransactionAmount] = useState(""); // The edited amount of a transaction
   const [transactionDate, setTransactionDate] = useState(); // The edited date to send
+  const [earliestDay, setEarliestDay] = useState(); // Day to show whether or not a transaction can be edited or deleted
+
 
   let allTransactions = []; // array of all transactions
 
@@ -32,6 +34,21 @@ function TransactionTable(props) {
       if (props.transactions) {
         setTransactions(props.transactions);
         allTransactions = props.transactions;
+      }
+
+      if (props.curBudget.timeFrame) {
+        let frame = props.curBudget.timeFrame;
+        let nextUpdate = new Date(props.curBudget.nextUpdate);
+        let initialDay;
+        if (frame === "monthly") {
+          initialDay = new Date(nextUpdate - 2629800000);
+        } else if (frame === "biweekly") {
+          initialDay = new Date(nextUpdate - 1314900000);
+        } else if (frame === "weekly") {
+          initialDay = new Date(nextUpdate - 657450000);
+        }
+
+        setEarliestDay(initialDay);
       }
     },
     [props]
@@ -185,7 +202,7 @@ function TransactionTable(props) {
   return (
     <div>
       <Row>
-        <Col sm="3">
+        <Col sm="3" id={"transaction-table"}>
           <Button id={"Popover6" + props.itemName} onClick={toggle} className="tableButton">
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
@@ -225,14 +242,34 @@ function TransactionTable(props) {
                 <td>${transactions[index].amount.toFixed(2)}</td>
                 <td>{transactions[index].shortDate}</td>
                 <td>{transactions[index].category}</td>
-                <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}><Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
-                <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}><Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+
+                {props.parent === "budgets"
+                  ?
+                  <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}> <Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                  : props.parent === "transactions" && earliestDay <= new Date(transactions[index].date)
+                    ?
+                    <td> <Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                    :
+                    <td />
+                }
+
+                {props.parent === "budgets"
+                  ?
+                  <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}> <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                  : props.parent === "transactions" && earliestDay <= new Date(transactions[index].date)
+                    ?
+                    <td> <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                    :
+                    <td />
+                }
+
+
               </tr>
             }
             )}
           </tbody>
         </Table>
-      </Collapse>
+      </Collapse >
       <Modal isOpen={modal} toggle={closeHandler}>
         {editMode
           ?
