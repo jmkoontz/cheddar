@@ -8,10 +8,34 @@ import DropDownHelper from './DropDownHelper';
 
 function FormBody(props) {
 
-  const [dropDownObj, setDropDownObj] = useState({ hello: "wordl", name: "butt" });
+  const [dropDownObj, setDropDownObj] = useState();
+  const [localIncome, setLocalIncome] = useState(props.income); // holds a local copy of income
   const [localCategories, setLocalCategories] = useState(props.categoryArr);  // Holds a local copy of the category array
   const [budName, setBudName] = useState(props.budgetName);
   const [catName, setCatName] = useState(""); // name of custom category
+  const [totalPercentage, setTotalPercentage] = useState(0); // total percentage allocated
+
+  // handle change in income
+  const handleIncomeChange = (event) => {
+    if (!parseInt(event.target.value) && event.target.value.length !== 0) return;
+
+    if (event.target.value.length === 0)
+      event.target.value = 0;
+
+    const tmpIncome = parseInt(event.target.value);
+
+    if (props.type === 'Percentage-Based') {
+      for (let i in localCategories) {
+        const percentage = localCategories[i].percentage / 100.0;
+        localCategories[i].amount = percentage * tmpIncome;
+      }
+
+      setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
+      props.setCategoryArr(localCategories);
+    }
+
+    props.setIncome(tmpIncome);
+  };
 
   /**
      * Handles user input from the modal form and updates the state
@@ -40,6 +64,34 @@ function FormBody(props) {
     props.setCategoryArr(arr);
   }
 
+  // handle percentage change for category of percentage-based budget
+  const handlePercentageChange = (index, event) => {
+    if (!parseInt(event.target.value) && event.target.value.length !== 0) return;
+
+    if (event.target.value.length === 0)
+      event.target.value = 0;
+
+    const oldPercentage = localCategories[index].percentage;
+    const tmpPercentage = parseFloat(event.target.value);
+    const tmpTotalPercentage = totalPercentage + tmpPercentage - oldPercentage;
+
+    console.log(oldPercentage + ', ' + tmpPercentage + ', ' + tmpTotalPercentage + ', ' + totalPercentage)
+    if (tmpPercentage > 100) return;
+
+    localCategories[index].percentage = tmpPercentage;
+    localCategories[index].amount = parseFloat((tmpPercentage * props.income / 100.0).toFixed(2)); // TODO fix extra decimal issue
+
+    // update savings category
+    if (index !== 0) {
+      setTotalPercentage(tmpTotalPercentage);
+      localCategories[0].percentage = Math.max(100 - tmpTotalPercentage, 0);
+      localCategories[0].amount = parseFloat((localCategories[0].percentage * props.income / 100.0).toFixed(2));
+    }
+
+    setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
+    props.setCategoryArr(localCategories);
+  }
+
   /**
   * Helper method to handle user changes to name
   */
@@ -58,6 +110,7 @@ function FormBody(props) {
     localCategories[index].name = event.target.value;
     setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
     props.setCategoryArr(localCategories);
+    console.log(localCategories[index].name)
   }
 
   // create custom category
@@ -68,20 +121,35 @@ function FormBody(props) {
 
   // check if category is a custom category
   const isCustomCategory = (name) => {
-    const presetNames = ['Income', 'Amount (Lump Sum)', 'Entertainment', 'Food and Groceries',
-      'Savings', 'Debt', 'Housing', 'Gas', 'Utilities'];
+    const presetNames = ['Entertainment', 'Food and Groceries', 'Savings', 'Debt',
+        'Housing', 'Gas', 'Utilities'];
 
     return !presetNames.includes(name);
   }
 
   useEffect(
     () => {
-      if (props.pickedCategory === "Custom" || props.pickedCategory === "Fixed Amount") {
-        props.setButtonDisplay(true);
-      }
+      props.setButtonDisplay(true);
       setLocalCategories(props.categoryArr);
+
+      // calculate percentage allocated when editing
+      if (props.type === 'Percentage-Based' && props.editModal) {
+        let tmpTotalPercentage = 0;
+        for (let i in props.categoryArr) {
+          if (props.categoryArr[i].name !== 'Savings')
+            tmpTotalPercentage += props.categoryArr[i].percentage;
+        }
+        setTotalPercentage(tmpTotalPercentage);
+      }
     },
     [props.categoryArr]
+  );
+
+  useEffect(
+    () => {
+      setBudName(props.budgetName);
+    },
+    [props.budgetName]
   );
 
   return (
@@ -92,11 +160,11 @@ function FormBody(props) {
           <Input onChange={handleNameChange} type="text" id="name" placeholder="Ex: Monthly Budget" value={budName} />
         </FormGroup>
 
-        {props.type === "Fixed Amount" && !props.editModal
+        {props.type === "Fixed Amount"
           ?
           <FormGroup>
             <Label for="date">End Date</Label>
-            <Col>
+            <Col className="removePadding">
               <DatePicker id="date" selected={props.endDate} onChange={d => props.setEndDate(new Date(d))}
                   minDate={new Date()} required={true} />
             </Col>
@@ -104,6 +172,22 @@ function FormBody(props) {
           :
           null
         }
+
+        <FormGroup>
+          {props.type === "Fixed Amount"
+            ?
+            <Label for="income">Amount (Lump Sum)</Label>
+            :
+            <Label for="income">Income</Label>
+          }
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>$</InputGroupText>
+            </InputGroupAddon>
+            <Input onChange={handleIncomeChange} type="text" id="income"
+                required="required" value={props.income} />
+          </InputGroup>
+        </FormGroup>
 
         {localCategories.map((item, index) =>
           <FormGroup key={index}>
@@ -117,24 +201,51 @@ function FormBody(props) {
               :
               <Label for={"" + index}>{item.name}</Label>
             }
-            <Row>
-              <Col sm={10}>
-                <Input
-                  onChange={handleCategoryChange}
-                  type="text"
-                  id={index}
-                  placeholder="Amount"
-                  required="required"
-                  value={item.amount}
-                />
-              </Col>
-              <Col sm={2}>
-                <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
-              </Col>
-            </Row>
+            {props.type === "Percentage-Based"
+              ?
+              <Row>
+                <Col sm={4}>
+                  <InputGroup>
+                    <Input onChange={(ev) => handlePercentageChange(index, ev)} type="text" id={index}
+                        required="required" value={item.percentage} disabled={item.name === "Savings"} />
+                    <InputGroupAddon addonType="append">
+                      <InputGroupText>%</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Col>
+                <Col sm={6}>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>$</InputGroupText>
+                    </InputGroupAddon>
+                    <Input disabled onChange={handleCategoryChange} type="text" id={index}
+                        required="required" value={item.amount} />
+                  </InputGroup>
+                </Col>
+                <Col sm={2}>
+                  <Button block onClick={() => props.removeCategory(index)}
+                      color="danger" hidden={item.name === "Savings"}>-
+                  </Button>
+                </Col>
+              </Row>
+              :
+              <Row>
+                <Col sm={10}>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>$</InputGroupText>
+                    </InputGroupAddon>
+                    <Input onChange={handleCategoryChange} type="text" id={index}
+                        required="required" value={item.amount} />
+                  </InputGroup>
+                </Col>
+                <Col sm={2}>
+                  <Button block onClick={() => props.removeCategory(index)} color="danger">-</Button>
+                </Col>
+              </Row>
+            }
           </FormGroup>
         )}
-
       </Form>
       <Row>
         <Col sm={4}>
@@ -146,21 +257,14 @@ function FormBody(props) {
           }
         </Col>
         <Col className="buttonFix">
-          {/* <DropDownHelper {...props} dropDownObj={dropDownObj}/> */}
           <Dropdown isOpen={props.dropdown} toggle={() => props.toggleDropDown(!props.dropdown)}>
             <DropdownToggle caret>
               {props.selectedDrop}
             </DropdownToggle>
             <DropdownMenu>
-              {props.type === "Fixed Amount"
-                ?
-                <DropdownItem onClick={() => props.setDropDown("Amount (Lump Sum)")}>Amount (Lump Sum)</DropdownItem>
-                :
-                <DropdownItem onClick={() => props.setDropDown("Income")}>Income</DropdownItem>
-              }
               <DropdownItem onClick={() => props.setDropDown("Entertainment")}>Entertainment</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Food and Groceries")}>Food and Groceries</DropdownItem>
-              <DropdownItem onClick={() => props.setDropDown("Savings")}>Savings</DropdownItem>
+              <DropdownItem hidden={props.type === "Percentage-Based"} onClick={() => props.setDropDown("Savings")}>Savings</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Debt")}>Debt</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Housing")}>Housing</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Gas")}>Gas</DropdownItem>
@@ -175,8 +279,7 @@ function FormBody(props) {
           </Dropdown>
         </Col>
       </Row>
-
-    </div >
+    </div>
   );
 };
 

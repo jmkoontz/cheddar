@@ -99,6 +99,9 @@ export function getBudgetCategoryNames(uid, budgetName) {
 export async function createBudget(uid, budget) {
   for (let i in budget) {
     if (budget.hasOwnProperty(i)) {
+      if (i === 'endDate' && budget.type !== 'Fixed Amount')
+        continue;
+
       if (budget[i] === undefined)
         return Promise.reject('UserError: One or more fields are missing');
       else if (budget[i] === '')
@@ -121,10 +124,26 @@ export async function createBudget(uid, budget) {
   // protect against duplicate category names
   for (let i in budget.budgetCategories) {
     for (let j in budget.budgetCategories) {
+      if (budget.budgetCategories[i].name.length === 0)
+        return Promise.reject('UserError: Every budget category must have a name');
+
       if (i !== j) {
         if (budget.budgetCategories[i].name.toLowerCase() === budget.budgetCategories[j].name.toLowerCase())
           return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
       }
+    }
+  }
+
+  if (budget.type === 'Percentage-Based') {
+    let totalPercentage = 0;
+    for (let i in budget.budgetCategories) {
+      totalPercentage += budget.budgetCategories[i].percentage;
+
+      if (totalPercentage > 100)
+        return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
+
+      if (budget.budgetCategories[i].percentage === 0)
+        return Promise.reject('UserError: Each category must have at least 1 percent of income allocated to it');
     }
   }
 
@@ -202,6 +221,9 @@ export async function editBudget(uid, budgetName, changes) {
     // protect against duplicate category names
     for (let i in changes.budgetCategories) {
       for (let j in changes.budgetCategories) {
+        if (changes.budgetCategories[i].name.length === 0)
+          return Promise.reject('UserError: Every budget category must have a name');
+
         if (i !== j) {
           if (changes.budgetCategories[i].name.toLowerCase() === changes.budgetCategories[j].name.toLowerCase())
             return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
@@ -209,7 +231,31 @@ export async function editBudget(uid, budgetName, changes) {
       }
     }
 
+    if (changes.type === 'Percentage-Based') {
+      let totalPercentage = 0;
+      for (let i in changes.budgetCategories) {
+        totalPercentage += changes.budgetCategories[i].percentage;
+
+        if (totalPercentage > 100)
+          return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
+
+        if (changes.budgetCategories[i].percentage === 0)
+          return Promise.reject('UserError: Each category must have at least 1 percent of income allocated to it');
+      }
+    }
+
     updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
+  }
+
+  if (changes.endDate && changes.type === 'Fixed Amount') {
+    const oneDayOffset = 1000 * 60 * 60 * 24;
+    changes.endDate = new Date(changes.endDate);
+
+    if (changes.endDate < new Date(Date.now()))
+      return Promise.reject('UserError: Fixed Amount budget cannot have have an end date earlier than the current date');
+
+    changes.endDate = new Date(changes.endDate.getFullYear(), changes.endDate.getUTCMonth(), changes.endDate.getDate());
+    updateClause.$set['budgets.$.nextUpdate'] = new Date(Date.parse(changes.endDate) + oneDayOffset);
   }
 
   return userModel.findOneAndUpdate(
