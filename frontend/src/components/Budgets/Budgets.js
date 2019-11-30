@@ -25,6 +25,7 @@ function Budgets() {
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
 	const [endDate, setEndDate] = useState();	// end date for fixed amount budgets
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
+	const [income, setIncome] = useState(0);	// income for budget
 	const [pickedTimeFrame, setPickedTimeFrame] = useState("monthly");
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	const [timeFrameDropDown, toggleTimeFrameDropDown] = useState(false);
@@ -43,11 +44,13 @@ function Budgets() {
 	 */
 	const closeModal = () => {
 		setModal(false);
+		setEditModal(false);
 		setCreationAlert(false);
 		setCategoryArr([]);
 		setPickedCategory("Select a Budget Type");
 		setPickedTimeFrame("monthly");
 		setBudgetName("");
+		setIncome(0);
 	}
 
   /**
@@ -65,7 +68,8 @@ function Budgets() {
 		let obj = {
 			"name": selectedDrop,
 			"amount": 0,
-			"transactions": []
+			"transactions": [],
+			"percentage": 0
 		};
 		setCategoryArr([...categoryArr, obj]); // TODO allow users to set a category
 		setDropDown("Select a Category");
@@ -78,6 +82,27 @@ function Budgets() {
 		setErrMsg("");
 		setCreationAlert(false);
 	}
+
+	// switch budget types
+	const changePickedCategory = (category) => {
+		setPickedCategory(category);
+		setCategoryArr([]);
+		setPickedTimeFrame('monthly');
+		setBudgetName('');
+		setIncome(0);
+
+		// add savings category by default
+		if (category === 'Percentage-Based') {
+			let savingsObj = {
+				'name': 'Savings',
+				'amount': 0,
+				'transactions': [],
+				'percentage': 100
+			};
+
+			setCategoryArr([savingsObj]);
+		}
+	};
 
 	/**
 	 * Helper to set the next budget and tab
@@ -100,7 +125,6 @@ function Budgets() {
 		if (budg) {
 			setFavorite(budg.favorite);
 		}
-
 	}
 
 	/**
@@ -111,16 +135,14 @@ function Budgets() {
 		setEditModal(true);
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
+		setIncome(curBudget.income);
+		setCategoryArr(JSON.parse(JSON.stringify(curBudget.budgetCategories)));
 
-		let tmpIncome = {
-			name: "Income",
-			amount: curBudget.income
+		if (curBudget.type === 'Fixed Amount') {
+			let end = new Date(curBudget.nextUpdate);
+			end.setUTCDate(end.getUTCDate() - 1);
+			setEndDate(end);
 		}
-
-		if (curBudget.type === "Fixed Amount")
-			tmpIncome.name = "Amount (Lump Sum)";
-
-		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
 	}
 
 	// Server calls below here
@@ -150,16 +172,10 @@ function Budgets() {
 				setLoading(false);
 			})
 			.catch((error) => {
-				console.log(error);
-				//TODO: error handling for budgets failing to load
-				// if (error.response && error.response.data) {
-				//   console.log(error.response.data.error);
-				//   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
-				//     //self.createIt();
-				//   }
-				// } else {
-				//   console.log(error);
-				// }
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	};
 
@@ -169,20 +185,11 @@ function Budgets() {
 	const createBudget = () => {
 		toggleAlert();
 
-		let tmpIncome;
-		let index = 0;
-		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
-				index = x;
-				tmpIncome = categoryArr[x].amount;
-			}
-			categoryArr[x].transactions = [];
-		}
-
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+		if (pickedCategory !== 'Percentage-Based')
+			delete categoryArr.percentage;
 
 		let tmpPickedCategory = pickedCategory;
-		if (pickedCategory === 'Standard')
+		if (pickedCategory === 'Standard')	// legacy compatibility
 			tmpPickedCategory = 'Custom';
 
 		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
@@ -190,23 +197,22 @@ function Budgets() {
 				name: budgetName,
 				type: tmpPickedCategory,
 				endDate: endDate,
-				income: tmpIncome,
+				income: income,
 				timeFrame: pickedTimeFrame,
 				favorite: false,
-				budgetCategories: removedIncomeArr
+				budgetCategories: categoryArr
 			}).then(function (response) {
-
 				setModal(false);
+				setEditModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
+				setBudgetName('');
+				setIncome(0);
 				getBudgets();
-
-
 			}).catch(function (error) {
 				if (error.response && error.response.data) {
-					console.log(error.response.data);
-					// setErrMsg(error);
-					// setCreationAlert(true);
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
 				}
 			});
 	};
@@ -219,15 +225,19 @@ function Budgets() {
 		).then(function (response) {
 
 			setModal(false);
+			setEditModal(false);
 			setCategoryArr([]);
 			setButtonDisplay(false);
+			setBudgetName('');
+			setIncome(0);
 			setCurBudget();
 			getBudgets();
 
 		}).catch(function (error) {
-			//setErrMsg(error);
-			//setCreationAlert(true);
-			console.log(error);
+			if (error.response && error.response.data) {
+				setErrMsg(error.response.data.error.message);
+				setCreationAlert(true);
+			}
 		});
 	}
 
@@ -235,6 +245,8 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
+		toggleAlert();
+
 		let tmpName;
 		if (budgetName === curBudget.name) {
 			tmpName = "";
@@ -242,35 +254,32 @@ function Budgets() {
 			tmpName = budgetName;
 		}
 
-		let tmpIncome;
-		let index = 0;
-		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income" || categoryArr[x].name === "Amount (Lump Sum)") {
-				index = x;
-				tmpIncome = categoryArr[x].amount;
-			}
-		}
-
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+		if (curBudget.type !== 'Percentage-Based')
+			delete categoryArr.percentage;
 
 		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
 			{
 				name: tmpName,
-				income: tmpIncome,
-				budgetCategories: removedIncomeArr
+				type: curBudget.type,
+				endDate: endDate,
+				income: income,
+				budgetCategories: categoryArr
 			}).then(function (response) {
 
 				setEditModal(false);
 				setModal(false);
 				setButtonDisplay(false);
 				setCategoryArr([]);
+				setBudgetName('');
+				setIncome(0);
 				setCurBudget();
 				getBudgets();
 
 			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	}
 
@@ -284,8 +293,6 @@ function Budgets() {
 		editBudget: editBudget,
 		deleteBudget: deleteBudget,
 		createBudget: createBudget,
-		//handleNameChange: handleNameChange,
-		//handleCategoryChange: handleCategoryChange,
 		budgetName: budgetName,
 		setBudgetName: setBudgetName,
 		endDate: endDate,
@@ -296,6 +303,8 @@ function Budgets() {
 		selectedDrop: selectedDrop,
 		setDropDown: setDropDown,
 		dropdown: dropdown,
+		income: income,
+		setIncome: setIncome,
 		categoryArr: categoryArr,
 		setCategoryArr: setCategoryArr,
 		tab: tab,
@@ -315,7 +324,6 @@ function Budgets() {
 		favorite: favorite,
 		getBudgets: getBudgets,
 		setCurBudget: setCurBudget
-
 	};
 
 	return (
@@ -342,9 +350,9 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									<DropdownItem onClick={() => setPickedCategory("Standard")}>Standard Budget</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Standard")}>Standard Budget</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>
@@ -369,25 +377,12 @@ function Budgets() {
 						:
 						<div>
 							<ModalBody>
+								<FormBody {...formInfo} type={pickedCategory} />
 								{creationError
 									?
 									<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
 									:
-									<div />
-								}
-								{pickedCategory === "Percentage-Based"
-									?
-									<StudentLoan {...formInfo} />
-									: pickedCategory === "Standard" || pickedCategory === "Custom"
-										?
-										<FormBody {...formInfo} />
-										: pickedCategory === "Fixed Amount"
-											?
-											<FormBody {...formInfo} type={pickedCategory} />
-											:
-											<div>
-												{/* Other categories will go here */}
-											</div>
+									<div/>
 								}
 							</ModalBody>
 						</div>
