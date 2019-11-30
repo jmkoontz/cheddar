@@ -16,6 +16,7 @@ export default (app) => {
     let budget = {
       name: req.body.name,
       type: req.body.type,
+      endDate: req.body.endDate,
       income: req.body.income,
       timeFrame: req.body.timeFrame,
       favorite: req.body.favorite,
@@ -37,6 +38,7 @@ export default (app) => {
     let changes = {
       name: req.body.name,
       type: req.body.type,
+      endDate: req.body.endDate,
       income: req.body.income,
       favorite: req.body.favorite,
       budgetCategories: req.body.budgetCategories
@@ -279,7 +281,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // get old transactions for a specific time period
+  // get old transactions for a specific budget period
   app.get('/Cheddar/Budgets/Budget/OldTransactions/:uid/:budgetName/:index', async (req, res) => {
     let data;
     try {
