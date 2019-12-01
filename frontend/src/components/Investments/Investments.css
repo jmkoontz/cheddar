@@ -6,6 +6,14 @@
     border: none;
 }
 
+.topMargin {
+    margin-top: 15px;
+}
+
+.bottomMargin {
+    margin-bottom: 15px;
+}
+
 .overview {
     margin-top:100px;
     width:100%;

@@ -369,18 +369,25 @@ class Investments extends React.Component {
     render () {
         return (
             <div className="parent">
-                <h3>Track Investments</h3>
+                
                 {/* Container that contains the frequency button and Add Company button */}
-                <Container fluid="true">
+                <Container className="topMargin bottomMargin" fluid="true">
                     <Row>
-                        <Col>
+                        <Col sm={3}>
                             <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
-                            <DropdownButton id="dropdown-basic-button" title="Frequency">
+                            
+                        </Col>
+                        <Col sm={1}>
+                            <DropdownButton id="dropdown-basic-button" title={this.state.defaultRate}>
                                 <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
                                 <Dropdown.Item onSelect={() => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
                             </DropdownButton>
                         </Col>
-                        <Col className="text-right">
+                        <Col sm={4}>
+                            <h3>Track Investments</h3>
+                        </Col>
+                        
+                        <Col sm={4} className="text-right">
                             <Button variant="link" onClick={this.showModal2}>Tips</Button>
                         </Col>
                     </Row>
@@ -395,14 +402,22 @@ class Investments extends React.Component {
                                     /* If all desired stock data is loaded and the number of companies to show is greater than 0
                                     then iterate through each of the selected companies and return a stocks graph and update button.
                                     Otherwise, return the loader. */
-                                    (Object.keys(this.state.data).length >= this.state.selectedCompanies.length) ?
+                                    (Object.keys(this.state.data).length >= 1) ?
                                         this.state.selectedCompanies.map((name,index)=>{
+                                            if(this.state.data[name]){
                                             return(
                                                 <div>
                                                     <StocksGraph frequency={this.state.defaultRate} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
                                                     <Button onClick={() => {this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                                 </div>
                                             )
+                                            }
+                                            else{
+                                                return(
+                                                    <div>
+                                                    </div>
+                                                )
+                                            }
                                         }) 
                                     : <Loader/>
                                 }
@@ -467,7 +482,7 @@ class Investments extends React.Component {
                                     })
                                 }
                             <Button variant="primary" onClick={this.showModal}>
-                                Submit
+                                Done
                             </Button>
                         </Form>
                     </Modal.Body>
@@ -483,8 +498,6 @@ class Investments extends React.Component {
                     <Modal.Body>
                         <Form>
                             <Form.Group controlId="formBasic">
-                                <Form.Label>Invested Amount</Form.Label>
-                                <Form.Control as="input" type="number" defaultValue={this.state.updateInvestedAmount} onChange={(event)=>{this.updateInvestedAmount(event)}}/>
                                 <Form.Label>Investment Shares</Form.Label>
                                 <Form.Control as="input" type="number" defaultValue={this.state.updateInvestmentShares} onChange={(event)=>{this.updateInvestmentShares(event)}}/>
                                 <Form.Label>Date Invested</Form.Label>
