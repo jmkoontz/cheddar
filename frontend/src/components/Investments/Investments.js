@@ -395,7 +395,7 @@ class Investments extends React.Component {
                                     /* If all desired stock data is loaded and the number of companies to show is greater than 0
                                     then iterate through each of the selected companies and return a stocks graph and update button.
                                     Otherwise, return the loader. */
-                                    (Object.keys(this.state.data).length >= this.state.selectedCompanies.length && this.state.selectedCompanies.length > 0) ?
+                                    (Object.keys(this.state.data).length >= this.state.selectedCompanies.length) ?
                                         this.state.selectedCompanies.map((name,index)=>{
                                             return(
                                                 <div>
