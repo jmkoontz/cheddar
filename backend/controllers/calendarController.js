@@ -21,9 +21,50 @@ export default (app) => {
   app.post('/Cheddar/Calendar/event/:uid', async (req, res) => {
     let data;
     try {
+      const event = req.body;
       const user = await getUser(req.params.uid);
       const events = user.events;
-      events.push(req.body);
+
+      if (event.repeat && event.repeat !== "Never") {
+        let loops = 1;
+
+        switch (event.repeat) {
+          case "Weekly":
+            loops *= 52;
+            break;
+          case "Biweekly":
+            loops *= 26;
+            break;
+          case "Monthly":
+            loops *= 12;
+        }
+
+        let nextEvent = event;
+        nextEvent.start = new Date(nextEvent.start);
+
+        for (let i = 0; i < loops; i++) {
+          nextEvent.subId = i;
+          console.log(nextEvent);
+          events.push(nextEvent);
+
+          nextEvent.start = new Date(nextEvent.start);
+          switch (event.repeat) {
+            case "Weekly":
+              nextEvent.start.setDate(nextEvent.start.getDate() + 7);
+              break;
+            case "Biweekly":
+              nextEvent.start.setDate(nextEvent.start.getDate() + 14);
+              break;
+            case "Monthly":
+              nextEvent.start.setMonth(nextEvent.start.getMonth() + 1);
+          }
+
+          nextEvent.end = nextEvent.start;
+        }
+
+      } else {
+        events.push(event);
+      }
 
       data = await editUser(req.params.uid, {events: events});
     } catch (err) {
@@ -42,8 +83,9 @@ export default (app) => {
 
       for (let i = 0; i < events.length; i++) {
         if (events[i].id === req.body.id) {
+          let sub = events[i].subId;
           events[i] = req.body;
-          break;
+          events[i].subId = sub;
         }
       }
 
@@ -65,7 +107,7 @@ export default (app) => {
       for (let i = 0; i < events.length; i++) {
         if (events[i].id == req.params.eventId) {
           events.splice(i, 1);
-          break;
+          i--;
         }
       }
 

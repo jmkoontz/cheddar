@@ -30,6 +30,7 @@ export const budgetSchema = new mongoose.Schema({
 
 export const eventsSchema = new mongoose.Schema({
   id: Number,
+  subId: Number,
   title: String,
   start: Date,
   end: Date,
@@ -37,7 +38,8 @@ export const eventsSchema = new mongoose.Schema({
   amount: Number,
   notify: Boolean,
   dismissed: Object,
-  emailed: Object
+  emailed: Object,
+  repeat: String
 });
 
 export const savingsSchema = new mongoose.Schema({
