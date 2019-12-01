@@ -91,7 +91,7 @@ class EventModal extends React.Component {
 
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formBasicEmail">
+            <Form.Group>
               <Form.Label>Title</Form.Label>
               <Form.Control
                 value={event.title}
@@ -102,7 +102,7 @@ class EventModal extends React.Component {
               />
             </Form.Group>
 
-            <Form.Group controlId="formBasicPassword">
+            <Form.Group>
               <Form.Label>Amount Due</Form.Label>
               <Form.Control
                 type={"number"}
@@ -112,6 +112,22 @@ class EventModal extends React.Component {
                 }}
                 placeholder="$0"
               />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Repeat</Form.Label>
+              <Form.Control
+                as="select"
+                value={event.repeat}
+                onChange={(e) => {
+                  this.setProperty("repeat", e.target.value);
+                }}
+              >
+                <option>Never</option>
+                <option>Weekly</option>
+                <option>Biweekly</option>
+                <option>Monthly</option>
+              </Form.Control>
             </Form.Group>
 
             <Form.Check
