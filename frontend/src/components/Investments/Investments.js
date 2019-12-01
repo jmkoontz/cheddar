@@ -270,7 +270,7 @@ class Investments extends React.Component {
                     this.setState({
                         selectedCompanies: companies,
                         companies: originalCompanies,
-                    });
+                    },()=>{this.getData(company)});
             });
         }
         
@@ -356,12 +356,49 @@ class Investments extends React.Component {
 
     //get API data for particular company and update state
     getData = async (companyName) => {
-        let res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
-        var data = this.state.data;
-        data[companyName] = res;
-        this.setState({
-            data: data,
-        });
+        let res;
+        res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
+        if(res.data.Note && res.data.Note.includes("API call frequency")){
+            //change API keys
+            if(this.state.key == keys.AlphaVantageAPIKey){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey2,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey2){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey3,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey3){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey4,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey4){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey5,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey5){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey6,
+                },() => {this.getData(companyName)});
+            }
+            else if(this.state.key == keys.AlphaVantageAPIKey6){
+                this.setState({
+                    key: keys.AlphaVantageAPIKey,
+                },() => {this.getData(companyName)});
+            }
+            //alert("Changing Keys");
+        }
+        else{
+            var data = this.state.data;
+            data[companyName] = res;
+            this.setState({
+                data: data,
+            });
+        }
     }
 
     
