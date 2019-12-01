@@ -68,7 +68,7 @@ function FormBody(props) {
   // check if category is a custom category
   const isCustomCategory = (name) => {
     const presetNames = ['Income', 'Entertainment', 'Food and Groceries', 'Savings',
-      'Debt', 'Housing', 'Gas', 'Utilities'];
+      'Debt', 'Housing', 'Gas', 'Utilities','Retirement'];
 
     return !presetNames.includes(name);
   }
@@ -146,6 +146,7 @@ function FormBody(props) {
               <DropdownItem onClick={() => props.setDropDown("Housing")}>Housing</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Gas")}>Gas</DropdownItem>
               <DropdownItem onClick={() => props.setDropDown("Utilities")}>Utilities</DropdownItem>
+              <DropdownItem onClick={() => props.setDropDown("Retirement")}>Retirement</DropdownItem>
               <InputGroup>
                 <Input onChange={handleCategoryNameChange} type="text" placeholder="Custom" value={catName} />
                 <InputGroupAddon addonType="append">
