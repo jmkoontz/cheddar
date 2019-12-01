@@ -10,6 +10,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Table from 'react-bootstrap/Table';
 import './Investments.css';
+import './Retirement.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -44,6 +45,7 @@ class Retirement extends React.Component {
             },
             totalInvestment: 0,
             showTotalInvestment: false,
+            showHIstory: true,
         }
     }
 
@@ -151,6 +153,11 @@ class Retirement extends React.Component {
         });
     }
 
+    showDepositHistory = () => {
+        this.setState({
+            showDepositHistory: !this.state.showDepositHistory,
+        });
+    }
 
     render () {
         var data = [{
@@ -198,6 +205,9 @@ class Retirement extends React.Component {
                 <Form>
                     <Form.Check type="checkbox" label={"Include Investments"} onChange={() => {this.showTotalInvestment()}}/>
                 </Form>
+                <Form>
+                    <Form.Check type="checkbox" defaultValue={this.state.showDepositHistory} label={"Show Deposit History"} onChange={() => {this.showDepositHistory()}}/>
+                </Form>
                 <Modal show={this.state.showModal} onHide={this.showModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
@@ -222,6 +232,7 @@ class Retirement extends React.Component {
                 <CanvasJSChart options = {options}
 				/* onRef={ref => this.chart = ref} */
 			    />
+                <div className={this.state.showDepositHistory ? 'visible' : 'hidden'} >
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -245,6 +256,7 @@ class Retirement extends React.Component {
                     }
                     </tbody>
                 </Table>
+                </div>
             </div>
         );
     }
