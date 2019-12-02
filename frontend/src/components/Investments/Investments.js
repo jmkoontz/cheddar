@@ -315,8 +315,10 @@ class Investments extends React.Component {
 //updates the investment on the backend
     updateInvestment = () => {
         let investment = {};
+        var dateKeys = Object.keys(this.state.data[this.state.companyName].data["Time Series (Daily)"]);
         investment["type"] = "stock";
         investment["startingInvestment"] = this.state.enteredInvestment;
+        investment["currentShareValue"] = this.state.data[this.state.companyName].data["Time Series (Daily)"][dateKeys[0]]["4. close"];
         investment["shares"] = this.state.enteredInvestmentShares;
         investment["startDate"] = this.state.enteredInvestmentDate;
         investment["favorite"] = this.state.enteredInvestmentFavorite;
@@ -331,14 +333,15 @@ class Investments extends React.Component {
         var investments = this.state.investments;
         for(i=0;i<this.state.investments.length;i++){
             if(this.state.investments[i]){
-                if(this.state.investments[i].company && this.state.investments[i].company == this.state.companyName){
-                    investments = investments.splice(i,1);
+                if(investments[i].company && investments[i].company == this.state.companyName){
+                    investments.splice(i,1);
+                    break;
                     
                 }
             }
         }
         if(proceed){
-            this.state.investments.push(investment);
+            investments.splice(i,0,investment);
             axios.post("http://localhost:8080/Cheddar/Investments", {
                 "uid": this.state.uid,
                 "investments": investments,

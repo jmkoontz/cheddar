@@ -8,7 +8,9 @@ import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Table from 'react-bootstrap/Table';
 import './Investments.css';
+import './Retirement.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -24,6 +26,7 @@ import { isNullOrUndefined } from 'util';
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+const date = new Date();
 class Retirement extends React.Component {
     constructor(props){
         super(props);
@@ -40,6 +43,9 @@ class Retirement extends React.Component {
                 amount: 0,
                 date: "",
             },
+            totalInvestment: 0,
+            showTotalInvestment: false,
+            showHIstory: true,
         }
     }
 
@@ -65,13 +71,25 @@ class Retirement extends React.Component {
             }
             else{
                 var length = res.data.history.length;
+                var prevContribution = this.state.prevContribution;
+                if(res.data.history.length > 1){
+                    prevContribution = res.data.history[length-1];
+                }
                 this.setState({
                     totalRetirement: res.data.total,
                     retirementHistory: res.data.history,
                     buttonText: buttonText,
-                    prevContribution: res.data.history[length-1],
+                    prevContribution: prevContribution,
                 });
             }
+        });
+        axios.get("http://localhost:8080/Cheddar/Investments/TotalInvestment", {
+            params: test,
+                }).then(res => {
+                    this.setState({
+                        totalInvestment: res.data.totalInvestment
+                    },()=>{console.log("TOTAL INVESTMENT: " + this.state.totalInvestment)});
+            //console.log(res);
         });
     }
 
@@ -129,8 +147,41 @@ class Retirement extends React.Component {
         });
     }
 
+    showTotalInvestment = () => {
+        this.setState({
+            showTotalInvestment: !this.state.showTotalInvestment,
+        });
+    }
+
+    showDepositHistory = () => {
+        this.setState({
+            showDepositHistory: !this.state.showDepositHistory,
+        });
+    }
 
     render () {
+        var data = [{
+				type: "stackedBar",
+				name: "Previous Total",
+				dataPoints: [
+					{y: this.state.totalRetirement - parseInt(this.state.prevContribution.amount), label: "Previous Total" },
+				]
+            },{
+				type: "stackedBar",
+				name: "Latest Contribution",
+				dataPoints: [
+					{y: parseInt(this.state.prevContribution.amount), label: "Recent Contribution"  },
+				]
+            },{
+				type: "stackedBar",
+				name: "Investments",
+				dataPoints: [
+					{y: this.state.totalInvestment, label: "Investments"  },
+				]
+            }];
+        if(!this.state.showTotalInvestment){
+            data.pop();
+        }
 
         const options = {
 			theme: "light2",
@@ -142,19 +193,7 @@ class Retirement extends React.Component {
                 valueFormatString: "",
                 interval: 0,
 			},
-			data: [{
-				type: "stackedBar",
-				name: "Previous Total",
-				dataPoints: [
-					{y: this.state.totalRetirement, label: "Previous Total" },
-				]
-            },{
-				type: "stackedBar",
-				name: "Latest Contribution",
-				dataPoints: [
-					{y: parseInt(this.state.prevContribution.amount), label: "Recent Contribution"  },
-				]
-            }]
+			data: data,
         }
         console.log(options.data);
         return (
@@ -163,6 +202,12 @@ class Retirement extends React.Component {
                 <Button variant="primary" onClick={() => this.showModal()}>
                     {this.state.buttonText}
                 </Button>
+                <Form>
+                    <Form.Check type="checkbox" label={"Include Investments"} onChange={() => {this.showTotalInvestment()}}/>
+                </Form>
+                <Form>
+                    <Form.Check type="checkbox" defaultValue={this.state.showDepositHistory} label={"Show Deposit History"} onChange={() => {this.showDepositHistory()}}/>
+                </Form>
                 <Modal show={this.state.showModal} onHide={this.showModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
@@ -175,7 +220,7 @@ class Retirement extends React.Component {
                         <Form.Label>Contributed Amount</Form.Label>
                         <Form.Control as="input" type="number" defaultValue={this.state.addedAmount} onChange={(event)=>{this.updateAddedAmount(event)}}/>
                         <Form.Label>Date Contributed</Form.Label>
-                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateAddedDate(event)}}/>
+                        <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} max={""+date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate()} onChange={(event)=>{this.updateAddedDate(event)}}/>
                     </Form.Group>
                     <Button variant="primary" onClick={() => this.addContribution()}>
                         Submit
@@ -187,6 +232,31 @@ class Retirement extends React.Component {
                 <CanvasJSChart options = {options}
 				/* onRef={ref => this.chart = ref} */
 			    />
+                <div className={this.state.showDepositHistory ? 'visible' : 'hidden'} >
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        this.state.retirementHistory.map((obj,index) => {
+                            var number = index+1;
+                            return (
+                                <tr>
+                                    <td>{number}</td>
+                                    <td>{obj["date"]}</td>
+                                    <td>{obj["amount"]}</td>
+                                </tr>       
+                            )
+                        })
+                    }
+                    </tbody>
+                </Table>
+                </div>
             </div>
         );
     }
@@ -194,65 +264,3 @@ class Retirement extends React.Component {
 
 export default Retirement;
 
-/*
-<Container>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-    </Row>
-    <Row>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-            <CanvasJSChart options = {options}
-                // onRef = {ref => this.chart = ref} 
-            />
-        </Col>
-        <Col>
-        </Col>
-    </Row>
-</Container>
-
-
-
-
-
-<Modal show={this.state.show} onHide={this.showModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                    Modal heading
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form>
-                    <Form.Group controlId="formBasicCheckbox">
-                        {Object.keys(this.state.companies).map((name)=>{
-                            return (<Form.Check type="checkbox" label={name} onClick={() => this.addSelectedCompany(name)}/>)
-                        })}
-                    </Form.Group>
-                    <Button variant="primary" type="submit" onClick={this.showModal}>
-                        Submit
-                    </Button>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={this.showModal}>Close</Button>
-                </Modal.Footer>
-                </Modal>
-*/
