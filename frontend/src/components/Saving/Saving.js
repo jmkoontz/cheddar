@@ -122,13 +122,14 @@ class Saving extends React.Component {
 
   getLineData = () => {
     if(this.state.goalAmount == '' || this.state.monthlyContribution == ''){
+      this.setState({month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()})
       return;
     }
     var data = [];
     const goal = Number(this.state.goalAmount);
     const contribution = Number(this.state.monthlyContribution);
     var amount = 0;
-    if(goal < contribution){
+    if(goal < contribution || contribution == 0){
       return;
     }
     while(amount <= goal){
@@ -137,6 +138,23 @@ class Saving extends React.Component {
       amount = amount + contribution;
     }
     this.setState({graphData: data});
+    this.setEndDate(data.length - 1);
+  }
+
+  setEndDate = (totalMonths) => {
+    var yrs = Math.floor(totalMonths / 12);
+    var mnths = totalMonths % 12;
+    console.log("Months: " + mnths + " Years: " + yrs + " (" + totalMonths + ")");
+    yrs += (new Date()).getFullYear();
+    mnths += (new Date()).getMonth();
+    if(mnths > 12){
+      mnths -= 12;
+      yrs++;
+    }
+    console.log(mnths + " " + yrs);
+    if(this.state.year < yrs || (this.state.year == yrs && monthNames.indexOf(this.state.month) < mnths)){
+        this.setState({month: monthNames[mnths - 1], year: yrs})
+    }
   }
 
   componentDidMount(){
@@ -200,40 +218,41 @@ class Saving extends React.Component {
                 <option value="Other">Other</option>
               </select>
               <br/>
-                <label>
-                  <b>Goal Amount</b><br/>$
-                  <input name="goalAmount" type="number" step="0.01" value={this.state.goalAmount} onChange={this.handleChange} />
-                </label>
-              <br/>
               <label>
-              <b>Planned End Date</b><br/>
-              <select name="month" value={this.state.month} onChange={this.handleChange}>
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
-              </select>
-              <select name="year" value={this.state.year} onChange={this.handleChange}>
-              {
-                years.map((year, index) => {
-                  return <option key={`year${index}`} value={year}>{year}</option>
-                })
-              }
-              </select>
+                <b>Goal Amount</b><br/>$
+                <input name="goalAmount" type="number" step="0.01" value={this.state.goalAmount} onChange={this.handleChange} />
               </label>
               <br/>
               <label>
                 <b>Monthly Contribution</b><br/>$
                 <input name="monthlyContribution" type="number" step="0.01" value={this.state.monthlyContribution} onChange={this.handleChange} />
               </label>
+              <br/>
+              <label>
+                <b>Planned End Date</b><br/>
+                <select name="month" value={this.state.month} onChange={this.handleChange}>
+                  <option value="January">January</option>
+                  <option value="February">February</option>
+                  <option value="March">March</option>
+                  <option value="April">April</option>
+                  <option value="May">May</option>
+                  <option value="June">June</option>
+                  <option value="July">July</option>
+                  <option value="August">August</option>
+                  <option value="September">September</option>
+                  <option value="October">October</option>
+                  <option value="November">November</option>
+                  <option value="December">December</option>
+                </select>
+                <select name="year" value={this.state.year} onChange={this.handleChange}>
+                {
+                  years.map((year, index) => {
+                    return <option key={`year${index}`} value={year}>{year}</option>
+                  })
+                }
+                </select>
+              </label>
+
               </form>
               </Col>
               <Col xs="6">
