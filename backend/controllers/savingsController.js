@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllSavings, getSavingsTitles, createSavings, editSavings, deleteSavings, getOneSavings} from '../models/savingsDAO';
+import {getAllSavings, getSavingsTitles, createSavings, editSavings, deleteSavings, getOneSavings, favSavings, unfavSavings} from '../models/savingsDAO';
 
 export default (app) => {
   app.get('/Cheddar/Savings/test', async (req, res) => {
@@ -104,6 +104,28 @@ export default (app) => {
       data = {error: parseError(err)};
     }
 
+    buildResponse(res, data);
+  });
+
+  // favorite a savings plans
+  app.put('/Cheddar/Savings/Favorite/:uid/:savingsId', async (req, res) => {
+    let data;
+    try{
+      data = await favSavings(req.params.uid, req.params.savingsId);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+    buildResponse(res, data);
+  });
+
+  // unfavorite a savings plans
+  app.put('/Cheddar/Savings/Unfavorite/:uid/:savingsId', async (req, res) => {
+    let data;
+    try{
+      data = await unfavSavings(req.params.uid, req.params.savingsId);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
     buildResponse(res, data);
   });
 };
