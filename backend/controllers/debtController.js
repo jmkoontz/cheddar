@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllDebts, createDebt, editDebt, deleteDebt} from '../models/debtDAO';
+import {getAllDebts, createDebt, editDebt, deleteDebt, favDebt, unfavDebt} from '../models/debtDAO';
 
 export default (app) => {
   app.get('/Cheddar/Debts/test', async (req, res) => {
@@ -79,6 +79,28 @@ export default (app) => {
       data = {error: parseError(err)};
     }
 
+    buildResponse(res, data);
+  });
+
+  // favorite a debts plans
+  app.put('/Cheddar/Debts/Favorite/:uid/:debtId', async (req, res) => {
+    let data;
+    try{
+      data = await favDebt(req.params.uid, req.params.debtId);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+    buildResponse(res, data);
+  });
+
+  // unfavorite a debts plans
+  app.put('/Cheddar/debts/Unfavorite/:uid/:debtId', async (req, res) => {
+    let data;
+    try{
+      data = await unfavDebt(req.params.uid, req.params.debtId);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
     buildResponse(res, data);
   });
 };
