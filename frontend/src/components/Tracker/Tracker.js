@@ -31,9 +31,10 @@ function Transactions() {
 	const [loading, setLoading] = useState(false); // Stops page from loading is a server call is running
 
 	let transactions = [];
-	let categories = [0,0,0,0,0,0,0,0];
+	let categories = [[],[],[],[],[],[],[],[]];
 	let categoryAmounts = [0,0,0,0,0,0,0,0];
 	let categoryNames = ["Entertainment", "Food and Groceries", "Savings", "Debt", "Housing", "Gas", "Utilities", "Other"];
+	let transNames = [[], [], [], [], [], [], [], []];
 
 	const calcTotals = () => {
 		let totalTitle = "Total Spending";
@@ -43,53 +44,82 @@ function Transactions() {
 				if(budgetList[x].budgetCategories[y].name === "Entertainment") {
 					categoryAmounts[0] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
+				else if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
 					categoryAmounts[1] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Savings") {
+				else if(budgetList[x].budgetCategories[y].name === "Savings") {
 					categoryAmounts[2] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Debt") {
+				else if(budgetList[x].budgetCategories[y].name === "Debt") {
 					categoryAmounts[3] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Housing") {
+				else if(budgetList[x].budgetCategories[y].name === "Housing") {
 					categoryAmounts[4] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Gas") {
+				else if(budgetList[x].budgetCategories[y].name === "Gas") {
 					categoryAmounts[5] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Utilities") {
+				else if(budgetList[x].budgetCategories[y].name === "Utilities") {
 					categoryAmounts[6] += budgetList[x].budgetCategories[y].amount;
 				}
-				if(budgetList[x].budgetCategories[y].name === "Other") {
+				else if(budgetList[x].budgetCategories[y].name === "Other") {
 					categoryAmounts[7] += budgetList[x].budgetCategories[y].amount;
+				}
+				else {
+					for(let i = 0; i < categoryNames.length; i++) {
+						if(budgetList[x].budgetCategories[y].name === categoryNames[i]) {
+							categoryAmounts[i] = budgetList[x].budgetCategories[y].amount;
+							break;
+						}
+					}
+					categoryNames.push(budgetList[x].budgetCategories[y].name);
+					categoryAmounts.push(budgetList[x].budgetCategories[y].amount)
+					transNames.push([]);
+					categories.push([]);
 				}
 				for(let z = 0; z < budgetList[x].budgetCategories[y].transactions.length; z++) {
 					for(let k = 0; k < transactions.length; k++) {
 						if(transactions[k]._id === budgetList[x].budgetCategories[y].transactions[z]) {
 							if(budgetList[x].budgetCategories[y].name === "Entertainment") {
-								categories[0] += transactions[k].amount;
+								categories[0].push(transactions[k].amount);
+								transNames[0].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
-								categories[1] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
+								categories[1].push(transactions[k].amount);
+								transNames[1].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Savings") {
-								categories[2] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Savings") {
+								categories[2].push(transactions[k].amount);
+								transNames[2].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Debt") {
-								categories[3] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Debt") {
+								categories[3].push(transactions[k].amount);
+								transNames[3].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Housing") {
-								categories[4] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Housing") {
+								categories[4].push(transactions[k].amount);
+								transNames[4].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Gas") {
-								categories[5] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Gas") {
+								categories[5].push(transactions[k].amount);
+								transNames[5].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Utilities") {
-								categories[6] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Utilities") {
+								categories[6].push(transactions[k].amount);
+								transNames[6].push(transactions[k].name);
 							}
-							if(budgetList[x].budgetCategories[y].name === "Other") {
-								categories[7] += transactions[k].amount;
+							else if(budgetList[x].budgetCategories[y].name === "Other") {
+								categories[7].push(transactions[k].amount);
+								transNames[7].push(transactions[k].name);
+							}
+							else {
+								for(let i = 0; i < categoryNames.length; i++) {
+									if(budgetList[x].budgetCategories[y].name === categoryNames[i]) {
+										categories[i].push(transactions[k].amount);
+										transNames[i].push(transactions[k].name);
+										break;
+									}
+								}
 							}
 							break;
 						}
@@ -97,6 +127,26 @@ function Transactions() {
 				}
 			}
 		}
+
+		let series = [];
+
+		for(let a = 0; a < categories.length; a++) {
+			for(let b = 0; b < categories[a].length; b++) {
+				let data = [0,0,0,0,0,0,0,0];
+				data[a] = categories[a][b]
+				let newobj = {
+					name: transNames[a][b],
+					data: data,
+					stack: "Spent"
+				}
+				series.push(newobj);
+			}
+		}
+		series.push({
+			name: "Allotted",
+			data: categoryAmounts,
+			stack: "Allotted"
+		});
 
 		let totalOptions = {
 
@@ -122,38 +172,25 @@ function Transactions() {
             overflow: 'justify'
         }
     },
+		legend: {
+        enabled: false
+    },
     tooltip: {
-        valueSuffix: ' dollars'
+			formatter: function () {
+					return '<b>' + this.x + '</b><br/>' +
+							this.series.name + ': ' + '$' + this.y + '<br/>' +
+							'Total: $' + this.point.stackTotal;
+			}
     },
     plotOptions: {
         bar: {
-            dataLabels: {
-                enabled: true
-            }
+						stacking: 'normal'
         }
-    },
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'top',
-        x: 0,
-        y: 100,
-        floating: true,
-        borderWidth: 1,
-        backgroundColor:
-            Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
-        shadow: true
     },
     credits: {
         enabled: false
     },
-    series: [{
-        name: "Spending",
-        data: categories
-    }, {
-			name: "Allotted",
-			data: categoryAmounts
-		}]
+    series: series
 	}
 
 
