@@ -84,7 +84,7 @@ class Retirement extends React.Component {
                 });
             }
         });
-        axios.get("http://localhost:8080/Cheddar/Investments/TotalInvestment", {
+        axios.get(buildUrl("/Cheddar/Investments/TotalInvestment"), {
             params: test,
                 }).then(res => {
                     this.setState({
