@@ -60,13 +60,17 @@ class Overview extends React.Component {
     }).then(res => {
       var companies = this.state.companies;
       var i;
+      
       var trackedCompanies = res.data.trackedCompanies;
+      if(typeof(trackedCompanies) == typeof(undefined)){
+          trackedCompanies = [];
+      }
       for(i=0;i<trackedCompanies.length;i++){
         companies[trackedCompanies[i]]["tracked"]=true;
       }
       this.setState({
         companies: companies,
-        selectedCompanies: res.data.trackedCompanies,
+        selectedCompanies: trackedCompanies,
         investments: res.data.investments,
       },() => {
         var comps = this.state.selectedCompanies;

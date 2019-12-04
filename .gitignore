@@ -3,5 +3,5 @@ node_modules/
 .idea/
 **/keys
 *.log
-backend/config/email.json
-frontend/src/config/keys.js
+**/config/email.json
+**/config/keys.js
