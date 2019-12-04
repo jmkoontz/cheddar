@@ -31,7 +31,6 @@ class Notifications extends React.Component {
   close (index) {
     const event = this.state.messages[index];
 
-    console.log(event);
     axios.post('http://localhost:8080/Cheddar/Calendar/dismissNotification/' + sessionStorage.getItem('user'), event).then((resp) => {
       const splice = this.state.messages;
       splice.splice(index, 1);
