@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col } from 'reactstrap';
 import axios from 'axios';
 import ToggleButton from 'react-toggle-button'
+import buildUrl from "../../actions/connect";
 
 function ToggleButtons(props) {
 
@@ -10,7 +11,7 @@ function ToggleButtons(props) {
 
   // server call to check if the tooltip is enabled tor disabled
   const getToolTips = () => {
-    axios.get(`http://localhost:8080/Cheddar/ToolTips/${uid}`)
+    axios.get(buildUrl(`/Cheddar/ToolTips/${uid}`))
       .then((response) => {
 
         let tmp = response.data;
@@ -35,7 +36,7 @@ function ToggleButtons(props) {
 
   // server call to disable tool tips
   const disableTips = (page) => {
-    axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${uid}/${page}`)
+    axios.put(buildUrl(`/Cheddar/DisableToolTips/${uid}/${page}`))
       .then((response) => {
         //console.log(response.data.toolTips)
         let tmp = response.data.toolTips;
@@ -49,7 +50,7 @@ function ToggleButtons(props) {
 
   // server call to disable tool tips, TODO remove this
   const enableTips = (page) => {
-    axios.put(`http://localhost:8080/Cheddar/EnableToolTips/${uid}/${page}`)
+    axios.put(buildUrl(`/Cheddar/EnableToolTips/${uid}/${page}`))
       .then((response) => {
         //console.log(response.data.toolTips)
         let tmp = response.data.toolTips;

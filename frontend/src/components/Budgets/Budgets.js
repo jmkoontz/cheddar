@@ -6,6 +6,7 @@ import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
 import FormBody from "./FormBody";
+import buildUrl from "../../actions/connect";
 
 function Budgets() {
 
@@ -151,7 +152,7 @@ function Budgets() {
    */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
 			.then(function (response) {
 				// handle success
 				setBudgetList(response.data);
@@ -192,7 +193,7 @@ function Budgets() {
 		if (pickedCategory === 'Standard')	// legacy compatibility
 			tmpPickedCategory = 'Custom';
 
-		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
+		axios.post(buildUrl(`/Cheddar/Budgets/${userID}`),
 			{
 				name: budgetName,
 				type: tmpPickedCategory,
@@ -221,7 +222,7 @@ function Budgets() {
 	* Makes the axios call to the backend to delete a budget
 	*/
 	const deleteBudget = (name) => {
-		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
+		axios.delete(buildUrl(`/Cheddar/Budgets/Budget/${userID}/${name}`),
 		).then(function (response) {
 
 			setModal(false);
@@ -257,7 +258,7 @@ function Budgets() {
 		if (curBudget.type !== 'Percentage-Based')
 			delete categoryArr.percentage;
 
-		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
+		axios.put(buildUrl(`/Cheddar/Budgets/${userID}/${curBudget.name}`),
 			{
 				name: tmpName,
 				type: curBudget.type,

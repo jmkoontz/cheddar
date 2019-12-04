@@ -6,6 +6,7 @@ import EventModal from "./EventModal";
 
 import './EventListModal.css';
 import Button from "react-bootstrap/Button";
+import buildUrl from "../../actions/connect";
 
 class EventListModal extends React.Component {
   constructor (props) {
@@ -39,7 +40,7 @@ class EventListModal extends React.Component {
   };
 
   displayEvents = () => {
-    axios.get('http://localhost:8080/Cheddar/Calendar/' + sessionStorage.getItem('user')).then((resp) => {
+    axios.get(buildUrl('/Cheddar/Calendar/' + sessionStorage.getItem('user'))).then((resp) => {
       console.log(resp.data);
       this.setState({
         events: resp.data
