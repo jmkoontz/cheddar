@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import '../../css/Transactions.css';
+import buildUrl from "../../actions/connect";
 
 function SelectBudgetForm(props) {
 
@@ -39,7 +40,7 @@ function SelectBudgetForm(props) {
 
   const createTransaction = () => {
 
-    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${userID}/${budgetName}/${transactionCategory}`,
+    axios.post(buildUrl(`/Cheddar/Budgets/Budget/Transaction/${userID}/${budgetName}/${transactionCategory}`),
       {
         name: transactionName,
         amount: transactionAmount,

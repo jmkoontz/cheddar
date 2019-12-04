@@ -3,6 +3,7 @@ import Alert from 'react-bootstrap/Alert';
 
 import './Notifications.css';
 import axios from "axios";
+import buildUrl from "../../actions/connect";
 
 class Notifications extends React.Component {
   constructor (props) {
@@ -31,7 +32,7 @@ class Notifications extends React.Component {
   close (index) {
     const event = this.state.messages[index];
 
-    axios.post('http://localhost:8080/Cheddar/Calendar/dismissNotification/' + sessionStorage.getItem('user'), event).then((resp) => {
+    axios.post(buildUrl('/Cheddar/Calendar/dismissNotification/' + sessionStorage.getItem('user')), event).then((resp) => {
       const splice = this.state.messages;
       splice.splice(index, 1);
 

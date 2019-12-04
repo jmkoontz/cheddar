@@ -23,6 +23,7 @@ import Loader from "../Loader/Loader";
 import '../App.css';
 import StocksGraph from "./StocksGraph";
 import GrowthGraph from "./GrowthGraph";
+import buildUrl from "../../actions/connect";
 
 const tips = (
     <Modal.Body>
@@ -117,7 +118,7 @@ class Investments extends React.Component {
 
     componentDidMount(){
         const test = {uid: this.state.uid};
-        axios.get("http://localhost:8080/Cheddar/Investments", {
+        axios.get(buildUrl("/Cheddar/Investments"), {
             params: test,
                 }).then(res => {
                     var companies = this.state.companies;
@@ -319,7 +320,7 @@ class Investments extends React.Component {
             if(companies.includes(company)){
                 companies.splice(companies.indexOf(company),1);
             }
-            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+            axios.post(buildUrl("/Cheddar/Investments/TrackedCompanies"), {
                 "uid": this.state.uid,
                 "updatedCompanies": companies,
                 }).then(res => {
@@ -335,7 +336,7 @@ class Investments extends React.Component {
                 companies.push(company);
             }
 
-            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+            axios.post(buildUrl("/Cheddar/Investments/TrackedCompanies"), {
                 "uid": this.state.uid,
                 updatedCompanies: companies,
                 }).then(res => {
@@ -406,7 +407,7 @@ class Investments extends React.Component {
         if(proceed){
             //console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
             this.state.investments.push(investment);
-            axios.post("http://localhost:8080/Cheddar/Investments", {
+            axios.post(buildUrl("/Cheddar/Investments"), {
                 "uid": this.state.uid,
                 "investments": investments,
             }).then(res => {
@@ -418,7 +419,7 @@ class Investments extends React.Component {
             this.showInfoModal();
             /*console.log(this.state.investments.filter(e => e.company === this.state.companyName).length);
             this.state.investments.push(investment);
-            axios.post("http://localhost:8080/Cheddar/Investments", {
+            axios.post(buildUrl("/Cheddar/Investments"), {
                 "uid": this.state.uid,
                 "investments": this.state.investments,
             }).then(res => {

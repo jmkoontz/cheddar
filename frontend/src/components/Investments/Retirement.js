@@ -19,6 +19,7 @@ import ModalTitle from 'react-bootstrap/ModalTitle';
 import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
+import buildUrl from "../../actions/connect";
 
 
 
@@ -46,7 +47,7 @@ class Retirement extends React.Component {
 
     componentDidMount(){
         const test = {uid: this.state.uid};
-        axios.get("http://localhost:8080/Cheddar/Retirement", {
+        axios.get(buildUrl("/Cheddar/Retirement"), {
             params: test,
         }).then(res => {
             var buttonText;
@@ -104,7 +105,7 @@ class Retirement extends React.Component {
             var history = this.state.retirementHistory;
             history.push(contribution);
 
-            axios.post("http://localhost:8080/Cheddar/Retirement/Contribution", {
+            axios.post(buildUrl("/Cheddar/Retirement/Contribution"), {
                     "uid": this.state.uid,
                     "history": history,
                     "previousTotal": this.state.totalRetirement,
