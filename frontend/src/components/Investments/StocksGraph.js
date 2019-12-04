@@ -20,6 +20,7 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { isNullOrUndefined } from 'util';
 import Loader from "../Loader/Loader";
+import buildUrl from "../../actions/connect";
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 class StocksGraph extends React.Component {
@@ -67,7 +68,7 @@ class StocksGraph extends React.Component {
 
     componentDidMount(){
         const test = {uid: this.state.uid};
-        axios.get("http://localhost:8080/Cheddar/Investments", {
+        axios.get(buildUrl("/Cheddar/Investments"), {
             params: test,
                 }).then(res => {
                     var companies = this.state.companies;

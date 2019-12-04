@@ -6,6 +6,7 @@ import { Form, Input, Button, Alert, Row, Col } from 'reactstrap';
 import axios from 'axios';
 import history from '../../history';
 import './SignIn.css'
+import buildUrl from "../../actions/connect";
 
 class CreateAccount extends Component {
 
@@ -72,7 +73,7 @@ class CreateAccount extends Component {
 
   addUserInfo(userData){
     let self = this;
-    axios.post('http://localhost:8080/Cheddar/CreateAccount', {
+    axios.post(buildUrl('/Cheddar/CreateAccount'), {
       _id: userData.user.uid,
       firstName: self.state.firstName,
       lastName: self.state.lastName,

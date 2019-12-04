@@ -6,6 +6,7 @@ import Calendar from 'react-calendar';
 import axios from 'axios';
 
 import './EventModal.css';
+import buildUrl from "../../actions/connect";
 
 class EventModal extends React.Component {
   constructor (props) {
@@ -29,12 +30,12 @@ class EventModal extends React.Component {
   handleSave = () => {
     // Save stuff here
     if (this.props.isNew) {
-      axios.post('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user'), this.state.event).then((resp) => {
+      axios.post(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user')), this.state.event).then((resp) => {
         this.setState({isSaved: true});
         this.handleClose();
       });
     } else {
-      axios.put('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user'), this.state.event).then((resp) => {
+      axios.put(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user')), this.state.event).then((resp) => {
         this.setState({isSaved: true});
         this.handleClose();
       });
@@ -43,7 +44,7 @@ class EventModal extends React.Component {
 
   handleDelete = () => {
     // Delete stuff here
-    axios.delete('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user') + '/' + this.state.event.id, this.state.event).then((resp) => {
+    axios.delete(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user') + '/' + this.state.event.id), this.state.event).then((resp) => {
       this.setState({isSaved: true});
       this.handleClose();
     });

@@ -10,6 +10,7 @@ import Pie from "./Pie";
 import TransactionTable from './TransactionTable';
 import axios from 'axios';
 import '../../css/Budgets.css';
+import buildUrl from "../../actions/connect";
 
 function BudgetTabs(props) {
 
@@ -82,7 +83,7 @@ function BudgetTabs(props) {
 
 	// server call to disable tool tips
 	const disableTips = () => {
-		axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${props.userID}/budgets`)
+		axios.put(buildUrl(`/Cheddar/DisableToolTips/${props.userID}/budgets`))
 			.then((response) => {
 				setToolOn(false);
 			})
@@ -93,7 +94,7 @@ function BudgetTabs(props) {
 
 	// server call to disable tool tips, TODO remove this
 	const enableTips = () => {
-		axios.put(`http://localhost:8080/Cheddar/EnableToolTips/${props.userID}/budgets`)
+		axios.put(buildUrl(`/Cheddar/EnableToolTips/${props.userID}/budgets`))
 			.then((response) => {
 				console.log(response.data)
 				setToolOn(true);
@@ -105,7 +106,7 @@ function BudgetTabs(props) {
 
 	// server call to check if the tooltip is enabled tor disabled
 	const checkToolTip = () => {
-		axios.get(`http://localhost:8080/Cheddar/ToolTips/${props.userID}`)
+		axios.get(buildUrl(`/Cheddar/ToolTips/${props.userID}`))
 			.then((response) => {
 				setToolEnable(response.data.budgets)
 				if (response.data.budgets) {
@@ -129,7 +130,7 @@ function BudgetTabs(props) {
 
 	// server call to unfavorite a budget
 	const unfavoriteBudget = () => {
-		axios.put(`http://localhost:8080/Cheddar/Budgets/Unfavorite/${props.userID}/${props.curBudget.name}`)
+		axios.put(buildUrl(`/Cheddar/Budgets/Unfavorite/${props.userID}/${props.curBudget.name}`))
 			.then((response) => {
 				// format the date for display
 				// TODO, make the budgetList update, dont call getBudgets
@@ -143,7 +144,7 @@ function BudgetTabs(props) {
 
 	// server call to favorite a budget
 	const favoriteBudget = () => {
-		axios.put(`http://localhost:8080/Cheddar/Budgets/Favorite/${props.userID}/${props.curBudget.name}`)
+		axios.put(buildUrl(`/Cheddar/Budgets/Favorite/${props.userID}/${props.curBudget.name}`))
 			.then((response) => {
 				// format the date for display
 				// TODO, make the budgetList update, dont call getBudgets
@@ -156,7 +157,7 @@ function BudgetTabs(props) {
 
 	// get all current transactions for a budget
 	const getTransactions = () => {
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/Budget/Transactions/${props.userID}/${props.curBudget.name}`))
 			.then((response) => {
 				// format the date for display
 				for (let i in response.data) {
@@ -172,7 +173,7 @@ function BudgetTabs(props) {
 	};
 
 	const getOldTransactions = (index) => {
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/OldTransactions/${props.userID}/${props.curBudget.name}/${index}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/Budget/OldTransactions/${props.userID}/${props.curBudget.name}/${index}`))
 			.then((response) => {
 				// format the date for display
 				for (let i in response.data) {
