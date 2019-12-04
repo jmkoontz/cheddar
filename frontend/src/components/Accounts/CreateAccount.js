@@ -72,6 +72,8 @@ class CreateAccount extends Component {
   };
 
   addUserInfo(userData){
+    console.log("REGISTERING");
+    console.log(userData);
     let self = this;
     axios.post(buildUrl('/Cheddar/CreateAccount'), {
       _id: userData.user.uid,
