@@ -3,9 +3,5 @@ node_modules/
 .idea/
 **/keys
 *.log
-<<<<<<< HEAD
-backend/config/email.json
-frontend/src/config/keys.js
-=======
-**/email.json
->>>>>>> Investments2
+**/config/email.json
+**/config/keys.js
