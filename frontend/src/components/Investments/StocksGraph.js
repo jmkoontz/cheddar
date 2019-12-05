@@ -33,7 +33,7 @@ class StocksGraph extends React.Component {
             company: "MSFT",
             companyName: "Microsoft",
             frequency: "TIME_SERIES_DAILY_ADJUSTED",
-            key: keys.AlphaVantageAPIKey,
+            key: process.env.AlphaVantageAPIKey,
             show: false,
             show2: false,
             companies: {

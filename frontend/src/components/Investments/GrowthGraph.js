@@ -32,7 +32,7 @@ class GrowthGraph extends React.Component {
             company: "MSFT",
             companyName: this.props.companyName,
             frequency: "TIME_SERIES_WEEKLY_ADJUSTED",
-            key: keys.AlphaVantageAPIKey,
+            key: process.env.AlphaVantageAPIKey,
             show: false,
             show2: false,
             companies: {

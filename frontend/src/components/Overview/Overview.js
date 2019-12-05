@@ -30,7 +30,7 @@ class Overview extends React.Component {
       uid: sessionStorage.getItem('user'),
       data: {},
       selectedCompanies: [],
-      key: keys.AlphaVantageAPIKey,
+      key: process.env.AlphaVantageAPIKey,
       companies: {
         "Amazon": {"id":"AMZN","tracked":false},
         "Apple": {"id":"AAPL","tracked":false},
@@ -116,34 +116,34 @@ class Overview extends React.Component {
     res = await axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol="+ this.state.companies[companyName]["id"]+"&apikey="+this.state.key+"&outputsize=full");
     if(res.data.Note && res.data.Note.includes("API call frequency")){
       //change API keys
-      if(this.state.key == keys.AlphaVantageAPIKey){
+      if(this.state.key == process.env.AlphaVantageAPIKey){
         this.setState({
-          key: keys.AlphaVantageAPIKey2,
+          key: process.env.AlphaVantageAPIKey2,
         },() => {this.getData(companyName)});
       }
-      else if(this.state.key == keys.AlphaVantageAPIKey2){
+      else if(this.state.key == process.env.AlphaVantageAPIKey2){
         this.setState({
-          key: keys.AlphaVantageAPIKey3,
+          key: process.env.AlphaVantageAPIKey3,
         },() => {this.getData(companyName)});
       }
-      else if(this.state.key == keys.AlphaVantageAPIKey3){
+      else if(this.state.key == process.env.AlphaVantageAPIKey3){
         this.setState({
-          key: keys.AlphaVantageAPIKey4,
+          key: process.env.AlphaVantageAPIKey4,
         },() => {this.getData(companyName)});
       }
-      else if(this.state.key == keys.AlphaVantageAPIKey4){
+      else if(this.state.key == process.env.AlphaVantageAPIKey4){
         this.setState({
-          key: keys.AlphaVantageAPIKey5,
+          key: process.env.AlphaVantageAPIKey5,
         },() => {this.getData(companyName)});
       }
-      else if(this.state.key == keys.AlphaVantageAPIKey5){
+      else if(this.state.key == process.env.AlphaVantageAPIKey5){
         this.setState({
-          key: keys.AlphaVantageAPIKey6,
+          key: process.env.AlphaVantageAPIKey6,
         },() => {this.getData(companyName)});
       }
-      else if(this.state.key == keys.AlphaVantageAPIKey6){
+      else if(this.state.key == process.env.AlphaVantageAPIKey6){
         this.setState({
-          key: keys.AlphaVantageAPIKey,
+          key: process.env.AlphaVantageAPIKey,
         },() => {this.getData(companyName)});
       }
       //alert("Changing Keys");
