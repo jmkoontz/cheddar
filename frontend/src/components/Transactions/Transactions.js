@@ -8,7 +8,6 @@ import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
 import '../../css/Transactions.css';
 import TipSequence from '../TipSequence/TipSequence';
-import buildUrl from "../../actions/connect";
 
 
 function Transactions() {
@@ -288,7 +287,7 @@ function Transactions() {
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
+		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
@@ -316,7 +315,7 @@ function Transactions() {
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-		axios.get(buildUrl(`/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`))
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`)
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
@@ -354,14 +353,14 @@ function Transactions() {
 	/**
 	 * Server call to get archived data for all budgets
 	 */
-	//const 
+	//const
 
 	/**
 	 * Server call to get all Budgets
 	 */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
+		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
 			.then(function (response) {
 				// handle success
 
@@ -490,7 +489,7 @@ function Transactions() {
             }, {
               text: "To view a list of transactions in your selected date range, click the 'View Transactions' button",
               target: "transaction-table"
-            }, 
+            },
           ]}
         />
 		</div>
