@@ -6,3 +6,18 @@
 .calendar-button {
 	margin-right: 10px;
 }
+
+.card-title {
+	font-weight: bold;
+	text-decoration: underline;
+	font-size: 20px;
+}
+
+.investments-overview {
+	margin-top: 50px;
+	width: 100%;
+}
+
+.rbc-month-row:hover {
+	cursor: pointer;
+}

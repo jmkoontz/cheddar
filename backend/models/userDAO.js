@@ -14,6 +14,29 @@ export function getUser(uid) {
     });
 }
 
+export function getToolTips(uid) {
+  const findClause = {
+    '_id': uid,
+  };
+
+  const returnClause = {
+    '_id': 0, // exclude _id
+    'toolTips': 1
+  };
+
+  return userModel.findOne(findClause, returnClause)
+    .then((user) => {
+      if (user && user.toolTips) {
+        return Promise.resolve(user.toolTips);
+      } else {
+        return Promise.reject('UserError: User not found');
+      }
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
 export function getAllUsers() {
   return userModel.find({})
     .then((users) => {
@@ -36,7 +59,8 @@ export function createUser(user) {
         return Promise.reject('UserError: Each field must have information');
     }
   }
-
+  console.log("DEBUGGING");
+  console.log(user);
   return userModel.create(user)
     .then((res) => {
       return Promise.resolve(res);
@@ -56,6 +80,60 @@ export function editUser(uid, changes) {
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function disableToolTips(uid, page) {
+
+  const findClause = {
+    '_id': uid,
+  };
+
+  let tmpStr = `toolTips.${page}`;
+  let tmpObj = {};
+  tmpObj[tmpStr] = false;
+
+  let updateClause = {$set: tmpObj};
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    updateClause,
+    { 'new': true })
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function enableToolTips(uid, page) {
+
+  const findClause = {
+    '_id': uid,
+  };
+
+  let tmpStr = `toolTips.${page}`;
+  let tmpObj = {};
+  tmpObj[tmpStr] = true;
+
+  let updateClause = {$set: tmpObj};
+
+  return userModel.findOneAndUpdate(
+    findClause,
+    updateClause,
+    { 'new': true })
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or budget not found');
 
       return Promise.resolve(updatedUser);
     })
@@ -97,22 +175,23 @@ export async function getNotifications(uid, isEmail) {
         continue;
 
       let cmp;
+      const multiplier = 24 * 60 * 60 * 1000;
       switch (period) {
         case "month":
           cmp = new Date();
-          cmp.setMonth(today.getMonth() - 1);
+          cmp.setMonth(today.getMonth() + 1);
           break;
         case "twoWeek":
           cmp = new Date();
-          cmp.setDate(today.getDate() - 14);
+          cmp.setDate(today.getTime() + 14 * multiplier);
           break;
         case "week":
           cmp = new Date();
-          cmp.setDate(today.getDate() - 7);
+          cmp.setDate(today.getTime() + 7 * multiplier);
           break;
         case "day":
           cmp = new Date();
-          cmp.setDate(today.getDate() - 1);
+          cmp.setDate(today.getTime() + multiplier);
           break;
         case "dayOf":
           cmp = today;
@@ -124,9 +203,13 @@ export async function getNotifications(uid, isEmail) {
       cmp.setHours(0, 0, 0);
       cmp.setMilliseconds(0);
 
-      if (cmp <= event.start && event.start <= today) {
-        notifications[event.id] = {
-          id: event.id,
+      if (cmp >= event.start && event.start >= today) {
+        let id = "" + event.id;
+        if (event.subId)
+          id += "-" + event.subId;
+
+        notifications[id] = {
+          id: id,
           title: event.title,
           period: period
         };
@@ -152,10 +235,11 @@ export async function pushEmailNotifications() {
     notifications.forEach((notification) => {
       emailString += "\t- " + notification.title + "\n";
       const periods = ["month", "twoWeek", "week", "day", "dayOf"];
+      const id = notification.id.split("-");
 
       //set email sent to true for this period
       for (let i = 0; i < events.length; i++) {
-        if (events[i].id == notification.id) {
+        if (events[i].id == id[0] && (id.length === 1 || id[1] == events[i].subId)) {
           if (!events[i].emailed)
             events[i].emailed = {};
 

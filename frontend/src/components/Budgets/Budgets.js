@@ -6,7 +6,7 @@ import '../../css/Budgets.css';
 import BudgetTabs from "./BudgetTabs";
 import StudentLoan from "./StudentLoan";
 import FormBody from "./FormBody";
-import FixedAmount from "./FixedAmount";
+import buildUrl from "../../actions/connect";
 
 function Budgets() {
 
@@ -24,7 +24,9 @@ function Budgets() {
 	const [editModal, setEditModal] = useState(false); // Boolean to say if I'm editing the budget
 	// Budget type drop down
 	const [budgetName, setBudgetName] = useState(""); // Name of budget to create
+	const [endDate, setEndDate] = useState();	// end date for fixed amount budgets
 	const [pickedCategory, setPickedCategory] = useState("Select a Budget Type"); // Dropdown menu selected item
+	const [income, setIncome] = useState(0);	// income for budget
 	const [pickedTimeFrame, setPickedTimeFrame] = useState("monthly");
 	const [budgetDropDown, toggleBudgetDropDown] = useState(false); // Toggles the drop down opening and closing
 	const [timeFrameDropDown, toggleTimeFrameDropDown] = useState(false);
@@ -43,11 +45,13 @@ function Budgets() {
 	 */
 	const closeModal = () => {
 		setModal(false);
+		setEditModal(false);
 		setCreationAlert(false);
 		setCategoryArr([]);
 		setPickedCategory("Select a Budget Type");
 		setPickedTimeFrame("monthly");
 		setBudgetName("");
+		setIncome(0);
 	}
 
   /**
@@ -65,7 +69,8 @@ function Budgets() {
 		let obj = {
 			"name": selectedDrop,
 			"amount": 0,
-			"transactions": []
+			"transactions": [],
+			"percentage": 0
 		};
 		setCategoryArr([...categoryArr, obj]); // TODO allow users to set a category
 		setDropDown("Select a Category");
@@ -79,12 +84,32 @@ function Budgets() {
 		setCreationAlert(false);
 	}
 
+	// switch budget types
+	const changePickedCategory = (category) => {
+		setPickedCategory(category);
+		setCategoryArr([]);
+		setPickedTimeFrame('monthly');
+		setBudgetName('');
+		setIncome(0);
+
+		// add savings category by default
+		if (category === 'Percentage-Based') {
+			let savingsObj = {
+				'name': 'Savings',
+				'amount': 0,
+				'transactions': [],
+				'percentage': 100
+			};
+
+			setCategoryArr([savingsObj]);
+		}
+	};
+
 	/**
 	 * Helper to set the next budget and tab
 	 * @param {String: contains the tab index} newTab
 	 */
 	const setNewTab = (newTab) => {
-		//console.log(newTab);
 		setTab(newTab);
 		setCurBudget(budgetList[parseInt(newTab)]);
 		setFavorite(budgetList[parseInt(newTab)].favorite);
@@ -98,11 +123,9 @@ function Budgets() {
 	const setFirstBudget = (budg, x) => {
 		setTab(x);
 		setCurBudget(budg);
-		console.log(budg)
 		if (budg) {
 			setFavorite(budg.favorite);
 		}
-
 	}
 
 	/**
@@ -113,12 +136,14 @@ function Budgets() {
 		setEditModal(true);
 		setPickedCategory(curBudget.type);
 		setBudgetName(curBudget.name);
-		let tmpIncome = {
-			name: "Income",
-			amount: curBudget.income
-		}
-		setCategoryArr([tmpIncome, ...curBudget.budgetCategories]);
+		setIncome(curBudget.income);
+		setCategoryArr(JSON.parse(JSON.stringify(curBudget.budgetCategories)));
 
+		if (curBudget.type === 'Fixed Amount') {
+			let end = new Date(curBudget.nextUpdate);
+			end.setUTCDate(end.getUTCDate() - 1);
+			setEndDate(end);
+		}
 	}
 
 	// Server calls below here
@@ -127,7 +152,7 @@ function Budgets() {
    */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
 			.then(function (response) {
 				// handle success
 				setBudgetList(response.data);
@@ -148,16 +173,10 @@ function Budgets() {
 				setLoading(false);
 			})
 			.catch((error) => {
-				console.log(error);
-				//TODO: error handling for budgets failing to load
-				// if (error.response && error.response.data) {
-				//   console.log(error.response.data.error);
-				//   if (error.response.data.error.message.errmsg && error.response.data.error.message.errmsg.includes("duplicate")) {
-				//     //self.createIt();
-				//   }
-				// } else {
-				//   console.log(error);
-				// }
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	};
 
@@ -167,38 +186,35 @@ function Budgets() {
 	const createBudget = () => {
 		toggleAlert();
 
-		let tmpIncome;
-		let index = 0;
-		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income") {
-				index = x;
-				tmpIncome = categoryArr[x].amount;
-			}
-		}
+		if (pickedCategory !== 'Percentage-Based')
+			delete categoryArr.percentage;
 
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
+		let tmpPickedCategory = pickedCategory;
+		if (pickedCategory === 'Standard')	// legacy compatibility
+			tmpPickedCategory = 'Custom';
 
-		axios.post(`http://localhost:8080/Cheddar/Budgets/${userID}`,
+		axios.post(buildUrl(`/Cheddar/Budgets/${userID}`),
 			{
 				name: budgetName,
-				type: pickedCategory,
-				income: tmpIncome,
+				type: tmpPickedCategory,
+				endDate: endDate,
+				income: income,
 				timeFrame: pickedTimeFrame,
 				favorite: false,
-				budgetCategories: removedIncomeArr
+				budgetCategories: categoryArr
 			}).then(function (response) {
-
-				//console.log(response);
 				setModal(false);
+				setEditModal(false);
 				setCategoryArr([]);
 				setButtonDisplay(false);
+				setBudgetName('');
+				setIncome(0);
 				getBudgets();
-
-
 			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	};
 
@@ -206,20 +222,23 @@ function Budgets() {
 	* Makes the axios call to the backend to delete a budget
 	*/
 	const deleteBudget = (name) => {
-		axios.delete(`http://localhost:8080/Cheddar/Budgets/Budget/${userID}/${name}`,
+		axios.delete(buildUrl(`/Cheddar/Budgets/Budget/${userID}/${name}`),
 		).then(function (response) {
 
-			//console.log(response);
 			setModal(false);
+			setEditModal(false);
 			setCategoryArr([]);
 			setButtonDisplay(false);
+			setBudgetName('');
+			setIncome(0);
 			setCurBudget();
 			getBudgets();
 
 		}).catch(function (error) {
-			//setErrMsg(error);
-			//setCreationAlert(true);
-			console.log(error);
+			if (error.response && error.response.data) {
+				setErrMsg(error.response.data.error.message);
+				setCreationAlert(true);
+			}
 		});
 	}
 
@@ -227,6 +246,7 @@ function Budgets() {
    * Makes the axios call to the backend to edit a budget
    */
 	const editBudget = () => {
+		toggleAlert();
 
 		let tmpName;
 		if (budgetName === curBudget.name) {
@@ -235,36 +255,32 @@ function Budgets() {
 			tmpName = budgetName;
 		}
 
-		let tmpIncome;
-		let index = 0;
-		for (let x = 0; x < categoryArr.length; x++) {
-			if (categoryArr[x].name === "Income") {
-				index = x;
-				tmpIncome = categoryArr[x].amount;
-			}
-		}
+		if (curBudget.type !== 'Percentage-Based')
+			delete categoryArr.percentage;
 
-		let removedIncomeArr = categoryArr.filter((s, sidx) => index !== sidx);
-
-		//console.log(removedIncomeArr)
-		axios.put(`http://localhost:8080/Cheddar/Budgets/${userID}/${curBudget.name}`,
+		axios.put(buildUrl(`/Cheddar/Budgets/${userID}/${curBudget.name}`),
 			{
 				name: tmpName,
-				income: tmpIncome,
-				budgetCategories: removedIncomeArr
+				type: curBudget.type,
+				endDate: endDate,
+				income: income,
+				budgetCategories: categoryArr
 			}).then(function (response) {
 
-				console.log(response);
 				setEditModal(false);
 				setModal(false);
 				setButtonDisplay(false);
+				setCategoryArr([]);
+				setBudgetName('');
+				setIncome(0);
 				setCurBudget();
 				getBudgets();
 
 			}).catch(function (error) {
-				//setErrMsg(error);
-				//setCreationAlert(true);
-				console.log(error);
+				if (error.response && error.response.data) {
+					setErrMsg(error.response.data.error.message);
+					setCreationAlert(true);
+				}
 			});
 	}
 
@@ -278,16 +294,18 @@ function Budgets() {
 		editBudget: editBudget,
 		deleteBudget: deleteBudget,
 		createBudget: createBudget,
-		//handleNameChange: handleNameChange,
-		//handleCategoryChange: handleCategoryChange,
 		budgetName: budgetName,
 		setBudgetName: setBudgetName,
+		endDate: endDate,
+		setEndDate: setEndDate,
 		removeCategory: removeCategory,
 		resetDropDown: resetDropDown,
 		toggleDropDown: toggleDropDown,
 		selectedDrop: selectedDrop,
 		setDropDown: setDropDown,
 		dropdown: dropdown,
+		income: income,
+		setIncome: setIncome,
 		categoryArr: categoryArr,
 		setCategoryArr: setCategoryArr,
 		tab: tab,
@@ -307,7 +325,6 @@ function Budgets() {
 		favorite: favorite,
 		getBudgets: getBudgets,
 		setCurBudget: setCurBudget
-
 	};
 
 	return (
@@ -334,17 +351,17 @@ function Budgets() {
 									{pickedCategory}
 								</DropdownToggle>
 								<DropdownMenu>
-									{/*TODO: clean this up and store it in a state variable*/}
-									<DropdownItem onClick={() => setPickedCategory("Loan Payment")}>Loan Payment</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
-									<DropdownItem onClick={() => setPickedCategory("Custom")}>Custom Budget</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Standard")}>Standard Budget</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Fixed Amount")}>Fixed Amount</DropdownItem>
+									<DropdownItem onClick={() => changePickedCategory("Percentage-Based")}>Percentage-Based</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</Col>
 						<Col sm={3} />
 						<Col sm={3}>
 							<Dropdown isOpen={timeFrameDropDown} toggle={() => toggleTimeFrameDropDown(!timeFrameDropDown)}>
-								<DropdownToggle disabled={editModal} className="smallText" caret>
+								<DropdownToggle hidden={pickedCategory === 'Fixed Amount'} disabled={editModal}
+										className="smallText" caret>
 									{pickedTimeFrame.charAt(0).toUpperCase() + pickedTimeFrame.slice(1)}
 								</DropdownToggle>
 								<DropdownMenu>
@@ -361,28 +378,13 @@ function Budgets() {
 						:
 						<div>
 							<ModalBody>
+								<FormBody {...formInfo} type={pickedCategory} />
 								{creationError
 									?
 									<Alert color="danger" toggle={toggleAlert}>{errMsg}</Alert>
 									:
-									<div />
+									<div/>
 								}
-								{pickedCategory === "Loan Payment"
-									?
-									<StudentLoan {...formInfo} />
-									: pickedCategory === "Custom"
-										?
-										<FormBody {...formInfo} />
-										: pickedCategory === "Fixed Amount"
-											?
-											<FixedAmount {...formInfo} />
-											:
-											<div>
-												{/* Other categories will go here */}
-											</div>
-								}
-
-
 							</ModalBody>
 						</div>
 					}
@@ -407,7 +409,7 @@ function Budgets() {
 
 
 			</Modal>
-		
+
 
 		</div>
 	);

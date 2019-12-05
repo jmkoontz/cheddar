@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import '../../css/Budgets.css';
+import buildUrl from "../../actions/connect";
 
 function TransactionForm(props) {
 
@@ -31,7 +32,7 @@ function TransactionForm(props) {
   }
 
   const createTransaction = () => {
-    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
+    axios.post(buildUrl(`/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`),
       {
         name: transactionName,
         amount: transactionAmount,
@@ -71,7 +72,7 @@ function TransactionForm(props) {
         <CardHeader>
           <p className={"addSpace"}>Enter New Transaction</p>
         </CardHeader>
-        <CardBody >
+        <CardBody>
           <Form className="textLeft">
             <Row>
               <Col sm={3}>

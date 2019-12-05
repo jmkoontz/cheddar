@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col} from 'reactstrap';
+import {
+  Modal, ModalHeader, ModalBody, Input, Form, Button, Alert, Row, Col, Dropdown, DropdownToggle, DropdownMenu, DropdownItem
+} from 'reactstrap';
 import firebase from '../../firebase.js';
 import axios from 'axios';
 import './SignIn.css'
-import {fireauth} from "../../firebase";
+import { fireauth } from "../../firebase";
+import ToggleButtons from "./ToggleButtons";
+import buildUrl from "../../actions/connect";
 
 class AccountSettings extends Component {
 
@@ -11,6 +15,7 @@ class AccountSettings extends Component {
     super(props);
 
     this.state = {
+      uid: sessionStorage.getItem('user'),
       new_password: null,
       confirm_password: null,
 
@@ -22,6 +27,13 @@ class AccountSettings extends Component {
 
       reauthenticate_visible: false,
       current_password: null,
+
+      countryOpen: false,
+
+      selectedState: "Indiana",
+      states: ["Alabama", "Alaska", "American Samoa", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Guam", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Minor Outlying Islands", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Northern Mariana Islands", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "U.S. Virgin Islands", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"],
+      email: null,
+      emailBox: null,
     };
 
   }
@@ -32,8 +44,7 @@ class AccountSettings extends Component {
   };
 
   deleteAccount = () => {
-    let uid = sessionStorage.getItem('user');
-    axios.delete(`http://localhost:8080/Cheddar/${uid}`).then(() => {
+    axios.delete(buildUrl(`/Cheddar/${this.state.uid}`)).then(() => {
       window.location.reload();
       fireauth.currentUser.delete();  // delete invalid user from Firebase
       sessionStorage.clear(); // remove saved UID
@@ -50,11 +61,11 @@ class AccountSettings extends Component {
     ev.preventDefault();
     let new_password = ev.target.newpassword.value;
     let confirm_password = ev.target.confirmpassword.value;
-    if(new_password === ""){
+    if (new_password === "") {
       this.setError("Please enter your new password.");
       return;
     }
-    if(confirm_password === ""){
+    if (confirm_password === "") {
       this.setError("Please confirm your new password.");
       return;
     }
@@ -73,14 +84,14 @@ class AccountSettings extends Component {
   updatePassword = () => {
     let self = this;
     let user = firebase.auth().currentUser;
-    user.updatePassword(self.state.new_password).then(function() {
+    user.updatePassword(self.state.new_password).then(function () {
       self.passwordUpdatedSuccessfully();
-    }).catch(function(error){
+    }).catch(function (error) {
       self.setErrorWithRef(self, error);
     });
   };
 
-  setError(message){
+  setError(message) {
     this.setState({
       alert_message: message,
       alert_visible: true,
@@ -88,7 +99,7 @@ class AccountSettings extends Component {
     });
   }
 
-  setErrorWithRef(self, message){
+  setErrorWithRef(self, message) {
     self.setState({
       alert_message: message.message,
       alert_visible: true,
@@ -96,7 +107,7 @@ class AccountSettings extends Component {
     });
   }
 
-  passwordUpdatedSuccessfully(){
+  passwordUpdatedSuccessfully() {
     let self = this;
     self.setState({
       alert_message: "Your password has been updated successfully.",
@@ -124,10 +135,10 @@ class AccountSettings extends Component {
       current_password
     );
 
-    user.reauthenticateWithCredential(credential).then(function() {
+    user.reauthenticateWithCredential(credential).then(function () {
       self.closeReauthenticate();
       self.updatePassword();
-    }).catch(function(error) {
+    }).catch(function (error) {
       self.closeReauthenticate();
       self.setErrorWithRef(self, error);
     });
@@ -140,26 +151,57 @@ class AccountSettings extends Component {
 
   closeReauthenticate = () => {
     let self = this;
-    self.setState( { reauthenticate_visible: false });
+    self.setState({ reauthenticate_visible: false });
   };
 
-  getEmail = () => {
-    return firebase.auth().currentUser.email;
+  getEmail = (uid) => {
+    let self = this;
+    axios.get(buildUrl(`/Cheddar/${uid}`))
+      .then(function (response) {
+        self.setState({
+          email: response.data.email
+        });
+
+      })
+      .catch((error) => {
+        console.log("User call did not work");
+        console.log(error);
+      });
   };
 
-  render(){
-    return(
+  countryToggle = () => {
+    this.setState({
+      countryOpen: !this.state.countryOpen,
+    });
+  };
+
+  selectState = (ev) => {
+    this.setState({
+      selectedState: ev.target.innerText,
+    });
+  };
+
+  componentDidMount() {
+    let tmp = this.getEmail(sessionStorage.getItem('user'));
+    let self = this;
+    self.setState({
+      emailBox: tmp
+    })
+  }
+
+  render() {
+    return (
 
       <div className="BigDivArea">
-        <div style={{height: '1em'}}/>
+        <div style={{ height: '1em' }} />
         <h3>Edit Account Settings</h3>
-        <hr/>
+        <hr />
 
         <Modal isOpen={this.state.modal_visible} toggle={this.closeModal}>
           <ModalHeader toggle={this.closeModal}> Are you sure you want to delete your account? </ModalHeader>
           <ModalBody>
             <p>This will delete all of your saved data!</p>
-            <hr/>
+            <hr />
             <Button color='danger' size='sm' onClick={this.deleteAccount}>Delete My Account and My Data</Button>
           </ModalBody>
         </Modal>
@@ -169,14 +211,14 @@ class AccountSettings extends Component {
           <ModalBody>
             <Form onSubmit={this.reauthenticate}>
               <Row>
-                <Col md='2'/>
+                <Col md='2' />
                 <Col md='8'>
-                  <Input type='password' id='currentpassword' bsSize='lg' placeholder='Current Password' style={{border: '1px solid #4682B4'}}/>
+                  <Input type='password' id='currentpassword' bsSize='lg' placeholder='Current Password' style={{ border: '1px solid #4682B4' }} />
                 </Col>
               </Row>
-              <div style={{height: '1em'}}/>
+              <div style={{ height: '1em' }} />
               <Row>
-                <Col md='3'/>
+                <Col md='3' />
                 <Col md='6'>
                   <Button className='signInButton' size='lg'>Confirm</Button>
                 </Col>
@@ -186,37 +228,54 @@ class AccountSettings extends Component {
         </Modal>
 
         <Row>
-          <Col md='4'/>
+          <Col md='2' />
           <Col md='4'>
-            <Input type='text' readOnly bsSize='lg' placeholder={this.getEmail()}/>
+            {this.state.email
+              ?
+              <Input type='text' readOnly bsSize='lg' placeholder={this.state.email} />
+              :
+              <div />
+            }
+          </Col>
+          <Col md='3'>
+            <Dropdown size='lg' isOpen={this.state.countryOpen} toggle={this.countryToggle}>
+              <DropdownToggle caret>{this.state.selectedState}</DropdownToggle>
+              <DropdownMenu>
+                {this.state.states.map((name, i) => {
+                  return (
+                    <DropdownItem key={i} onClick={this.selectState}>{this.state.states[i]}</DropdownItem>
+                  );
+                })}
+              </DropdownMenu>
+            </Dropdown>
           </Col>
         </Row>
 
-        <hr/>
+        <hr />
         <Form onSubmit={this.openReauth}>
           <Row>
-            <Col md='3'/>
+            <Col md='3' />
             <Col md='3'>
-              <Input type='password' id='newpassword' bsSize='lg' placeholder='New Password' style={{border: '1px solid #4682B4'}}/>
+              <Input type='password' id='newpassword' bsSize='lg' placeholder='New Password' style={{ border: '1px solid #4682B4' }} />
             </Col>
           </Row>
 
-          <div style={{height: '1em'}}/>
+          <div style={{ height: '1em' }} />
 
           <Row>
-            <Col md='3'/>
+            <Col md='3' />
             <Col md='3'>
-              <Input type='password' id='confirmpassword' bsSize='lg' placeholder='Confirm Password' style={{border: '1px solid #4682B4'}}/>
+              <Input type='password' id='confirmpassword' bsSize='lg' placeholder='Confirm Password' style={{ border: '1px solid #4682B4' }} />
             </Col>
             <Col md='3'>
               <Button className='signInButton' size='lg'> Update Password </Button>
             </Col>
           </Row>
 
-          <div style={{height: '1em'}}/>
+          <div style={{ height: '1em' }} />
 
           <Row>
-            <Col md='3'/>
+            <Col md='3' />
             <Col md='6'>
               <Alert color={this.state.alert_color} isOpen={this.state.alert_visible} toggle={this.onDismiss}>
                 {this.state.alert_message}
@@ -226,15 +285,25 @@ class AccountSettings extends Component {
 
         </Form>
 
-        <hr/>
-        <div style={{height: '1em'}}/>
+        <hr />
 
         <Row>
-          <Col md='4'/>
+          <Col md='4' />
           <Col md='4'>
             <Button color='danger' className='deleteButton' size='lg' onClick={this.confirmDelete}> Delete My Account </Button>
           </Col>
         </Row>
+
+        <hr />
+        <div style={{ height: '1em' }} />
+        <Row>
+          <Col md='4' />
+          <Col md='6'>
+            <ToggleButtons />
+          </Col>
+        </Row>
+
+
       </div>
 
     );

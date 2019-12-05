@@ -14,7 +14,8 @@ export const budgetCategorySchema = new mongoose.Schema({
   name: String,
   amount: Number,
   transactions: [mongoose.Schema.Types.ObjectId],
-  oldTransactions: []
+  oldTransactions: [],
+  percentage: Number
 });
 
 export const budgetSchema = new mongoose.Schema({
@@ -29,6 +30,7 @@ export const budgetSchema = new mongoose.Schema({
 
 export const eventsSchema = new mongoose.Schema({
   id: Number,
+  subId: Number,
   title: String,
   start: Date,
   end: Date,
@@ -36,7 +38,8 @@ export const eventsSchema = new mongoose.Schema({
   amount: Number,
   notify: Boolean,
   dismissed: Object,
-  emailed: Object
+  emailed: Object,
+  repeat: String
 });
 
 export const savingsSchema = new mongoose.Schema({
@@ -61,6 +64,7 @@ export const debtSchema = new mongoose.Schema({
 export const investmentSchema = new mongoose.Schema({
     type: String,
     startingInvestment: Number,
+    currentShareValue: Number,
     company: String,
     favorite: Boolean,
     shares: Number,
@@ -69,17 +73,18 @@ export const investmentSchema = new mongoose.Schema({
 
 export const allInvestmentsSchema = new mongoose.Schema({
     trackedCompanies: [String],
-    investments: [investmentSchema]
+    investments: [investmentSchema],
+    totalInvestment: Number,
 });
 
 export const retirementHistorySchema = new mongoose.Schema({
-    date: String,
-    amount: Number,
+  date: String,
+  amount: Number,
 });
 
 export const retirementSchema = new mongoose.Schema({
-    total: Number,
-    history: [retirementHistorySchema]
+  total: Number,
+  history: [retirementHistorySchema]
 });
 
 export const notificationScheduleSchema = new mongoose.Schema({
@@ -89,6 +94,18 @@ export const notificationScheduleSchema = new mongoose.Schema({
   day: Boolean,
   dayOf: Boolean,
   emailsEnabled: Boolean
+});
+
+export const toolTipScheduleSchema = new mongoose.Schema({
+  overview: Boolean,
+  budgets: Boolean,
+  saving: Boolean,
+  investments: Boolean,
+  debts: Boolean,
+  transactions: Boolean,
+  assets: Boolean,
+  retirement: Boolean,
+  tracker: Boolean
 });
 
 export const userSchema = new mongoose.Schema({
@@ -108,5 +125,6 @@ export const userSchema = new mongoose.Schema({
   debts: [debtSchema],
   investments: allInvestmentsSchema,
   retirement: retirementSchema,
-  notificationSchedule: notificationScheduleSchema
+  notificationSchedule: notificationScheduleSchema,
+  toolTips: toolTipScheduleSchema
 });

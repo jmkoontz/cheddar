@@ -3,6 +3,7 @@ import { Component } from 'react';
 import { Button } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import axios from 'axios';
+import buildUrl from "../../actions/connect";
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -106,7 +107,7 @@ class RepaymentDateCalc extends React.Component {
   }
 
   getDebts = () => {
-    axios.get(`http://localhost:8080/Cheddar/Debts/${this.state.userID}/`)
+    axios.get(buildUrl(`/Cheddar/Debts/${this.state.userID}/`))
       .then((response) => {
         this.setState({debtList: response.data})
       })

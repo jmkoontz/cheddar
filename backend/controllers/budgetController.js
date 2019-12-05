@@ -16,6 +16,7 @@ export default (app) => {
     let budget = {
       name: req.body.name,
       type: req.body.type,
+      endDate: req.body.endDate,
       income: req.body.income,
       timeFrame: req.body.timeFrame,
       favorite: req.body.favorite,
@@ -37,6 +38,7 @@ export default (app) => {
     let changes = {
       name: req.body.name,
       type: req.body.type,
+      endDate: req.body.endDate,
       income: req.body.income,
       favorite: req.body.favorite,
       budgetCategories: req.body.budgetCategories
@@ -64,7 +66,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // Unfavorite a budget
+  // unfavorite a budget
   app.put('/Cheddar/Budgets/Unfavorite/:uid/:budgetName', async (req, res) => {
     let data;
     try {
@@ -141,7 +143,7 @@ export default (app) => {
     try {
       data = await getAllBudgets(req.params.uid, true);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -279,13 +281,13 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // get old transactions for a specific time period
+  // get old transactions for a specific budget period
   app.get('/Cheddar/Budgets/Budget/OldTransactions/:uid/:budgetName/:index', async (req, res) => {
     let data;
     try {
       data = await getOldTransactions(req.params.uid, req.params.budgetName, req.params.index);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);
@@ -297,7 +299,7 @@ export default (app) => {
     try {
       data = await transferOldTransactions(req.params.uid);
     } catch (err) {
-      data = {error: parseError(err)};
+      data = { error: parseError(err) };
     }
 
     buildResponse(res, data);

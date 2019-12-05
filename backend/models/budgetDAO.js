@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
-import {userModel} from '../utilities/mongooseModels';
-import {addTransaction, getTransactions} from './transactionDAO';
+import { userModel } from '../utilities/mongooseModels';
+import { addTransaction, getTransactions } from './transactionDAO';
 
 export async function getAllBudgets(uid, external) {
   const returnClause = {
-    '_id': 0, // exclude _id
+    '_id': 1, // include _id
     'budgets': 1
   };
 
@@ -13,7 +13,7 @@ export async function getAllBudgets(uid, external) {
   if (external)
     await transferOldTransactions(uid);
 
-  return userModel.findOne({_id: uid}, returnClause)
+  return userModel.findOne({ _id: uid }, returnClause)
     .then((user) => {
       if (user && user.budgets)
         return Promise.resolve(user.budgets);
@@ -27,11 +27,11 @@ export async function getAllBudgets(uid, external) {
 
 export function getBudgetNames(uid) {
   const returnClause = {
-    '_id': 0, // exclude _id
+    '_id': 1, // exclude _id
     'budgets.name': 1
   };
 
-  return userModel.findOne({_id: uid}, returnClause)
+  return userModel.findOne({ _id: uid }, returnClause)
     .then((user) => {
       if (user && user.budgets) {
         let namesList = [];
@@ -62,7 +62,11 @@ export function getBudget(uid, budgetName) {
   return userModel.findOne(findClause, returnClause)
     .then((user) => {
       if (user && user.budgets) {
-        return Promise.resolve(user.budgets[0]);
+        for (let i in user.budgets) {
+          if (user.budgets[i].name == budgetName) {
+            return Promise.resolve(user.budgets[i]);
+          };
+        }
       } else {
         return Promise.reject('UserError: User or budget not found');
       }
@@ -75,11 +79,11 @@ export function getBudget(uid, budgetName) {
 export function getBudgetCategoryNames(uid, budgetName) {
   const returnClause = {
     '_id': 0, // exclude _id
-    'budgets': {'$elemMatch': {'name': budgetName}},
+    'budgets': { '$elemMatch': { 'name': budgetName } },
     'budgets.budgetCategories.name': 1
   };
 
-  return userModel.findOne({_id: uid}, returnClause)
+  return userModel.findOne({ _id: uid }, returnClause)
     .then((user) => {
       if (user && user.budgets && user.budgets[0].budgetCategories) {
         let namesList = [];
@@ -99,6 +103,9 @@ export function getBudgetCategoryNames(uid, budgetName) {
 export async function createBudget(uid, budget) {
   for (let i in budget) {
     if (budget.hasOwnProperty(i)) {
+      if (i === 'endDate' && budget.type !== 'Fixed Amount')
+        continue;
+
       if (budget[i] === undefined)
         return Promise.reject('UserError: One or more fields are missing');
       else if (budget[i] === '')
@@ -118,26 +125,64 @@ export async function createBudget(uid, budget) {
   if (budgetNames.includes(budget.name))
     return Promise.reject('UserError: Budget with name \"' + budget.name + '\" already exists');
 
+  // protect against duplicate category names
+  for (let i in budget.budgetCategories) {
+    for (let j in budget.budgetCategories) {
+      if (budget.budgetCategories[i].name.length === 0)
+        return Promise.reject('UserError: Every budget category must have a name');
+
+      if (i !== j) {
+        if (budget.budgetCategories[i].name.toLowerCase() === budget.budgetCategories[j].name.toLowerCase())
+          return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
+      }
+    }
+  }
+
+  if (budget.type === 'Percentage-Based') {
+    let totalPercentage = 0;
+    for (let i in budget.budgetCategories) {
+      totalPercentage += budget.budgetCategories[i].percentage;
+
+      if (totalPercentage > 100)
+        return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
+
+      if (budget.budgetCategories[i].percentage === 0)
+        return Promise.reject('UserError: Each category must have at least 1 percent of income allocated to it');
+    }
+  }
+
   // set update date for budget
-  let currentDate = new Date(Date.now());
-  currentDate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), currentDate.getDate());
-  if (budget.timeFrame === 'monthly') {
-    if (currentDate.getUTCMonth() === 11)
-      budget.nextUpdate = new Date(currentDate.getFullYear() + 1, 0, 1);
-    else
-      budget.nextUpdate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth() + 1, 1);
-  } else if (budget.timeFrame === 'biweekly') {
-    const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
-    budget.nextUpdate = new Date(Date.parse(currentDate) + twoWeeksOffset);
-  } else if (budget.timeFrame === 'weekly') {
-    const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
-    budget.nextUpdate = new Date(Date.parse(currentDate) + oneWeekOffset);
+  if (budget.type === 'Fixed Amount') {
+    const oneDayOffset = 1000 * 60 * 60 * 24;
+    budget.endDate = new Date(budget.endDate);
+
+    if (budget.endDate < new Date(Date.now()))
+      return Promise.reject('UserError: Fixed Amount budget cannot have have an end date earlier than the current date');
+
+    budget.endDate = new Date(budget.endDate.getFullYear(), budget.endDate.getUTCMonth(), budget.endDate.getDate());
+    budget.nextUpdate = new Date(Date.parse(budget.endDate) + oneDayOffset);
+    delete budget.endDate;  // remove endDate before creating budget
+  } else {
+    let currentDate = new Date(Date.now());
+    currentDate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth(), currentDate.getDate());
+    if (budget.timeFrame === 'monthly') {
+      if (currentDate.getUTCMonth() === 11)
+        budget.nextUpdate = new Date(currentDate.getFullYear() + 1, 0, 1);
+      else
+        budget.nextUpdate = new Date(currentDate.getFullYear(), currentDate.getUTCMonth() + 1, 1);
+    } else if (budget.timeFrame === 'biweekly') {
+      const twoWeeksOffset = 1000 * 60 * 60 * 24 * 14;
+      budget.nextUpdate = new Date(Date.parse(currentDate) + twoWeeksOffset);
+    } else if (budget.timeFrame === 'weekly') {
+      const oneWeekOffset = 1000 * 60 * 60 * 24 * 7;
+      budget.nextUpdate = new Date(Date.parse(currentDate) + oneWeekOffset);
+    }
   }
 
   return userModel.findOneAndUpdate(
-    {_id: uid},
-    {'$addToSet': {'budgets': budget}},
-    {'new': true})
+    { _id: uid },
+    { '$addToSet': { 'budgets': budget } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User not found');
@@ -150,7 +195,7 @@ export async function createBudget(uid, budget) {
 }
 
 export async function editBudget(uid, budgetName, changes) {
-  let updateClause = {$set: {}};
+  let updateClause = { $set: {} };
 
   if (changes.name !== "") {
     // get names of budgets
@@ -176,13 +221,51 @@ export async function editBudget(uid, budgetName, changes) {
   if (changes.income)
     updateClause.$set['budgets.$.income'] = changes.income;
 
-  if (changes.budgetCategories)
+  if (changes.budgetCategories) {
+    // protect against duplicate category names
+    for (let i in changes.budgetCategories) {
+      for (let j in changes.budgetCategories) {
+        if (changes.budgetCategories[i].name.length === 0)
+          return Promise.reject('UserError: Every budget category must have a name');
+
+        if (i !== j) {
+          if (changes.budgetCategories[i].name.toLowerCase() === changes.budgetCategories[j].name.toLowerCase())
+            return Promise.reject('UserError: Budget cannot have multiple categories of the same name');
+        }
+      }
+    }
+
+    if (changes.type === 'Percentage-Based') {
+      let totalPercentage = 0;
+      for (let i in changes.budgetCategories) {
+        totalPercentage += changes.budgetCategories[i].percentage;
+
+        if (totalPercentage > 100)
+          return Promise.reject('UserError: Percentage-Based budget cannot have over 100 percent of income allocated');
+
+        if (changes.budgetCategories[i].percentage === 0)
+          return Promise.reject('UserError: Each category must have at least 1 percent of income allocated to it');
+      }
+    }
+
     updateClause.$set['budgets.$.budgetCategories'] = changes.budgetCategories;
+  }
+
+  if (changes.endDate && changes.type === 'Fixed Amount') {
+    const oneDayOffset = 1000 * 60 * 60 * 24;
+    changes.endDate = new Date(changes.endDate);
+
+    if (changes.endDate < new Date(Date.now()))
+      return Promise.reject('UserError: Fixed Amount budget cannot have have an end date earlier than the current date');
+
+    changes.endDate = new Date(changes.endDate.getFullYear(), changes.endDate.getUTCMonth(), changes.endDate.getDate());
+    updateClause.$set['budgets.$.nextUpdate'] = new Date(Date.parse(changes.endDate) + oneDayOffset);
+  }
 
   return userModel.findOneAndUpdate(
     findClause,
     updateClause,
-    {'new': true})
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -219,8 +302,8 @@ export async function favoriteBudget(uid, budgetName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$set': {'budgets': budgets}},
-    {'new': true})
+    { '$set': { 'budgets': budgets } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -241,8 +324,8 @@ export function unfavoriteBudget(uid, budgetName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$set': {'budgets.$.favorite': false}},
-    {'new': true})
+    { '$set': { 'budgets.$.favorite': false } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -256,9 +339,9 @@ export function unfavoriteBudget(uid, budgetName) {
 
 export function deleteBudget(uid, budgetName) {
   return userModel.findOneAndUpdate(
-    {'_id': uid},
-    {'$pull': {'budgets': {'name': budgetName}}},
-    {'new': true})
+    { '_id': uid },
+    { '$pull': { 'budgets': { 'name': budgetName } } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -299,8 +382,8 @@ export async function addBudgetCategory(uid, budgetName, category) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$addToSet': {'budgets.$.budgetCategories': category}},
-    {'new': true})
+    { '$addToSet': { 'budgets.$.budgetCategories': category } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User not found');
@@ -313,7 +396,7 @@ export async function addBudgetCategory(uid, budgetName, category) {
 }
 
 export async function editBudgetCategory(uid, budgetName, categoryName, changes) {
-  let updateClause = {$set: {}};
+  let updateClause = { $set: {} };
 
   if (changes.name) {
     // get names of budget categories
@@ -335,12 +418,12 @@ export async function editBudgetCategory(uid, budgetName, categoryName, changes)
     updateClause.$set['budgets.$[budget].budgetCategories.$[category].amount'] = changes.amount;
 
   const options = {
-    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'arrayFilters': [{ 'budget.name': budgetName }, { 'category.name': categoryName }],
     'new': true
   };
 
   return userModel.findOneAndUpdate(
-    {'_id': uid},
+    { '_id': uid },
     updateClause,
     options)
     .then((updatedUser) => {
@@ -362,8 +445,8 @@ export function deleteBudgetCategory(uid, budgetName, categoryName) {
 
   return userModel.findOneAndUpdate(
     findClause,
-    {'$pull': {'budgets.$.budgetCategories': {'name': categoryName}}},
-    {'new': true})
+    { '$pull': { 'budgets.$.budgetCategories': { 'name': categoryName } } },
+    { 'new': true })
     .then((updatedUser) => {
       if (updatedUser == null)
         return Promise.reject('UserError: User or budget not found');
@@ -388,13 +471,13 @@ export function addTransactionToBudget(uid, budgetName, categoryName, transactio
   transaction._id = new mongoose.Types.ObjectId();
 
   const options = {
-    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'arrayFilters': [{ 'budget.name': budgetName }, { 'category.name': categoryName }],
     'new': true
   };
 
   return userModel.findOneAndUpdate(
-    {'_id': uid},
-    {'$push': {'budgets.$[budget].budgetCategories.$[category].transactions': transaction._id}},
+    { '_id': uid },
+    { '$push': { 'budgets.$[budget].budgetCategories.$[category].transactions': transaction._id } },
     options)
     .then(async (updatedUser) => {
       if (updatedUser == null)
@@ -415,13 +498,13 @@ export function addTransactionToBudget(uid, budgetName, categoryName, transactio
 
 export function removeTransactionFromBudget(uid, budgetName, categoryName, transactionId) {
   const options = {
-    'arrayFilters': [{'budget.name': budgetName}, {'category.name': categoryName}],
+    'arrayFilters': [{ 'budget.name': budgetName }, { 'category.name': categoryName }],
     'new': true
   };
 
   return userModel.findOneAndUpdate(
-    {'_id': uid},
-    {'$pull': {'budgets.$[budget].budgetCategories.$[category].transactions':  mongoose.Types.ObjectId(transactionId)}},
+    { '_id': uid },
+    { '$pull': { 'budgets.$[budget].budgetCategories.$[category].transactions': mongoose.Types.ObjectId(transactionId) } },
     options)
     .then((updatedUser) => {
       if (updatedUser == null)
@@ -437,12 +520,12 @@ export function removeTransactionFromBudget(uid, budgetName, categoryName, trans
 export function getTransactionsInBudgetCategory(uid, budgetName, categoryName) {
   const returnClause = {
     '_id': 0, // exclude _id
-    'budgets': {'$elemMatch': {'name': budgetName, 'budgetCategories.name': categoryName}},
+    'budgets': { '$elemMatch': { 'name': budgetName, 'budgetCategories.name': categoryName } },
     'budgets.budgetCategories': 1
   };
 
   return userModel.findOne(
-    {'_id': uid},
+    { '_id': uid },
     returnClause)
     .then(async (user) => {
       if (user && user.budgets && user.budgets[0].budgetCategories) {
@@ -501,12 +584,12 @@ export async function getTransactionsInBudgetCategoryAndDateRange(uid, budgetNam
 export function getTransactionsInBudget(uid, budgetName) {
   const returnClause = {
     '_id': 0, // exclude _id
-    'budgets': {'$elemMatch': {'name': budgetName}},
+    'budgets': { '$elemMatch': { 'name': budgetName } },
     'budgets.budgetCategories': 1
   };
 
   return userModel.findOne(
-    {'_id': uid},
+    { '_id': uid },
     returnClause)
     .then(async (user) => {
       if (user && user.budgets && user.budgets[0].budgetCategories) {
@@ -554,7 +637,9 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
     return Promise.reject('UserError: No start date specified');
 
   let transactions = [];
+  let budget = {};
   try {
+    budget = await getBudget(uid, budgetName);
     transactions = await getTransactionsInBudget(uid, budgetName);
   } catch (error) {
     return Promise.reject(error);
@@ -571,8 +656,41 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
   let startDate = new Date(dateRange.startYear, dateRange.startMonth, dateRange.startDay);
   let endDate = new Date(dateRange.endYear, dateRange.endMonth, dateRange.endDay);
 
-  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
+  // Determine max index based on user's start date
+  let maxIndex = 0;
+  for (let i in budget.budgetCategories) {
+    if (budget.budgetCategories[i].oldTransactions) {
+      for (let j in budget.budgetCategories[i].oldTransactions) {
+        if (new Date(budget.budgetCategories[i].oldTransactions[j].startDate) <= startDate || j == budget.budgetCategories[i].oldTransactions.length-1) {
+          if (maxIndex < j) {
+            maxIndex = j;
+          }
+          break;
+        }
+      }
+    }
+  }
 
+  // Loop through and call getOldTransactions for each index based on startDate
+
+  for (let i = 0; i <= maxIndex; i++) {
+    let tmp = [];
+    try {
+      tmp = await getOldTransactions(uid, budgetName, i);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+
+    // append new transactions to the list
+    for (let i in tmp) {
+      transactions.push(tmp[i])
+    }
+  }
+
+  //console.log(transactions);
+
+  transactions = transactions.filter((t) => t.date >= startDate && t.date <= endDate);
+  //console.log(transactions);
   return Promise.resolve(transactions);
 }
 
@@ -583,6 +701,9 @@ export async function getOldTransactions(uid, budgetName, index) {
   } catch (error) {
     return Promise.reject(error);
   }
+
+  if (budget.type === 'Fixed Amount')
+    return Promise.resolve([]);
 
   let transactions = [];
   let transactionIdList = [];
@@ -629,7 +750,7 @@ export async function transferOldTransactions(uid) {
   let modified = false;
   for (let i in budgets) {
     // legacy compatibility
-    if (!budgets[i].nextUpdate || budgets[i].type !== 'Custom')
+    if (!budgets[i].nextUpdate || budgets[i].type === 'Fixed Amount')
       continue;
 
     if (budgets[i].nextUpdate <= new Date(Date.now())) {
@@ -677,9 +798,9 @@ export async function transferOldTransactions(uid) {
 
     if (modified) {
       return userModel.findOneAndUpdate(
-        {'_id': uid},
-        {'$set': {budgets: budgets}},
-        {'new': true})
+        { '_id': uid },
+        { '$set': { budgets: budgets } },
+        { 'new': true })
         .then((updatedUser) => {
           if (updatedUser == null)
             return Promise.reject('UserError: User not found');

@@ -7,6 +7,7 @@ import Notifications from "../Notifications/Notifications";
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Calendar.css';
+import buildUrl from "../../actions/connect";
 
 const localizer = momentLocalizer(moment);
 
@@ -29,13 +30,13 @@ class EventCalendar extends React.Component {
   };
 
   displayEvents = () => {
-    axios.get('http://localhost:8080/Cheddar/Calendar/' + sessionStorage.getItem('user')).then((resp) => {
+    axios.get(buildUrl('/Cheddar/Calendar/' + sessionStorage.getItem('user'))).then((resp) => {
       this.setState({
         events: resp.data
       });
     });
 
-    axios.get('http://localhost:8080/Cheddar/Calendar/notifications/' + sessionStorage.getItem('user')).then((resp) => {
+    axios.get(buildUrl('/Cheddar/Calendar/notifications/' + sessionStorage.getItem('user'))).then((resp) => {
       this.notifications.current.clear();
 
       for (let i = 0; i < resp.data.length; i++) {

@@ -8,7 +8,7 @@ function DateFinder(props) {
   const [localEnd, setLocalEnd] = useState(); // Ending date
   const [localStart, setLocalStart] = useState(); // Starting date
   const [budgetDrop, setBudgetDrop] = useState(); // Opens and closes budgets
-  const [selectedBudget, setSelectedBudget] = useState("All Budgets");  // What budget to retrieve transactions from
+  const [selectedBudget, setSelectedBudget] = useState("All Current Budgets");  // What budget to retrieve transactions from
 
   /**
    * Set state and prop start date
@@ -31,12 +31,9 @@ function DateFinder(props) {
    */
   const handleFetch = () => {
 
-    if (selectedBudget === "All Budgets") {
+
       props.getTimeTransactions();
-    } else {
-      console.log(selectedBudget)
-      props.getBudgetTransactions(selectedBudget)
-    }
+
   }
 
   return (
@@ -68,26 +65,9 @@ function DateFinder(props) {
           </Col>
         </Row>
         <Row className="padTop">
-          
-          <Col sm={6}>
-            <Label for="budgetName">Select a Budget</Label>
-            <Dropdown id="budgetName" isOpen={budgetDrop} toggle={() => setBudgetDrop(!budgetDrop)}>
-              <DropdownToggle caret>
-                {selectedBudget}
-              </DropdownToggle>
-              {props.budgetList
-              ?
-              <DropdownMenu>
-                {props.budgetList.map((item, index) =>
-                  <DropdownItem key={index} onClick={() => {setSelectedBudget(item.name); props.setSelectedBudget(item)}}>{item.name}</DropdownItem>
-                )}
-              </DropdownMenu>
-              :
-              <DropdownMenu/>
-              }
-            </Dropdown>
-          </Col>
-          <Col sm={6}>
+
+
+          <Col sm={12}>
             {props.startDate && props.endDate && props.endDate.getTime() > props.startDate.getTime()
               ?
               <Button color="primary" onClick={handleFetch}>Get Transactions</Button>

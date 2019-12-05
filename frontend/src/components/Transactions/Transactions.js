@@ -7,9 +7,87 @@ import DateFinder from "./DateFinder";
 import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
 import '../../css/Transactions.css';
+import buildUrl from "../../actions/connect";
+import TipSequence from '../TipSequence/TipSequence';
 
 
 function Transactions() {
+
+ /**
+ * Helper method to show each data point on the chart
+ * @param {Object} e
+ */
+	const showHoverData = (e) => {
+		setHoverData(e.target.category);
+	}
+	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
+	const tmpChart = {
+		title: {
+			text: "Daily Spending Chart"
+		},
+		xAxis: {
+			type: 'datetime',
+			dateTimeLabelFormats: {
+				day: '%b %e'
+			}
+		},
+		yAxis: {
+			title: {
+				text: 'Money Spent'
+			}
+		},
+		series: [{
+			pointStart: new Date(),
+			pointInterval: 24 * 3600 * 1000, // one day
+			animation: {
+				duration: 2000
+			}
+		}],
+
+		plotOptions: {
+			series: {
+				point: {
+					events: {
+						mouseOver: showHoverData
+					}
+				}
+			}
+		}
+	}
+
+	const totalChart = {
+		title: {
+			text: "Total Spending Chart"
+		},
+		xAxis: {
+			type: 'datetime',
+			dateTimeLabelFormats: {
+				day: '%b %e'
+			}
+		},
+		yAxis: {
+			title: {
+				text: 'Money Spent'
+			}
+		},
+		series: [{
+			pointStart: new Date(),
+			pointInterval: 24 * 3600 * 1000, // one day
+			animation: {
+				duration: 2000
+			}
+		}],
+
+		plotOptions: {
+			series: {
+				point: {
+					events: {
+						mouseOver: showHoverData
+					}
+				}
+			}
+		}
+	}
 
 	const [userID, setUID] = useState(sessionStorage.getItem('user'));
 	// Transactions and date states
@@ -21,22 +99,17 @@ function Transactions() {
 	const [endDate, setEndDate] = useState(); // Time the backend understand
 	const [startDate, setStartDate] = useState(); // Time the backend understand     new Date((new Date()).getTime() - (24 * 3600 * 1000))
 	// Chart states
-	const [hoverData, setHoverData] = useState(); // Show the value at each point when hovered over
 	const [dayList, setDayList] = useState(); // Array of each day's spending
 	const [chartData, setChartData] = useState(); // Obj containing chart info
 	const [totalChartData, setTotalChartData] = useState();	// Obj containing total chart data
+	const [chartDefault, setChartDefault] = useState(tmpChart);
+	const [totalChartDefault, setTotalChartDefault] = useState(totalChart);
 	// Error states
 	const [error, setError] = useState(); // Error message
 	// Utility states
 	const [loading, setLoading] = useState(false); // Stops page from loading is a server call is running
 
-	/**
-	 * Helper method to show each data point on the chart
-	 * @param {Object} e 
-	 */
-	const showHoverData = (e) => {
-		setHoverData(e.target.category);
-	}
+
 
 
 	/**
@@ -77,8 +150,6 @@ function Transactions() {
 
 		}
 
-		// Variable to keep track of how much was spent in this budget before the given time frame
-		//let preTotal = 0;
 		// Loop over transactions and add their amount to to coresponding daysArray index
 		for (let x = 0; x < transactionsList.length; x++) {
 			// Add each transaction into its respective array index
@@ -93,8 +164,6 @@ function Transactions() {
 			}
 
 		}
-
-		console.log(runningTotal);
 
 		for (let y = 0; y < daysArray.length; y++) {
 			runningTotal += daysArray[y];
@@ -216,12 +285,12 @@ function Transactions() {
 	const getTimeTransactions = () => {
 
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
-		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()+1}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
+		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
 			.then(function (response) {
-				// handle success				
+				// handle success
 				for (let i in response.data) {
 					let date = new Date(response.data[i].date);
 					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
@@ -243,7 +312,11 @@ function Transactions() {
  	*/
 	const getBudgetTransactions = (name) => {
 
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/${userID}/${name}`)
+		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
+		let query = queryOne + queryTwo;
+
+		axios.get(buildUrl(`/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`))
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
@@ -279,15 +352,23 @@ function Transactions() {
 	};
 
 	/**
+	 * Server call to get archived data for all budgets
+	 */
+	//const
+
+	/**
 	 * Server call to get all Budgets
 	 */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
 			.then(function (response) {
 				// handle success
 
 				setBudgetList([...response.data, { name: "All Budgets" }]);
+				for (let i in response.data) {
+
+				}
 				setRawBudgetList(response.data);
 				setLoading(false);
 			})
@@ -334,7 +415,7 @@ function Transactions() {
 			<h3 className="addSpace">Transactions</h3>
 			<Row className="padTop">
 				<Col sm={1} />
-				<Col sm={5}>
+				<Col sm={5} id={"transaction-dailyChart"}>
 					{dayList
 						?
 						<HighchartsReact
@@ -343,18 +424,21 @@ function Transactions() {
 							options={chartData}
 						/>
 						:
-						<div />
+						<HighchartsReact
+							allowChartUpdate={true}
+							highcharts={Highcharts}
+							options={chartDefault} />
 					}
 				</Col>
 				<Col sm={1} />
-				<Col sm={4} >
+				<Col sm={4}>
 					<DateFinder {...propData} />
 				</Col>
 				<Col sm={1} />
 			</Row>
 			<Row>
 				<Col sm={1} />
-				<Col sm={5}>
+				<Col sm={5} id={"transaction-totalChart"}>
 					{dayList
 						?
 						<HighchartsReact
@@ -363,19 +447,16 @@ function Transactions() {
 							options={totalChartData}
 						/>
 						:
-						<div />
+						<HighchartsReact
+							allowChartUpdate={true}
+							highcharts={Highcharts}
+							options={totalChartDefault} />
 					}
 
 				</Col>
 				<Col sm={1} />
 				<Col sm={4} >
-					{!loading
-						?
-						<SelectBudgetForm {...propData} />
-						:
-						<div />
-					}
-
+					<SelectBudgetForm {...propData} />
 				</Col>
 				<Col sm={1} />
 			</Row>
@@ -384,14 +465,34 @@ function Transactions() {
 				<Col sm={10}>
 					{!loading
 						?
-						<TransactionTable {...propData} transactions={transactions} />
+						<TransactionTable {...propData} parent={"transactions"} curBudget={selectedBudget} transactions={transactions} />
 						:
-						<div />
+						<div id={"transaction-table"}/>
 					}
 				</Col>
 				<Col sm={1} />
 			</Row>
-
+			<TipSequence
+          page={"transactions"}
+          tips={[
+            {
+              text: "Enter a start date, end date, and a budget.  Then click 'Get Transactions' to view your transactions",
+              target: "transaction-finder"
+            }, {
+              text: "After entering a date range, a graph will display here to show you your daily spending habits",
+              target: "transaction-dailyChart"
+            }, {
+              text: "After entering a date range, a graph will display here to show you your total spending habits",
+              target: "transaction-totalChart"
+            }, {
+              text: "To add a new transaction, enter a budget, category, name, date, and amount then click 'Submit'",
+              target: "transaction-add"
+            }, {
+              text: "To view a list of transactions in your selected date range, click the 'View Transactions' button",
+              target: "transaction-table"
+            },
+          ]}
+        />
 		</div>
 	);
 

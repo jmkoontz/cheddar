@@ -5,6 +5,7 @@ import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 import DatePicker from "react-datepicker";
 import axios from 'axios';
 import '../../css/Budgets.css';
+import buildUrl from "../../actions/connect";
 
 function TransactionTable(props) {
   const [transactions, setTransactions] = useState(); // array of transactions to display
@@ -24,15 +25,31 @@ function TransactionTable(props) {
   const [transactionName, setTransactionName] = useState(""); // The edited name of a transaction
   const [transactionAmount, setTransactionAmount] = useState(""); // The edited amount of a transaction
   const [transactionDate, setTransactionDate] = useState(); // The edited date to send
+  const [earliestDay, setEarliestDay] = useState(); // Day to show whether or not a transaction can be edited or deleted
+
 
   let allTransactions = []; // array of all transactions
 
   useEffect(
     () => {
       if (props.transactions) {
-        console.log(props.transactions)
         setTransactions(props.transactions);
         allTransactions = props.transactions;
+      }
+
+      if (props.curBudget.timeFrame) {
+        let frame = props.curBudget.timeFrame;
+        let nextUpdate = new Date(props.curBudget.nextUpdate);
+        let initialDay;
+        if (frame === "monthly") {
+          initialDay = new Date(nextUpdate - 2629800000);
+        } else if (frame === "biweekly") {
+          initialDay = new Date(nextUpdate - 1314900000);
+        } else if (frame === "weekly") {
+          initialDay = new Date(nextUpdate - 657450000);
+        }
+
+        setEarliestDay(initialDay);
       }
     },
     [props]
@@ -157,7 +174,7 @@ function TransactionTable(props) {
       date: transactionDate
     }
 
-    axios.put(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`,
+    axios.put(buildUrl(`/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`),
       tmpObj
     )
       .then((response) => {
@@ -172,7 +189,7 @@ function TransactionTable(props) {
 
   // server call to delete a transaction
   const deleteTransaction = () => {
-    axios.delete(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`)
+    axios.delete(buildUrl(`/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`))
       .then((response) => {
         // Handle success
         closeHandler();
@@ -186,8 +203,8 @@ function TransactionTable(props) {
   return (
     <div>
       <Row>
-        <Col sm="3">
-          <Button onClick={toggle} className="tableButton">
+        <Col sm="3" id={"transaction-table"}>
+          <Button id={"Popover6" + props.itemName} onClick={toggle} className="tableButton">
             {collapse ? 'Hide Transactions' : 'View Transactions'}
           </Button>
         </Col>
@@ -214,8 +231,8 @@ function TransactionTable(props) {
                 <span hidden={sortKey !== 'category' || !sortCategoryAsc}><FontAwesomeIcon icon={faCaretUp} /></span>
                 <span hidden={sortKey !== 'category' || sortCategoryAsc}><FontAwesomeIcon icon={faCaretDown} /></span>
               </th>
-              <th hidden={props.budgetPeriodIndex >= 0} className="tableHeader" >Edit{' '}</th>
-              <th hidden={props.budgetPeriodIndex >= 0} className="tableHeader" >Delete{' '}</th>
+              <th hidden={props.budgetPeriodIndex >= 0 || props.isDisabled} className="tableHeader" >Edit{' '}</th>
+              <th hidden={props.budgetPeriodIndex >= 0 || props.isDisabled} className="tableHeader" >Delete{' '}</th>
             </tr>
           </thead>
           <tbody>
@@ -226,14 +243,34 @@ function TransactionTable(props) {
                 <td>${transactions[index].amount.toFixed(2)}</td>
                 <td>{transactions[index].shortDate}</td>
                 <td>{transactions[index].category}</td>
-                <td hidden={props.budgetPeriodIndex >= 0}><Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
-                <td hidden={props.budgetPeriodIndex >= 0}><Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+
+                {props.parent === "budgets"
+                  ?
+                  <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}> <Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                  : props.parent === "transactions" && earliestDay <= new Date(transactions[index].date)
+                    ?
+                    <td> <Button color="primary" onClick={() => editHandler(index)}>Edit</Button></td>
+                    :
+                    <td />
+                }
+
+                {props.parent === "budgets"
+                  ?
+                  <td hidden={props.budgetPeriodIndex >= 0 || props.isDisabled}> <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                  : props.parent === "transactions" && earliestDay <= new Date(transactions[index].date)
+                    ?
+                    <td> <Button color="danger" onClick={() => deleteHandler(index)}>Delete</Button></td>
+                    :
+                    <td />
+                }
+
+
               </tr>
             }
             )}
           </tbody>
         </Table>
-      </Collapse>
+      </Collapse >
       <Modal isOpen={modal} toggle={closeHandler}>
         {editMode
           ?
