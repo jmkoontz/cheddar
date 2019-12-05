@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { Row, Col } from 'reactstrap';
-import SelectBudgetForm from '../Transactions/SelectBudgetForm';
-import DateFinder from "../Transactions/DateFinder";
+import SelectBudgetForm from './SelectBudgetForm';
+import DateFinder from "./DateFinder";
 import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
 import '../../css/Transactions.css';
@@ -31,13 +31,14 @@ function Transactions() {
 	const [loading, setLoading] = useState(false); // Stops page from loading is a server call is running
 
 	let transactions = [];
-	let categories = [[],[],[],[],[],[],[],[]];
-	let categoryAmounts = [0,0,0,0,0,0,0,0];
-	let categoryNames = ["Entertainment", "Food and Groceries", "Savings", "Debt", "Housing", "Gas", "Utilities", "Other"];
-	let transNames = [[], [], [], [], [], [], [], []];
+	let categories = [[],[],[],[],[],[],[]];
+	let categoryAmounts = [0,0,0,0,0,0,0];
+	let categoryNames = ["Entertainment", "Food and Groceries", "Savings", "Debt", "Housing", "Gas", "Utilities"];
+	let transNames = [[], [], [], [], [], [], []];
 
 	const calcTotals = () => {
 		let totalTitle = "Total Spending";
+		console.log(transactions);
 
 		for (let x = 0; x < budgetList.length - 1; x++) {
 			for(let y = 0; y < budgetList[x].budgetCategories.length; y++) {
@@ -61,9 +62,6 @@ function Transactions() {
 				}
 				else if(budgetList[x].budgetCategories[y].name === "Utilities") {
 					categoryAmounts[6] += budgetList[x].budgetCategories[y].amount;
-				}
-				else if(budgetList[x].budgetCategories[y].name === "Other") {
-					categoryAmounts[7] += budgetList[x].budgetCategories[y].amount;
 				}
 				else {
 					for(let i = 0; i < categoryNames.length; i++) {
@@ -108,10 +106,6 @@ function Transactions() {
 								categories[6].push(transactions[k].amount);
 								transNames[6].push(transactions[k].name);
 							}
-							else if(budgetList[x].budgetCategories[y].name === "Other") {
-								categories[7].push(transactions[k].amount);
-								transNames[7].push(transactions[k].name);
-							}
 							else {
 								for(let i = 0; i < categoryNames.length; i++) {
 									if(budgetList[x].budgetCategories[y].name === categoryNames[i]) {
@@ -132,7 +126,10 @@ function Transactions() {
 
 		for(let a = 0; a < categories.length; a++) {
 			for(let b = 0; b < categories[a].length; b++) {
-				let data = [0,0,0,0,0,0,0,0];
+				let data = [];
+				for(let c = 0; c < categories.length; c++) {
+					data.push(0);
+				}
 				data[a] = categories[a][b]
 				let newobj = {
 					name: transNames[a][b],
@@ -200,30 +197,30 @@ function Transactions() {
 	/**
 	 * Server call to get all transactions in a given time frame
 	 */
-	const getTimeTransactions = () => {
+	 const getTimeTransactions = () => {
 
-		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
-		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate()+1}`;
-		let query = queryOne + queryTwo;
+ 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
+ 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
+ 		let query = queryOne + queryTwo;
 
-		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
-			.then(function (response) {
-				// handle success
-				for (let i in response.data) {
-					let date = new Date(response.data[i].date);
-					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-					//console.log(response.data[i].shortDate);
-				}
+ 		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
+ 			.then(function (response) {
+ 				// handle success
+ 				for (let i in response.data) {
+ 					let date = new Date(response.data[i].date);
+ 					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+ 					//console.log(response.data[i].shortDate);
+ 				}
 				// Update the transaction state
 				transactions = response.data;
 				calcTotals();
 
-			})
-			.catch((error) => {
-				console.log("Transaction call did not work");
-				console.log(error);
-			});
-	};
+ 			})
+ 			.catch((error) => {
+ 				console.log("Transaction call did not work");
+ 				console.log(error);
+ 			});
+ 	};
 
 	/**
 	 * Server call to get all Budgets
@@ -291,8 +288,8 @@ function Transactions() {
 				<Col sm={1} />
 			</Row>
 			<Row>
-				<Col sm={4} />
-				<Col sm={4}>
+				<Col sm={2} />
+				<Col sm={8}>
 
 						<HighchartsReact
 							allowChartUpdate={true}
