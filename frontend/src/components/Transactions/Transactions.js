@@ -310,18 +310,19 @@ function Transactions() {
 	/**
  	* Server call to get all the transaction data for a specific budget in the database
  	*/
-	const getBudgetTransactions = (name) => {
+	const getBudgetTransactions = (budgetName) => {
 
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-		axios.get(buildUrl(`/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`))
+		console.log(budgetName)
+		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${budgetName}?${query}`)
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
 					// Get current budget
-					if (response.data[i].name === name) {
+					if (response.data[i].name === budgetName) {
 						setCurrentBudget(response.data[i]);
 					}
 					let date = new Date(response.data[i].date);
@@ -330,7 +331,7 @@ function Transactions() {
 
 				// Update the transaction state
 				setTransactions(response.data);
-				sortByDay(response.data, name);
+				sortByDay(response.data, budgetName);
 			})
 			.catch((error) => {
 				console.log("Transaction call did not work  " + error);
