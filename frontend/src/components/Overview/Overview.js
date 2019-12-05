@@ -48,6 +48,8 @@ class Overview extends React.Component {
         "Yum! Brands Inc": {"id":"YUM","tracked":false},
       },
       investments: [],
+      favDebt: {},
+      favSavings: {},
     };
   }
 
@@ -76,6 +78,8 @@ class Overview extends React.Component {
           this.getData(comps[i]);
         }
       });
+      this.getFavSavings();
+      this.getFavDebt();
     });
   }
 
@@ -87,6 +91,28 @@ class Overview extends React.Component {
       data: data,
     });
   };
+
+  getFavSavings = () => {
+    axios.get(`http://localhost:8080/Cheddar/Savings/Favorite/${this.state.uid}/`)
+      .then((response) => {
+        console.log(response);
+        this.setState({favSavings: response.data})
+      })
+      .catch((error) => {
+        console.error("Error getting favorite Savings\n" + error);
+      });
+  }
+
+  getFavDebt = () => {
+    axios.get(`http://localhost:8080/Cheddar/Debts/Favorite/${this.state.uid}/`)
+      .then((response) => {
+        console.log(response);
+        this.setState({favDebt: response.data})
+      })
+      .catch((error) => {
+        console.error("Error getting favorite Debt\n" + error);
+      });
+  }
 
   emptyStocksGraph = () => {
     if(this.state.selectedCompanies.length == 0){
@@ -201,6 +227,35 @@ class Overview extends React.Component {
                   </CardBody>
                 </Card>
               </Row>
+            </Col>
+          </Row>
+        </Container>
+
+        <Container>
+          <Row>
+            <Col xs={4} id={"info-column"}>
+              <Card body>
+                <CardTitle>
+                  Your Favorite Savings Plan
+                </CardTitle>
+                <CardBody>
+                  {(this.state.favSavings == {} || this.state.favSavings == -1)
+                    ?"Favorite a Savings Plan to have it show up here"
+                    :<p><b>{this.state.favSavings.title}</b><br/>${this.state.favSavings.goalAmount}/${this.state.favSavings.currSaved}<br/>{this.state.favSavings.goalMonth} {this.state.favSavings.goalYear}</p>}
+                </CardBody>
+              </Card>
+            </Col>
+            <Col xs={4} id={"info-column"}>
+              <Card body>
+                <CardTitle>
+                  Your Favorite Tracked Debt
+                </CardTitle>
+                <CardBody>
+                {(this.state.favDebt == {} || this.state.favDebt == -1)
+                  ?"Favorite a Debt to have it show up here"
+                  :<p><b>{this.state.favDebt.nickname} {this.state.favDebt.category}</b><br/>Current Balance: ${this.state.favDebt.currBalance}</p>}
+                </CardBody>
+              </Card>
             </Col>
           </Row>
         </Container>
