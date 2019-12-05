@@ -204,6 +204,7 @@ function Transactions() {
  		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
  		let query = queryOne + queryTwo;
 
+<<<<<<< HEAD
  		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
  			.then(function (response) {
  				// handle success
@@ -212,6 +213,16 @@ function Transactions() {
  					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
  					//console.log(response.data[i].shortDate);
  				}
+=======
+		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
+			.then(function (response) {
+				// handle success
+				for (let i in response.data) {
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+					//console.log(response.data[i].shortDate);
+				}
+>>>>>>> f9247b9af2727ea232a3af2f9e93aa622f8b142e
 				// Update the transaction state
 				transactions = response.data;
 				calcTotals();
