@@ -24,7 +24,8 @@ export default (app) => {
       initial: req.body.initial,
       currBalance: req.body.currBalance,
       interestRate: req.body.interestRate,
-      minimumPayment: req.body.minimumPayment
+      minimumPayment: req.body.minimumPayment,
+      favorite: false
     };
 
     let data;
