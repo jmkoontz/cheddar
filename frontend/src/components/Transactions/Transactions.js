@@ -7,6 +7,7 @@ import DateFinder from "./DateFinder";
 import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
 import '../../css/Transactions.css';
+import buildUrl from "../../actions/connect";
 import TipSequence from '../TipSequence/TipSequence';
 
 
@@ -287,7 +288,7 @@ function Transactions() {
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
+		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
@@ -309,23 +310,18 @@ function Transactions() {
 	/**
  	* Server call to get all the transaction data for a specific budget in the database
  	*/
-	const getBudgetTransactions = (budgetName) => {
+	const getBudgetTransactions = (name) => {
 
 		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-<<<<<<< HEAD
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`)
-=======
-		console.log(budgetName)
-		axios.get(`http://localhost:8080/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${budgetName}?${query}`)
->>>>>>> f9247b9af2727ea232a3af2f9e93aa622f8b142e
+		axios.get(buildUrl(`/Cheddar/Budgets/Budget/Transactions/DateRange/${userID}/${name}?${query}`))
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
 					// Get current budget
-					if (response.data[i].name === budgetName) {
+					if (response.data[i].name === name) {
 						setCurrentBudget(response.data[i]);
 					}
 					let date = new Date(response.data[i].date);
@@ -334,7 +330,7 @@ function Transactions() {
 
 				// Update the transaction state
 				setTransactions(response.data);
-				sortByDay(response.data, budgetName);
+				sortByDay(response.data, name);
 			})
 			.catch((error) => {
 				console.log("Transaction call did not work  " + error);
@@ -365,7 +361,7 @@ function Transactions() {
 	 */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
 			.then(function (response) {
 				// handle success
 
