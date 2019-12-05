@@ -30,10 +30,8 @@ function DateFinder(props) {
    * Helper function to make transaction data call
    */
   const handleFetch = () => {
-
-
-      props.getTimeTransactions();
-
+    //props.budgetList
+    props.getBudgetTransactions()
   }
 
   return (

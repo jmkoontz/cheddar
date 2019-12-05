@@ -634,13 +634,15 @@ export function getTransactionsInBudget(uid, budgetName) {
 
 export async function getTransactionsFromAllBudgetsInDateRange(uid, dateRange) {
   let budgetNames = [];
+  let allTransactions = [];
   try {
     budgetNames = await getBudgetNames(uid);
 
-    let allTransactions = [];
+
     for (let i in budgetNames) {
       let transactions = await getTransactionsInBudgetAndDateRange(uid, budgetNames[i], dateRange);
-      allTransactions = [...allTransactions, transactions];
+      //allTransactions = [...allTransactions, transactions];
+      allTransactions = allTransactions.concat(transactions);
     }
   } catch (error) {
     return Promise.reject(error);
