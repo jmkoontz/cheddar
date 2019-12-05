@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Component } from 'react';
 import { Button, Progress, Container, Row, Col } from 'reactstrap';
 import { withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
+import Alert from 'react-bootstrap/Alert';
 import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
 import '../../css/SavingsModal.css'
@@ -20,21 +21,26 @@ const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, mon
     <div>
      <Collapsible trigger={title}
      triggerOpenedClassName="Collapsible__trigger--active"
-     triggerWhenOpen={<div><Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} type="button">Edit</Button>
+     triggerWhenOpen={<div className="triggerTop"><Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} className="editBtn" type="button">Edit</Button>
                           <Button outline color={(favorite)?"primary":"secondary"} type="button" onClick={() => {
                               if(favorite){
                                 axios.put(`http://localhost:8080/Cheddar/Savings/Unfavorite/${sessionStorage.getItem('user')}/${_id}`)
+                                .then(() => {
+                                  window.location.reload(false);
+                                })
                           			.catch((error) => {
                           				console.log(error);
                           			})
                               }else{
                                 axios.put(`http://localhost:8080/Cheddar/Savings/Favorite/${sessionStorage.getItem('user')}/${_id}`)
+                                  .then(() => {
+                                    window.location.reload(false);
+                                  })
                           			.catch((error) => {
                           				console.log(error);
                           			})
                               }
-                              window.location.reload(false);
-                            }}><FavoriteIcon />
+                            }} className="favButton"><FavoriteIcon />
                           </Button>
                       </div>}
      lazyRender
@@ -53,10 +59,26 @@ const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
+function AlertFunction() {
+  const [show, setShow] = useState(true);
+
+  if (show) {
+    return (
+      <Alert variant="info" onClose={() => setShow(false)} dismissible>
+        <Alert.Heading>You have no Emergency Saving Plan</Alert.Heading>
+        <p>
+          It is recommended to create a savings plan in case of emergencies
+        </p>
+      </Alert>
+    );
+  }
+  return null;
+}
+
 class Saving extends React.Component {
   constructor(props){
     super(props);
-    this.state = { userID: sessionStorage.getItem('user'), graphData: [], show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false}
+    this.state = { userID: sessionStorage.getItem('user'), graphData: [], show: false, savingsList: [], title: '', category: 'Choose a category', goalAmount: '', goalDate: {month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()}, monthlyContribution: '', recommendPlan: false, validAmount: false, validCont: false, validCat: false, validTitle: false}
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -194,14 +216,30 @@ class Saving extends React.Component {
     }
   }
 
+  getRecommendStatus = () => {
+    axios.get(`http://localhost:8080/Cheddar/ToolTips/${sessionStorage.getItem('user')}`)
+      .then((response) => {
+        if (response.data["recommendSavings"]) {
+          this.setState({ recommendPlan: true });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   componentDidMount(){
     this.setState({month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()})
     this.getSavings();
+    this.getRecommendStatus();
   }
+
+
 
   render () {
     const years = Array.from(new Array(20),(val, index) => index + this.state.goalDate.year);
     const savings = this.state.savingsList;
+    var status = this.state.recommendPlan;
     const options = {
       animationEnabled: true,
     	theme: "light2",

@@ -98,6 +98,7 @@ export const toolTipScheduleSchema = new mongoose.Schema({
   overview: Boolean,
   budgets: Boolean,
   saving: Boolean,
+  recommendSavings: Boolean,
   investments: Boolean,
   debts: Boolean,
   transactions: Boolean,
