@@ -10,7 +10,7 @@ import '../../css/Collapsible.css';
 import '../../css/SavingsModal.css'
 import CanvasJSReact from '../../assets/canvasjs.react';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-
+import Notifications from "../Notifications/Notifications";
 
 
 var CanvasJS = CanvasJSReact.CanvasJS;
@@ -60,6 +60,8 @@ class Saving extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.notifications = React.createRef();
   }
 
   handleClick = () => {
@@ -129,6 +131,7 @@ class Saving extends React.Component {
     axios.get(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/`)
       .then((response) => {
         this.setState({savingsList: response.data})
+        this.getNotifications();
         //console.log(response);
         //console.log(this.state.savingsList)
       })
@@ -174,6 +177,23 @@ class Saving extends React.Component {
     }
   }
 
+  getNotifications = () => {
+    let savings = this.state.savingsList;
+    let currYear = (new Date()).getFullYear();
+    let currMonth = (new Date()).getMonth();
+    for(let i in savings){
+      if(savings[i].goalYear == currYear && monthNames.indexOf(savings[i].goalMonth) <= currMonth){
+        if(savings[i].currSaved < savings[i].goalAmount){
+          this.notifications.current.add({
+            message: savings[i].title,
+            type: "info",
+            title: "You have missed a goal:"
+          })
+        }
+      }
+    }
+  }
+
   componentDidMount(){
     this.setState({month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear()})
     this.getSavings();
@@ -211,6 +231,9 @@ class Saving extends React.Component {
               <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
         </span>
 
+        <Notifications
+          ref={this.notifications}
+        />
 
         <Modal show={this.state.show} onHide={this.handleClose} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
