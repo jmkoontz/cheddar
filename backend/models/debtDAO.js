@@ -111,11 +111,11 @@ export async function favDebt(uid, debtId){
   }
 
   for(let i in debts){
-    if(debts[i]._id === debtsId){
+    if(debts[i]._id == debtId){
       debts[i].favorite = true;
     }
     else if(debts[i].favorite === true){
-      debts[x].favorite = false;
+      debts[i].favorite = false;
     }
   }
 
@@ -136,7 +136,7 @@ export async function favDebt(uid, debtId){
 
 export function unfavDebt(uid, debtId){
   return userModel.findOneAndUpdate(
-    {'_id': uid, 'debts._id': debtsId},
+    {'_id': uid, 'debts._id': debtId},
     {'$set': {'debts.$.favorite': false}},
     {'new': true})
     .then((updatedUser) => {
