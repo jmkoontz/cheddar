@@ -5,6 +5,7 @@ import { getUser, getToolTips, createUser, editUser, deleteUser, disableToolTips
 
 export default (app) => {
   app.post('/Cheddar/CreateAccount', async (req, res) => {
+    console.log("IN BACKEND");
     let user = {
       _id: req.body._id,
       firstName: req.body.firstName,
@@ -17,7 +18,11 @@ export default (app) => {
       transactions: [],
       savings: [],
       debts: [],
-      investments: {},
+      investments: {
+          trackedCompanies: [],
+          investments: [],
+          totalInvestment: 0,
+      },
       retirement: {
         total: 0,
         history: [],
@@ -36,6 +41,8 @@ export default (app) => {
     };
 
     let data;
+    console.log("DEBUGGING");
+    console.log(user);
     try {
       data = await createUser(user);
     } catch (err) {

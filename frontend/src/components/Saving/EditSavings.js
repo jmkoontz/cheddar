@@ -5,6 +5,7 @@ import { Route, NavLink, Redirect, withRouter } from "react-router-dom";
 import History from "../../history";
 import Modal from 'react-bootstrap/Modal'
 import axios from 'axios';
+import buildUrl from "../../actions/connect";
 
 class EditSavings extends React.Component {
   constructor(props){
@@ -45,7 +46,7 @@ class EditSavings extends React.Component {
 
   handleSubmit(event){
     //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
-    axios.put(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/${this.state.savingsId}`,
+    axios.put(buildUrl(`/Cheddar/Savings/${this.state.userID}/${this.state.savingsId}`),
       {
         title: this.state.title,
         category: this.state.category,
@@ -66,7 +67,7 @@ class EditSavings extends React.Component {
   }
 
   handleDelete(event){
-    axios.delete(`http://localhost:8080/Cheddar/Savings/Saving/${this.state.userID}/${this.state.savingsId}/`)
+    axios.delete(buildUrl(`/Cheddar/Savings/Saving/${this.state.userID}/${this.state.savingsId}/`))
       .then((response) => {
         console.log(response);
         event.preventDefault();
@@ -86,7 +87,7 @@ class EditSavings extends React.Component {
     const id = this.props.match.params.id;
     //console.log(id);
 
-    axios.get(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/`)
+    axios.get(buildUrl(`/Cheddar/Savings/${this.state.userID}/`))
       .then((response) => {
         //this.setState({savingsList: response.data})
         //console.log(response.data);
