@@ -34,6 +34,7 @@ function DateFinder(props) {
     if (selectedBudget === "All Budgets") {
       props.getTimeTransactions();
     } else {
+      console.log(selectedBudget)
       props.getBudgetTransactions(selectedBudget)
     }
   }
