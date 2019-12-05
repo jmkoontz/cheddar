@@ -18,6 +18,7 @@ import buildUrl from '../../actions/connect';
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
 import Tip from "../Tip/Tip";
+import FavoriteBudgetCard from "./FavoriteBudgetCard";
 
 class Overview extends React.Component {
   constructor (props) {
@@ -217,6 +218,10 @@ class Overview extends React.Component {
                     Rent: $1500 due on 2019-11-25
                   </CardBody>
                 </Card>
+              </Row>
+
+              <Row>
+                <FavoriteBudgetCard/>
               </Row>
 
             </Col>

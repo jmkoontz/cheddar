@@ -151,14 +151,14 @@ class CategoryTable extends Component {
               </Row>
               <div style={{height: '1em'}}/>
               <Row>
-                <Col md='3'/>
-                <Button className='signInButton' size='sm'>Add</Button>
+                <Col md='5'/>
+                <Button color='primary' size='md'>Add</Button>
               </Row>
             </Form>
           </ModalBody>
         </Modal>
 
-        <Table dark>
+        <Table striped size='md'>
           <thead>
           <tr>
             <th>#</th>
