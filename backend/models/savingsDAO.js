@@ -158,7 +158,7 @@ export async function favSavings(uid, savingsId){
       savings[i].favorite = true;
     }
     else if(savings[i].favorite === true){
-      savings[x].favorite = false;
+      savings[i].favorite = false;
     }
   }
 

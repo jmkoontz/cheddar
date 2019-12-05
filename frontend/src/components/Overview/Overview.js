@@ -186,7 +186,7 @@ class Overview extends React.Component {
 
         <Container>
           <Row>
-            <Col xs={9}>
+            <Col xs={6}>
               <div id={'calendar-button-row'}>
                 <Button className={'calendar-button'} id={'expenses-list-button'} onClick={() => {this.eventListModal.current.open()}}>All Expenses</Button>
                 <Button id={"notification-schedule-button"} className={'calendar-button'} onClick={() => {this.notificationModal.current.open()}}>Set Notifications</Button>
@@ -228,24 +228,20 @@ class Overview extends React.Component {
                 </Card>
               </Row>
             </Col>
-          </Row>
-        </Container>
-
-        <Container>
-          <Row>
-            <Col xs={4} id={"info-column"}>
-              <Card body>
-                <CardTitle>
-                  Your Favorite Savings Plan
-                </CardTitle>
-                <CardBody>
-                  {(this.state.favSavings == {} || this.state.favSavings == -1)
-                    ?"Favorite a Savings Plan to have it show up here"
-                    :<p><b>{this.state.favSavings.title}</b><br/>${this.state.favSavings.goalAmount}/${this.state.favSavings.currSaved}<br/>{this.state.favSavings.goalMonth} {this.state.favSavings.goalYear}</p>}
-                </CardBody>
-              </Card>
-            </Col>
-            <Col xs={4} id={"info-column"}>
+            <Col xs={3} id={"info-column"}>
+              <Row>
+                <Card body>
+                  <CardTitle>
+                    Your Favorite Savings Plan
+                  </CardTitle>
+                  <CardBody>
+                    {(this.state.favSavings == {} || this.state.favSavings == -1)
+                      ?"Favorite a Savings Plan to have it show up here"
+                      :<p><b>{this.state.favSavings.title}</b><br/>${this.state.favSavings.goalAmount}/${this.state.favSavings.currSaved}<br/>{this.state.favSavings.goalMonth} {this.state.favSavings.goalYear}</p>}
+                  </CardBody>
+                </Card>
+              </Row>
+              <Row>
               <Card body>
                 <CardTitle>
                   Your Favorite Tracked Debt
@@ -256,9 +252,11 @@ class Overview extends React.Component {
                   :<p><b>{this.state.favDebt.nickname} {this.state.favDebt.category}</b><br/>Current Balance: ${this.state.favDebt.currBalance}</p>}
                 </CardBody>
               </Card>
+              </Row>
             </Col>
           </Row>
         </Container>
+
 
         <div className="investments-overview" id={"investments-overview"}>
           <Container fluid="true">

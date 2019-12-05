@@ -17,21 +17,26 @@ const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate,
   <div>
     <Collapsible trigger={category}
     triggerOpenedClassName="Collapsible__trigger--active"
-    triggerWhenOpen={<div><Button outline color="secondary" onClick={() => History.push({pathname: `/editdebts/${_id}`})} type="button">Edit</Button>
+    triggerWhenOpen={<div className="triggerTop"><Button outline color="secondary" onClick={() => History.push({pathname: `/editdebts/${_id}`})} className="editBtn" type="button">Edit</Button>
                       <Button outline color={(favorite)?"primary":"secondary"} type="button" onClick={() => {
                           if(favorite){
                             axios.put(`http://localhost:8080/Cheddar/Debts/Unfavorite/${sessionStorage.getItem('user')}/${_id}`)
+                              .then(() => {
+                                window.location.reload(false);
+                              })
                             .catch((error) => {
                               console.log(error);
                             })
                           }else{
                             axios.put(`http://localhost:8080/Cheddar/Debts/Favorite/${sessionStorage.getItem('user')}/${_id}`)
+                              .then(() => {
+                                window.location.reload(false);
+                              })
                             .catch((error) => {
                               console.log(error);
                             })
                           }
-                          window.location.reload(false);
-                        }}><FavoriteIcon />
+                        }} className="favButton"><FavoriteIcon />
                       </Button>
                     </div>}
     lazyRender
