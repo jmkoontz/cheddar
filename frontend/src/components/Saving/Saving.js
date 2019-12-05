@@ -64,11 +64,18 @@ function AlertFunction() {
 
   if (show) {
     return (
-      <Alert variant="info" onClose={() => setShow(false)} dismissible>
+      <Alert variant="warning" onClose={() => setShow(false)} dismissible>
         <Alert.Heading>You have no Emergency Saving Plan</Alert.Heading>
         <p>
-          It is recommended to create a savings plan in case of emergencies
+          We recommended you create a savings plan of at least six months of net living expenses to cover any financial surprises life throws your way. We can help you save here. Start by adding a Emergency plan above.
         </p>
+        <br/>
+        <Button variant="outline-light" size="sm" onClick={() => {axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${sessionStorage.getItem('user')}/recommendSavings`)
+        .catch((error) => {
+          console.error(error);
+        }); setShow(false)}}>
+          Don't Notify Me About This Again
+        </Button>
       </Alert>
     );
   }
@@ -141,8 +148,20 @@ class Saving extends React.Component {
       .then((response) => {
         console.log(response);
         event.preventDefault();
-        this.getSavings();
-        this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
+        if(this.state.category == "Save for Emergency"){
+          axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${this.state.userID}/recommendSavings`)
+          .then(()=>{
+            this.getSavings();
+            this.getRecommendStatus();
+            this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        } else{
+          this.getSavings();
+          this.setState({graphData: [], show: false, title: '', category: 'Choose a category', goalAmount: '', month: monthNames[(new Date()).getMonth()], year: (new Date()).getFullYear(), monthlyContribution: '', validAmount: false, validCont: false, validCat: false, validTitle: false})
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -219,9 +238,7 @@ class Saving extends React.Component {
   getRecommendStatus = () => {
     axios.get(`http://localhost:8080/Cheddar/ToolTips/${sessionStorage.getItem('user')}`)
       .then((response) => {
-        if (response.data["recommendSavings"]) {
-          this.setState({ recommendPlan: true });
-        }
+        this.setState({ recommendPlan: response.data["recommendSavings"] });
       })
       .catch((error) => {
         console.log(error);
@@ -273,6 +290,8 @@ class Saving extends React.Component {
           ref={this.notifications}
         />
 
+        {this.state.recommendPlan && <AlertFunction />}
+
         <Modal show={this.state.show} onHide={this.handleClose} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
             <Modal.Title>Create New Savings Goal</Modal.Title>
@@ -290,7 +309,7 @@ class Saving extends React.Component {
                 <option value="Choose a category">Choose a category</option>
                 <option value="Pay off Credit Card Debt">Pay off Credit Card Debt</option>
                 <option value="Pay off Loans">Pay off Loans</option>
-                <option value="Save for Emergency">Save for Emeregency</option>
+                <option value="Save for Emergency">Save for Emergency</option>
                 <option value="Save for a Trip">Save for a Trip</option>
                 <option value="Save for a Purchase">Save for a Purchase</option>
                 <option value="Other">Other</option>

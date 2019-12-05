@@ -26,6 +26,7 @@ export default (app) => {
         overview: true,
         budgets: true,
         saving: true,
+        recommendSavings: true,
         investments: true,
         debts: true,
         transactions: true,
@@ -70,7 +71,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // disable tooltips on budget page 
+  // disable tooltips on budget page
   app.put('/Cheddar/DisableToolTips/:uid/:page', async (req, res) => {
     let data;
     try {
@@ -82,7 +83,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // enable tooltips on budget page 
+  // enable tooltips on budget page
   app.put('/Cheddar/EnableToolTips/:uid/:page', async (req, res) => {
     let data;
     try {
