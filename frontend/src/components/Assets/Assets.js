@@ -178,12 +178,12 @@ class Assets extends Component {
         <Nav justified='center' tabs>
           <NavItem>
             <NavLink active onClick={this.goToAssets}>
-              Assets
+              <b>Assets</b>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink onClick={this.goToRecurringPayments}>
-              Recurring Payments
+              <b>Recurring Payments</b>
             </NavLink>
           </NavItem>
         </Nav>
@@ -221,8 +221,8 @@ class Assets extends Component {
               </Row>
               <div style={{height: '1em'}}/>
               <Row>
-                <Col md='3'/>
-                <Button className='signInButton' size='sm'>Add</Button>
+                <Col md='5'/>
+                <Button color='primary' size='md'>Add</Button>
               </Row>
             </Form>
           </ModalBody>
