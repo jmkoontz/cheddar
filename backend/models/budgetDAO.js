@@ -632,6 +632,23 @@ export function getTransactionsInBudget(uid, budgetName) {
     });
 }
 
+export async function getTransactionsFromAllBudgetsInDateRange(uid, dateRange) {
+  let budgetNames = [];
+  try {
+    budgetNames = await getBudgetNames(uid);
+
+    let allTransactions = [];
+    for (let i in budgetNames) {
+      let transactions = await getTransactionsInBudgetAndDateRange(uid, budgetNames[i], dateRange);
+      allTransactions = [...allTransactions, transactions];
+    }
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  return Promise.resolve(allTransactions);
+}
+
 export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateRange) {
   if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
     return Promise.reject('UserError: No start date specified');

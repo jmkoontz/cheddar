@@ -7,7 +7,7 @@ import {
   addTransactionToBudget, removeTransactionFromBudget, getTransactionsInBudgetCategory,
   getTransactionsInBudgetCategoryAndDateRange, getTransactionsInBudget,
   getTransactionsInBudgetAndDateRange, unfavoriteBudget, favoriteBudget, getBudget,
-  transferOldTransactions, getOldTransactions
+  transferOldTransactions, getOldTransactions, getTransactionsFromAllBudgetsInDateRange
 } from '../models/budgetDAO';
 
 export default (app) => {
@@ -241,6 +241,27 @@ export default (app) => {
     let data;
     try {
       data = await getTransactionsInBudgetCategory(req.params.uid, req.params.budgetName, req.params.categoryName);
+    } catch (err) {
+      data = { error: parseError(err) };
+    }
+
+    buildResponse(res, data);
+  });
+
+  // get transactions from all budgets in date date range
+  app.get('/Cheddar/Budgets/Transactions/DateRange/:uid', async (req, res) => {
+    let dateRange = {
+      startYear: req.query.startYear,
+      startMonth: req.query.startMonth,
+      startDay: req.query.startDay,
+      endYear: req.query.endYear,
+      endMonth: req.query.endMonth,
+      endDay: req.query.endDay
+    };
+
+    let data;
+    try {
+      data = await getTransactionsFromAllBudgetsInDateRange(req.params.uid, dateRange);
     } catch (err) {
       data = { error: parseError(err) };
     }
