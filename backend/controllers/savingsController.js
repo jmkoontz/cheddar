@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllSavings, getSavingsTitles, createSavings, editSavings, deleteSavings, getOneSavings, favSavings, unfavSavings} from '../models/savingsDAO';
+import {getAllSavings, getSavingsTitles, createSavings, editSavings, deleteSavings, getOneSavings, favSavings, unfavSavings, getfavSavings} from '../models/savingsDAO';
 
 export default (app) => {
   app.get('/Cheddar/Savings/test', async (req, res) => {
@@ -123,6 +123,16 @@ export default (app) => {
     let data;
     try{
       data = await unfavSavings(req.params.uid, req.params.savingsId);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }
+    buildResponse(res, data);
+  });
+
+  app.get('/Cheddar/Savings/Favorite/:uid', async (req, res) => {
+    let data;
+    try{
+      data = await getfavSavings(req.params.uid);
     } catch (err) {
       data = {error: parseError(err)};
     }

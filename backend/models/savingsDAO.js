@@ -192,3 +192,20 @@ export function unfavSavings(uid, savingsId){
       return Promise.reject(err);
     });
 }
+
+export async function getfavSavings(uid) {
+  var savings;
+  try{
+    savings = await getAllSavings(uid);
+  } catch (err){
+    return Promise.reject(err);
+  }
+
+  for(let i in savings){
+    if(savings[i].favorite === true){
+      return Promise.resolve(savings[i]);
+    }
+  }
+
+  return Promise.resolve(-1);
+}
