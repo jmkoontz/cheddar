@@ -9,7 +9,17 @@ import {
   Row,
   Col,
   Label,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem, InputGroup, InputGroupAddon, FormGroup, Table,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  InputGroup,
+  InputGroupAddon,
+  FormGroup,
+  Table,
+  Nav,
+  NavItem,
+  NavLink,
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
@@ -89,6 +99,10 @@ class RecurringPayments extends Component {
 
   goToAssets = () => {
     History.push("/assets");
+  };
+
+  goToRecurringPayments = () => {
+    History.push("/recurring-payments");
   };
 
   toggle = () => {
@@ -188,10 +202,21 @@ class RecurringPayments extends Component {
 
     return (
       <div className='divArea'>
-        <div style={{height: '1em'}}/>
-        <h3>Recurring Payments</h3>
+        <div style={{height: '2em'}}/>
+        <Nav justified='center' tabs>
+          <NavItem>
+            <NavLink onClick={this.goToAssets}>
+              Assets
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink active onClick={this.goToRecurringPayments}>
+              Recurring Payments
+            </NavLink>
+          </NavItem>
+        </Nav>
 
-        <hr/>
+        <div style={{height: '2em'}}/>
 
         <Modal isOpen={this.state.modal} toggle={this.closeModal}>
           <ModalHeader toggle={this.closeModal}> Add A New Payment </ModalHeader>
@@ -289,9 +314,8 @@ class RecurringPayments extends Component {
 
         <div className='right'>
           <Row>
-            <Button size='sm' onClick={this.goToAssets}>Go To Assets</Button>
             <Col>
-              <Button className='signInButton' size='sm' onClick={this.openModal}>Add New Recurring Payment</Button>
+              <Button color='primary' size='md' onClick={this.openModal}>Add New Recurring Payment</Button>
             </Col>
           </Row>
         </div>

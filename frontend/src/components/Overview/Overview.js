@@ -185,10 +185,22 @@ class Overview extends React.Component {
             </Col>
 
             <Col xs={3} id={"info-column"}>
+
+              <Row>
+                <Card body>
+                  <CardTitle className='card-title'>
+                    Total Asset Value
+                  </CardTitle>
+                  <CardBody>
+                    $237,000
+                  </CardBody>
+                </Card>
+              </Row>
+
               <Row>
                 <Card body>
                   <CardTitle>
-                    Your Top Asset
+                    Top Asset
                   </CardTitle>
                   <CardBody>
                     House: $140000
@@ -199,13 +211,14 @@ class Overview extends React.Component {
               <Row>
                 <Card body>
                   <CardTitle className='card-title'>
-                    Your Top Recurring Payment
+                    Top Recurring Payment
                   </CardTitle>
                   <CardBody>
                     Rent: $1500 due on 2019-11-25
                   </CardBody>
                 </Card>
               </Row>
+
             </Col>
           </Row>
         </Container>
