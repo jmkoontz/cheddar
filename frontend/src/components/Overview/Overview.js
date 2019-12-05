@@ -1,7 +1,6 @@
 import React from 'react';
 import Calendar from "../Calendar/Calendar";
 import Button from 'react-bootstrap/Button';
-import keys from '../../config/keys.js';
 import EventListModal from "../Calendar/EventListModal";
 import StocksGraph from '../Investments/StocksGraph';
 import GrowthGraph from '../Investments/GrowthGraph';

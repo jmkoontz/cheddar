@@ -1,7 +1,6 @@
 import React from 'react';
 import CanvasJSReact from '../../assets/canvasjs.react';
 import axios from 'axios';
-import keys from '../../config/keys.js';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Card from 'react-bootstrap/Card';
