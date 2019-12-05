@@ -7,6 +7,7 @@ import axios from 'axios';
 import './SignIn.css'
 import { fireauth } from "../../firebase";
 import ToggleButtons from "./ToggleButtons";
+import buildUrl from "../../actions/connect";
 
 class AccountSettings extends Component {
 
@@ -43,7 +44,7 @@ class AccountSettings extends Component {
   };
 
   deleteAccount = () => {
-    axios.delete(`http://localhost:8080/Cheddar/${this.state.uid}`).then(() => {
+    axios.delete(buildUrl(`/Cheddar/${this.state.uid}`)).then(() => {
       window.location.reload();
       fireauth.currentUser.delete();  // delete invalid user from Firebase
       sessionStorage.clear(); // remove saved UID
@@ -155,7 +156,7 @@ class AccountSettings extends Component {
 
   getEmail = (uid) => {
     let self = this;
-    axios.get(`http://localhost:8080/Cheddar/${uid}`)
+    axios.get(buildUrl(`/Cheddar/${uid}`))
       .then(function (response) {
         self.setState({
           email: response.data.email

@@ -8,6 +8,7 @@ import axios from 'axios';
 import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
 import CanvasJSReact from '../../assets/canvasjs.react';
+import buildUrl from "../../actions/connect";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -82,7 +83,7 @@ class Debts extends React.Component {
 
   handleSubmit(event){
     //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyCont + ' a month until ' + this.state.month + ' ' + this.state.year);
-    axios.post(`http://localhost:8080/Cheddar/Debts/${this.state.userID}`,
+    axios.post(buildUrl(`/Cheddar/Debts/${this.state.userID}`),
       {
         category: this.state.category,
         nickname: this.state.nickname,
@@ -103,7 +104,7 @@ class Debts extends React.Component {
   }
 
   getDebts = () => {
-    axios.get(`http://localhost:8080/Cheddar/Debts/${this.state.userID}/`)
+    axios.get(buildUrl(`/Cheddar/Debts/${this.state.userID}/`))
       .then((response) => {
         this.setState({debtList: response.data})
       })

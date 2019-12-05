@@ -13,6 +13,7 @@ import axios from 'axios';
 import Loader from '../Loader/Loader';
 import {Card, CardTitle, CardBody} from 'reactstrap';
 import TipSequence from '../TipSequence/TipSequence';
+import buildUrl from '../../actions/connect';
 
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
@@ -54,26 +55,30 @@ class Overview extends React.Component {
   componentDidMount() {
     const test = {uid: this.state.uid};
     console.log(this.state.uid);
-    axios.get("http://localhost:8080/Cheddar/Investments", {
+    axios.get(buildUrl("/Cheddar/Investments"), {
       params: test,
     }).then(res => {
       var companies = this.state.companies;
       var i;
+      
       var trackedCompanies = res.data.trackedCompanies;
+      if(typeof(trackedCompanies) == typeof(undefined)){
+          trackedCompanies = [];
+      }
       for(i=0;i<trackedCompanies.length;i++){
         companies[trackedCompanies[i]]["tracked"]=true;
       }
       this.setState({
         companies: companies,
-        selectedCompanies: res.data.trackedCompanies,
+        selectedCompanies: trackedCompanies,
         investments: res.data.investments,
       },() => {
         var comps = this.state.selectedCompanies;
         console.log(comps);
         let i =0;
         for(i = 0;i < comps.length; i++){
-          console.log(comps[i]);
           this.getData(comps[i]);
+          console.log(comps[i]);
         }
       });
     });

@@ -8,6 +8,7 @@ import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
 import '../../css/Transactions.css';
 import TipSequence from '../TipSequence/TipSequence';
+import buildUrl from "../../actions/connect";
 
 
 function Transactions() {
@@ -287,7 +288,7 @@ function Transactions() {
 		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
 		let query = queryOne + queryTwo;
 
-		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
+		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
 			.then(function (response) {
 				// handle success
 				for (let i in response.data) {
@@ -361,7 +362,7 @@ function Transactions() {
 	 */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
 			.then(function (response) {
 				// handle success
 

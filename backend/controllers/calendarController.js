@@ -21,9 +21,49 @@ export default (app) => {
   app.post('/Cheddar/Calendar/event/:uid', async (req, res) => {
     let data;
     try {
+      const event = req.body;
       const user = await getUser(req.params.uid);
       const events = user.events;
-      events.push(req.body);
+
+      if (event.repeat && event.repeat !== "Never") {
+        let loops = 3;
+
+        switch (event.repeat) {
+          case "Weekly":
+            loops *= 52;
+            break;
+          case "Biweekly":
+            loops *= 26;
+            break;
+          case "Monthly":
+            loops *= 12;
+        }
+
+        let nextEvent = event;
+        nextEvent.start = new Date(nextEvent.start);
+
+        for (let i = 0; i < loops; i++) {
+          nextEvent.subId = i;
+          events.push(nextEvent);
+
+          nextEvent.start = new Date(nextEvent.start);
+          switch (event.repeat) {
+            case "Weekly":
+              nextEvent.start.setDate(nextEvent.start.getDate() + 7);
+              break;
+            case "Biweekly":
+              nextEvent.start.setDate(nextEvent.start.getDate() + 14);
+              break;
+            case "Monthly":
+              nextEvent.start.setMonth(nextEvent.start.getMonth() + 1);
+          }
+
+          nextEvent.end = nextEvent.start;
+        }
+
+      } else {
+        events.push(event);
+      }
 
       data = await editUser(req.params.uid, {events: events});
     } catch (err) {
@@ -39,10 +79,14 @@ export default (app) => {
     try {
       const user = await getUser(req.params.uid);
       const events = user.events;
+      const id = req.body.id;
+      const subId = req.body.subId;
 
       for (let i = 0; i < events.length; i++) {
-        if (events[i].id === req.body.id) {
+        if (events[i].id == id && (subId == undefined || subId == events[i].subId)) {
+          let sub = events[i].subId;
           events[i] = req.body;
+          events[i].subId = sub;
           break;
         }
       }
@@ -65,7 +109,7 @@ export default (app) => {
       for (let i = 0; i < events.length; i++) {
         if (events[i].id == req.params.eventId) {
           events.splice(i, 1);
-          break;
+          i--;
         }
       }
 
@@ -77,7 +121,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // edit an event indexed by the id
+  // get notifications
   app.get('/Cheddar/Calendar/notifications/:uid', async (req, res) => {
     let data;
     try {
@@ -89,7 +133,7 @@ export default (app) => {
     buildResponse(res, data);
   });
 
-  // edit an event indexed by the id
+  // dismiss a notification
   app.post('/Cheddar/Calendar/dismissNotification/:uid', async (req, res) => {
     let data;
     try {
@@ -98,7 +142,10 @@ export default (app) => {
       const periods = ["month", "twoWeek", "week", "day", "dayOf"];
 
       for (let i = 0; i < events.length; i++) {
-        if (events[i].id == req.body.id) {
+        const id = req.body.id.split("-");
+
+        // check that id's match. if sub id exists, check that as well
+        if (events[i].id == id[0] && (id.length === 1 || id[1] == events[i].subId)) {
           if (!events[i].dismissed)
             events[i].dismissed = {
               month: false,
@@ -114,6 +161,8 @@ export default (app) => {
             if (periods[j] == req.body.period)
               break;
           }
+
+          break;
         }
       }
 
