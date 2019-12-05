@@ -149,3 +149,20 @@ export function unfavDebt(uid, debtId){
       return Promise.reject(err);
     });
 }
+
+export async function getfavDebt(uid) {
+  var debts;
+  try{
+    debts = await getAllDebts(uid);
+  } catch (err){
+    return Promise.reject(err);
+  }
+
+  for(let i in debts){
+    if(debts[i].favorite === true){
+      return Promise.resolve(debts[i]);
+    }
+  }
+
+  return Promise.resolve(-1);
+}
