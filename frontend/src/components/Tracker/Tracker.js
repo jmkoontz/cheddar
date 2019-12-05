@@ -32,7 +32,7 @@ function Transactions() {
 	const [loading, setLoading] = useState(false); // Stops page from loading is a server call is running
 
 	let transactions = [];
-	let categories = [[],[],[],[],[],[],[]];
+	let categories = [[],[],[],[],[],[],[]]; //amount spent for each transaction
 	let categoryAmounts = [0,0,0,0,0,0,0];
 	let categoryNames = ["Entertainment", "Food and Groceries", "Savings", "Debt", "Housing", "Gas", "Utilities"];
 	let transNames = [[], [], [], [], [], [], []];
@@ -76,52 +76,55 @@ function Transactions() {
 					transNames.push([]);
 					categories.push([]);
 				}
-				for(let z = 0; z < budgetList[x].budgetCategories[y].transactions.length; z++) {
-					for(let k = 0; k < transactions.length; k++) {
-						if(transactions[k]._id === budgetList[x].budgetCategories[y].transactions[z]) {
-							if(budgetList[x].budgetCategories[y].name === "Entertainment") {
-								categories[0].push(transactions[k].amount);
-								transNames[0].push(transactions[k].name);
-							}
-							else if(budgetList[x].budgetCategories[y].name === "Food and Groceries") {
-								categories[1].push(transactions[k].amount);
-								transNames[1].push(transactions[k].name);
-							}
-							else if(budgetList[x].budgetCategories[y].name === "Savings") {
-								categories[2].push(transactions[k].amount);
-								transNames[2].push(transactions[k].name);
-							}
-							else if(budgetList[x].budgetCategories[y].name === "Debt") {
-								categories[3].push(transactions[k].amount);
-								transNames[3].push(transactions[k].name);
-							}
-							else if(budgetList[x].budgetCategories[y].name === "Housing") {
-								categories[4].push(transactions[k].amount);
-								transNames[4].push(transactions[k].name);
-							}
-							else if(budgetList[x].budgetCategories[y].name === "Gas") {
-								categories[5].push(transactions[k].amount);
-								transNames[5].push(transactions[k].name);
-							}
-							else if(budgetList[x].budgetCategories[y].name === "Utilities") {
-								categories[6].push(transactions[k].amount);
-								transNames[6].push(transactions[k].name);
-							}
-							else {
-								for(let i = 0; i < categoryNames.length; i++) {
-									if(budgetList[x].budgetCategories[y].name === categoryNames[i]) {
-										categories[i].push(transactions[k].amount);
-										transNames[i].push(transactions[k].name);
-										break;
-									}
-								}
-							}
-							break;
-						}
-					}
-				}
 			}
 		}
+
+		//for(let z = 0; z < budgetList[x].budgetCategories[y].transactions.length; z++) {
+			for(let k = 0; k < transactions.length; k++) {
+				console.log(transactions[k].name + " " + k + " " + transactions.length);
+				//if(transactions[k]._id === budgetList[x].budgetCategories[y].transactions[z]) {
+					if(transactions[k].category === "Entertainment") {
+						categories[0].push(transactions[k].amount);
+						transNames[0].push(transactions[k].name);
+					}
+					else if(transactions[k].category === "Food and Groceries") {
+						categories[1].push(transactions[k].amount);
+						transNames[1].push(transactions[k].name);
+					}
+					else if(transactions[k].category === "Savings") {
+						categories[2].push(transactions[k].amount);
+						transNames[2].push(transactions[k].name);
+					}
+					else if(transactions[k].category === "Debt") {
+						categories[3].push(transactions[k].amount);
+						transNames[3].push(transactions[k].name);
+					}
+					else if(transactions[k].category === "Housing") {
+						categories[4].push(transactions[k].amount);
+						transNames[4].push(transactions[k].name);
+					}
+					else if(transactions[k].category === "Gas") {
+						categories[5].push(transactions[k].amount);
+						transNames[5].push(transactions[k].name);
+					}
+					else if(transactions[k].category === "Utilities") {
+						categories[6].push(transactions[k].amount);
+						transNames[6].push(transactions[k].name);
+					}
+					else {
+						for(let i = 0; i < categoryNames.length; i++) {
+							if(transactions[k].category === categoryNames[i]) {
+								categories[i].push(transactions[k].amount);
+								transNames[i].push(transactions[k].name);
+								console.log(transactions[k].name + " pushed");
+								break;
+							}
+						}
+					}
+					//break;
+				//}
+			}
+		//}
 
 		let series = [];
 
@@ -224,6 +227,33 @@ function Transactions() {
  	};
 
 	/**
+ 	* Server call to get all the transaction data for a specific budget in the database
+ 	*/
+	const getBudgetTransactions = () => {
+
+		let queryOne = `startYear=${startDate.getFullYear()}&startMonth=${startDate.getMonth()}&startDay=${startDate.getDate()}`;
+		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
+		let query = queryOne + queryTwo;
+
+		axios.get(buildUrl(`/Cheddar/Budgets/Transactions/DateRange/${userID}?${query}`))
+			.then(function (response) {
+				// handle success
+				for (let i in response.data) {
+					// Get current budget
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+				}
+
+				// Update the transaction state
+				transactions = response.data;
+				calcTotals();
+			})
+			.catch((error) => {
+				console.log("Transaction call did not work  " + error);
+			});
+	};
+
+	/**
 	 * Server call to get all Budgets
 	 */
 	const getBudgets = () => {
@@ -261,7 +291,9 @@ function Transactions() {
 
 	const propData = {
 		userID: userID,
+		getBudgetTransactions: getBudgetTransactions,
 		getTimeTransactions: getTimeTransactions,
+		calcTotals: calcTotals,
 		startDate: startDate,
 		setStartDate: setStartDate,
 		endDate: endDate,
