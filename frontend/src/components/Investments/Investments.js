@@ -23,6 +23,7 @@ import Loader from "../Loader/Loader";
 import '../App.css';
 import StocksGraph from "./StocksGraph";
 import GrowthGraph from "./GrowthGraph";
+import buildUrl from "../../actions/connect";
 
 //Constant variable that contains investments tips to be used later
 
@@ -119,7 +120,7 @@ class Investments extends React.Component {
     //when component mounts, get investment data
     componentDidMount(){
         const test = {uid: this.state.uid};
-        axios.get("http://localhost:8080/Cheddar/Investments", {
+        axios.get(buildUrl("/Cheddar/Investments"), {
             params: test,
                 }).then(res => {
                     var companies = this.state.companies;
@@ -249,7 +250,7 @@ class Investments extends React.Component {
             if(companies.includes(company)){
                 companies.splice(companies.indexOf(company),1);
             }
-            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+            axios.post(buildUrl("/Cheddar/Investments/TrackedCompanies"), {
                 "uid": this.state.uid,
                 "updatedCompanies": companies,
                 }).then(res => {
@@ -265,7 +266,7 @@ class Investments extends React.Component {
                 companies.push(company);
             }
 
-            axios.post("http://localhost:8080/Cheddar/Investments/TrackedCompanies", {
+            axios.post(buildUrl("/Cheddar/Investments/TrackedCompanies"), {
                 "uid": this.state.uid,
                 updatedCompanies: companies,
                 }).then(res => {
@@ -342,14 +343,13 @@ class Investments extends React.Component {
         }
         if(proceed){
             investments.splice(i,0,investment);
-            axios.post("http://localhost:8080/Cheddar/Investments", {
+            axios.post(buildUrl("/Cheddar/Investments"), {
                 "uid": this.state.uid,
                 "investments": investments,
             }).then(res => {
                 this.showInfoModal();
             });
         }
-        
         
     }
 

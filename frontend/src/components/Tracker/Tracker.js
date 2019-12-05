@@ -6,6 +6,7 @@ import SelectBudgetForm from './SelectBudgetForm';
 import DateFinder from "./DateFinder";
 import TransactionTable from '../Budgets/TransactionTable';
 import axios from 'axios';
+import buildUrl from '../../actions/connect';
 import '../../css/Transactions.css';
 
 
@@ -203,6 +204,7 @@ function Transactions() {
  		let queryTwo = `&endYear=${endDate.getFullYear()}&endMonth=${endDate.getMonth()}&endDay=${endDate.getDate() + 1}`;
  		let query = queryOne + queryTwo;
 
+<<<<<<< HEAD
  		axios.get(`http://localhost:8080/Cheddar/Transactions/DateRange/${userID}?${query}`)
  			.then(function (response) {
  				// handle success
@@ -211,6 +213,16 @@ function Transactions() {
  					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
  					//console.log(response.data[i].shortDate);
  				}
+=======
+		axios.get(buildUrl(`/Cheddar/Transactions/DateRange/${userID}?${query}`))
+			.then(function (response) {
+				// handle success
+				for (let i in response.data) {
+					let date = new Date(response.data[i].date);
+					response.data[i].shortDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+					//console.log(response.data[i].shortDate);
+				}
+>>>>>>> 3e205fa58d4dcb1da0781bfcc394407f606d5afb
 				// Update the transaction state
 				transactions = response.data;
 				calcTotals();
@@ -227,7 +239,7 @@ function Transactions() {
 	 */
 	const getBudgets = () => {
 		setLoading(true);
-		axios.get(`http://localhost:8080/Cheddar/Budgets/${userID}`)
+		axios.get(buildUrl(`/Cheddar/Budgets/${userID}`))
 			.then(function (response) {
 				// handle success
 

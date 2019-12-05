@@ -5,6 +5,7 @@ import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
 import DatePicker from "react-datepicker";
 import axios from 'axios';
 import '../../css/Budgets.css';
+import buildUrl from "../../actions/connect";
 
 function TransactionTable(props) {
   const [transactions, setTransactions] = useState(); // array of transactions to display
@@ -173,7 +174,7 @@ function TransactionTable(props) {
       date: transactionDate
     }
 
-    axios.put(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`,
+    axios.put(buildUrl(`/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`),
       tmpObj
     )
       .then((response) => {
@@ -188,7 +189,7 @@ function TransactionTable(props) {
 
   // server call to delete a transaction
   const deleteTransaction = () => {
-    axios.delete(`http://localhost:8080/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`)
+    axios.delete(buildUrl(`/Cheddar/Transactions/${props.userID}/${selectedTransaction._id}`))
       .then((response) => {
         // Handle success
         closeHandler();
