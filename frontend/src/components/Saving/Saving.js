@@ -9,17 +9,34 @@ import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
 import '../../css/SavingsModal.css'
 import CanvasJSReact from '../../assets/canvasjs.react';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 
 
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, monthlyCont, currSaved}) => (
+const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, monthlyCont, currSaved, favorite}) => (
     <div>
      <Collapsible trigger={title}
      triggerOpenedClassName="Collapsible__trigger--active"
-     triggerWhenOpen={<Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} type="button">Edit</Button>}
+     triggerWhenOpen={<div><Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} type="button">Edit</Button>
+                          <Button outline color={(favorite)?"primary":"secondary"} type="button" onClick={() => {
+                              if(favorite){
+                                axios.put(`http://localhost:8080/Cheddar/Savings/Unfavorite/${sessionStorage.getItem('user')}/${_id}`)
+                          			.catch((error) => {
+                          				console.log(error);
+                          			})
+                              }else{
+                                axios.put(`http://localhost:8080/Cheddar/Savings/Favorite/${sessionStorage.getItem('user')}/${_id}`)
+                          			.catch((error) => {
+                          				console.log(error);
+                          			})
+                              }
+                              window.location.reload(false);
+                            }}><FavoriteIcon />
+                          </Button>
+                      </div>}
      lazyRender
      easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
       <h2>{title}</h2>

@@ -154,7 +154,7 @@ export async function favSavings(uid, savingsId){
   }
 
   for(let i in savings){
-    if(savings[i]._id === savingsId){
+    if(savings[i]._id == savingsId){
       savings[i].favorite = true;
     }
     else if(savings[i].favorite === true){
