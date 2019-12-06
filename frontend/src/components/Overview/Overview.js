@@ -220,10 +220,6 @@ class Overview extends React.Component {
                 </Card>
               </Row>
 
-              <Row>
-                <FavoriteBudgetCard/>
-              </Row>
-
             </Col>
           </Row>
         </Container>
@@ -281,6 +277,10 @@ class Overview extends React.Component {
             </Row>
           </Container>
         </div>
+
+        <Row>
+          <FavoriteBudgetCard/>
+        </Row>
 
         <TipSequence
           page={"overview"}
