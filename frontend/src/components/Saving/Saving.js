@@ -21,11 +21,12 @@ var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, monthlyCont, currSaved, favorite}) => (
     <div>
      <Collapsible trigger={title}
+      id="trigger_title"
      triggerOpenedClassName="Collapsible__trigger--active"
-     triggerWhenOpen={<div className="triggerTop"><Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} className="editBtn" type="button">Edit</Button>
+     triggerWhenOpen={<div className="triggerTop"><Button outline color="secondary" onClick={() => History.push({pathname: `/editsavings/${_id}`})} className="editBtn" id="edit" type="button">Edit</Button>
                           <Button outline color={(favorite)?"primary":"secondary"} type="button" onClick={() => {
                               if(favorite){
-                                axios.put(`http://localhost:8080/Cheddar/Savings/Unfavorite/${sessionStorage.getItem('user')}/${_id}`)
+                                axios.put(buildUrl('/Cheddar/Savings/Unfavorite/' + sessionStorage.getItem('user') + '/' + _id))
                                 .then(() => {
                                   window.location.reload(false);
                                 })
@@ -33,7 +34,7 @@ const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, mon
                           				console.log(error);
                           			})
                               }else{
-                                axios.put(`http://localhost:8080/Cheddar/Savings/Favorite/${sessionStorage.getItem('user')}/${_id}`)
+                                axios.put(buildUrl('/Cheddar/Savings/Favorite/' + sessionStorage.getItem('user') +'/' +_id))
                                   .then(() => {
                                     window.location.reload(false);
                                   })
@@ -41,7 +42,7 @@ const SavingsPlan = ({_id, title, category, goalAmount, goalMonth, goalYear, mon
                           				console.log(error);
                           			})
                               }
-                            }} className="favButton"><FavoriteIcon />
+                            }} className="favButton" id="favorite"><FavoriteIcon />
                           </Button>
                       </div>}
      lazyRender
@@ -71,7 +72,7 @@ function AlertFunction() {
           We recommended you create a savings plan of at least six months of net living expenses to cover any financial surprises life throws your way. We can help you save here. Start by adding a Emergency plan above.
         </p>
         <br/>
-        <Button variant="outline-light" size="sm" onClick={() => {axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${sessionStorage.getItem('user')}/recommendSavings`)
+        <Button variant="outline-light" size="sm" onClick={() => {axios.put(buildUrl('/Cheddar/DisableToolTips/' + sessionStorage.getItem('user') + '/recommendSavings'))}
         .catch((error) => {
           console.error(error);
         }); setShow(false)}}>
@@ -150,7 +151,7 @@ class Saving extends React.Component {
         console.log(response);
         event.preventDefault();
         if(this.state.category == "Save for Emergency"){
-          axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${this.state.userID}/recommendSavings`)
+          axios.put(buildUrl('/Cheddar/DisableToolTips/' +this.state.userID + '/recommendSavings')
           .then(()=>{
             this.getSavings();
             this.getRecommendStatus();
@@ -241,7 +242,7 @@ class Saving extends React.Component {
   }
 
   getRecommendStatus = () => {
-    axios.get(`http://localhost:8080/Cheddar/ToolTips/${sessionStorage.getItem('user')}`)
+    axios.get(buildUrl('/Cheddar/ToolTips/' + sessionStorage.getItem('user')))
       .then((response) => {
         this.setState({ recommendPlan: response.data["recommendSavings"] });
       })
@@ -282,13 +283,13 @@ class Saving extends React.Component {
    };
     return (
       <div className="BigDivArea">
-        <h3 className="titleSpace">Savings Goals</h3>
+        <h3 className="titleSpace" id="page-header">Savings Goals</h3>
           {(savings.length > 0 && savings[0])
             ? savings.map(plan => <SavingsPlan {...plan} />)
             : <p>You have no savings plans. Why don't you add one below</p>}
         <br/>
          <span className="input-group-btn">
-              <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
+              <Button outline color="secondary" id="add-button" onClick={this.handleClick} type="button">Add +</Button>
         </span>
 
         <Notifications
@@ -381,6 +382,30 @@ class Saving extends React.Component {
             </Button>
           </Modal.Footer>
         </Modal>
+
+        <TipSequence
+            page={"savings"}
+            tips={[
+                {
+                text: "The savings page is the place to create and view savings plans for new purchases or to save for life's surprises.",
+                target: "page-header"
+                }, {
+                text: "Click the \"Add\" button to begin creating a new savings plan",
+                target: "add-button",
+                }, {
+                text: "Click this bar to show more information about a savings plan",
+                target: "trigger_title",
+                }, {
+                text: "Click the \"Edit\" button to edit a savings plan",
+                target: "edit",
+                }, {
+                text: "Click the \"Favorite\" button to have that savings plan appear on the overview page",
+                target: "favorite",
+                },
+                        
+                        
+            ]}
+        />
       </div>
     );
   }
