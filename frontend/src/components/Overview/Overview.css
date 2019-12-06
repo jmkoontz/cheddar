@@ -21,3 +21,29 @@
 .rbc-month-row:hover {
 	cursor: pointer;
 }
+
+#info-column {
+	border: 1px solid rgba(0,0,0,.125);
+	border-radius: .25rem;
+	text-align: left;
+	padding: 15px 25px 15px 25px;
+}
+
+#info-column .card {
+	margin: 0;
+}
+
+#info-column .card-body {
+	padding: 5px 15px 5px 15px;
+	border: none;
+}
+
+#info-column .card-title {
+	margin: 0;
+	font-size: 18px;
+}
+
+#info-column .card-body {
+	margin: 0;
+	font-size: 14px;
+}
