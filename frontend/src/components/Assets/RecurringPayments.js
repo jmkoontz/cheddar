@@ -211,6 +211,7 @@ class RecurringPayments extends Component {
       amount: amount,
       start: new Date(date),
       end: new Date(date),
+      id: 345
     };
     this.saveToCalendar(event);
     let payments = this.state.payments;
