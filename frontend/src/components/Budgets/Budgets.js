@@ -52,6 +52,7 @@ function Budgets() {
 		setPickedTimeFrame("monthly");
 		setBudgetName("");
 		setIncome(0);
+		setButtonDisplay(false);
 	}
 
   /**
@@ -288,6 +289,14 @@ function Budgets() {
 		() => {
 			getBudgets();
 		}, [userID]
+	);
+
+	// clear modal values whenever it closes
+	useEffect(
+		() => {
+			if (modal === false)
+				closeModal();
+		}, [modal]
 	);
 
 	const formInfo = {
