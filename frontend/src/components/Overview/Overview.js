@@ -241,7 +241,7 @@ class Overview extends React.Component {
                     Top Recurring Payment
                   </CardTitle>
                   <CardBody>
-                    Rent: $1500 due on 2019-11-25
+                    Rent: $1500 due on January 1st, 2020
                   </CardBody>
                 </Card>
               </Row>

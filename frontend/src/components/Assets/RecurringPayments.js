@@ -52,7 +52,7 @@ class RecurringPayments extends Component {
       show1: {
         payment_name: "Rent",
         amount: "1500",
-        date: "2019-11-25",
+        date: "2020-01-01",
         timePeriod: "Monthly"
       },
 
@@ -81,13 +81,13 @@ class RecurringPayments extends Component {
 
     };
 
-    //let payments = this.state.payments;
-    //payments.push(this.state.show1);
+    let payments = this.state.payments;
+    payments.push(this.state.show1);
     //payments.push(this.state.show2);
     //payments.push(this.state.show3);
-    //this.setState({
-    //  payments: payments,
-    //})
+    this.setState({
+      payments: payments,
+    });
   }
 
   disableTips = () => {
@@ -205,12 +205,14 @@ class RecurringPayments extends Component {
       timePeriod: timePeriod,
       date: date
     };
+    let d = new Date(date);
+    let fixed_date = new Date( d.getTime() - d.getTimezoneOffset() * -60000 );
 
     let event = {
       title: payment_name,
       amount: amount,
-      start: new Date(date),
-      end: new Date(date),
+      start: fixed_date,
+      end: fixed_date,
       id: 345
     };
     this.saveToCalendar(event);
