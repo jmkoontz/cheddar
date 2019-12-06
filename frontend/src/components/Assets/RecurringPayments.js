@@ -19,11 +19,15 @@ import {
   Table,
   Nav,
   NavItem,
-  NavLink,
+  NavLink, Popover, PopoverHeader, PopoverBody, ButtonGroup,
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
 import History from "../../history";
+import axios from "axios";
+import buildUrl from "../../actions/connect";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faAngleRight} from "@fortawesome/free-solid-svg-icons";
 
 class RecurringPayments extends Component {
 
@@ -68,6 +72,12 @@ class RecurringPayments extends Component {
 
       payments: [],
 
+      userID: sessionStorage.getItem('user'),
+      tipsOn: false,
+      tipsClosed: false,
+      tipIndex: 0,
+      tipArray: [true, false, false],
+
     };
 
     let payments = this.state.payments;
@@ -77,6 +87,64 @@ class RecurringPayments extends Component {
     this.setState({
       payments: payments,
     })
+  }
+
+  disableTips = () => {
+    let self = this;
+    axios.put(buildUrl(`/Cheddar/DisableToolTips/${this.state.userID}/recurring-payments`))
+      .then((response) => {
+        self.setState({
+          tipsClosed: true,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  popClose = (index) => {
+    this.setState({tipsClosed: true});
+  };
+
+  // helper for closing a tool tip, takes the index of the tool tip to toggle
+  popFinish = (index) => {
+    let tmpArray = this.state.tipArray;
+    tmpArray[index] = !tmpArray[index];
+    this.setState({tipArray: tmpArray});
+    this.setState({tipsClosed: false});
+    this.disableTips();
+  };
+
+  // helper for opening the previous tool tip, takes the index of the tool tip to toggle
+  popPrev = (index) => {
+    let newIndex = index - 1;
+    let tmpArray = this.state.tipArray;
+    tmpArray[index] = !tmpArray[index];
+    tmpArray[newIndex] = !tmpArray[newIndex];
+    this.setState({tipArray: tmpArray});
+    this.setState({tipIndex: newIndex});
+  };
+
+  // helper for opening the next tool tip, takes the index of the tool tip to toggle
+  popNext = (index) => {
+    let newIndex = index + 1;
+    let tmpArray = this.state.tipArray;
+    tmpArray[index] = !tmpArray[index];
+    tmpArray[newIndex] = !tmpArray[newIndex];
+    this.setState({tipArray: tmpArray});
+    this.setState({tipIndex: newIndex});
+  };
+
+  setTipsClosed = (closed) => {
+    this.setState({
+      tipsClosed: closed,
+    });
+  };
+
+  componentDidMount() {
+    this.setState({
+      tipsOn: true,
+    });
   }
 
   openModal = () => {
@@ -315,7 +383,7 @@ class RecurringPayments extends Component {
         <div className='right'>
           <Row>
             <Col>
-              <Button color='primary' size='md' onClick={this.openModal}>Add New Recurring Payment</Button>
+              <Button id="Popover1" color='primary' size='md' onClick={this.openModal}>Add New Recurring Payment</Button>
             </Col>
           </Row>
         </div>
@@ -349,6 +417,44 @@ class RecurringPayments extends Component {
           })}
           </tbody>
         </Table>
+
+        {this.state.tipsOn
+          ?
+          <Popover placement="bottom" isOpen={this.state.tipArray[this.state.tipIndex] && this.state.tipIndex === 0}
+                   target={"Popover1"}>
+            <PopoverHeader>1/1 Tool Tip:</PopoverHeader>
+            <PopoverBody>
+              {this.state.tipsClosed
+                ?
+                <div>
+                  <p>By clicking finish, tool tips will be disabled on this page and must be renabled from the settings. Are
+                    you sure you want to continue?</p>
+                  <Row>
+                    <Col>
+                      <Button onClick={() => this.setTipsClosed(!this.state.tipsClosed)} color="primary">Go Back</Button>
+                    </Col>
+                    <Col>
+                      <Button onClick={() => this.popFinish(this.state.tipIndex)} color="danger">Finish</Button>
+                    </Col>
+                  </Row>
+                </div>
+                :
+                <div>
+                  <p>Click this button to add a new recurring payment to your list.</p>
+                  <Row>
+                    <Col sm={6}>
+                    </Col>
+                    <Col sm={6}>
+                      <Button onClick={() => this.popClose(0)}>Close</Button>
+                    </Col>
+                  </Row>
+                </div>
+              }
+            </PopoverBody>
+          </Popover>
+          :
+          null
+        }
 
       </div>
     );

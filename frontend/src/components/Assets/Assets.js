@@ -242,7 +242,7 @@ class Assets extends Component {
     return (
       <div className='divArea'>
         <div style={{height: '2em'}}/>
-        <Nav justified='true' tabs>
+        <Nav justified={true} tabs>
           <NavItem>
             <NavLink active onClick={this.goToAssets}>
               <b>Assets</b>
