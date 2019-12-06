@@ -108,6 +108,10 @@ class FavoriteBudgetCard extends Component {
 
   };
 
+  drilldownStub = () => {
+    // empty - needs to exist for drilldown
+  }
+
   render(){
 
     if(!this.state.loading) {
@@ -120,7 +124,7 @@ class FavoriteBudgetCard extends Component {
           <CardBody>
             <Label>{this.state.favoriteBudget.name}</Label>
             <Pie data={this.state.favoriteBudget.budgetCategories} spendingByCategory={this.state.spendingByCategory}
-                 setTableMode={"all"} setTableCategory={''} />
+                 setTableMode={this.drilldownStub} setTableCategory={this.drilldownStub} />
           </CardBody>
         </Card>
       );
