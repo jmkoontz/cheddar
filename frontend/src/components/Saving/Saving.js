@@ -206,16 +206,20 @@ class Saving extends React.Component {
     var yrs = Math.floor(totalMonths / 12);
     var mnths = totalMonths % 12;
     console.log("Months: " + mnths + " Years: " + yrs + " (" + totalMonths + ")");
-    yrs += (new Date()).getFullYear();
     mnths += (new Date()).getMonth();
     if(mnths > 12){
       mnths -= 12;
       yrs++;
     }
-    console.log(mnths + " " + yrs);
-    if(this.state.year < yrs || (this.state.year == yrs && monthNames.indexOf(this.state.month) < mnths)){
-        this.setState({month: monthNames[mnths - 1], year: yrs})
+    if(yrs >= 75){
+      yrs = 74;
     }
+    yrs += (new Date()).getFullYear();
+    console.log(mnths + " " + yrs);
+    console.log( monthNames[mnths - 1] + " " + yrs);
+    //if(this.state.year < yrs || (this.state.year == yrs && monthNames.indexOf(this.state.month) < mnths)){
+        this.setState({month: monthNames[mnths - 1], year: yrs})
+    //}
   }
 
   getNotifications = () => {
@@ -254,7 +258,7 @@ class Saving extends React.Component {
 
 
   render () {
-    const years = Array.from(new Array(20),(val, index) => index + this.state.goalDate.year);
+    const years = Array.from(new Array(75),(val, index) => index + this.state.goalDate.year);
     const savings = this.state.savingsList;
     var status = this.state.recommendPlan;
     const options = {
