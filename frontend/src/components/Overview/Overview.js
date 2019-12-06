@@ -18,6 +18,7 @@ import buildUrl from '../../actions/connect';
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
 import Tip from "../Tip/Tip";
+import FavoriteBudgetCard from "./FavoriteBudgetCard";
 
 class Overview extends React.Component {
   constructor (props) {
@@ -329,6 +330,10 @@ class Overview extends React.Component {
             </Row>
           </Container>
         </div>
+
+        <Row>
+          <FavoriteBudgetCard/>
+        </Row>
 
         <TipSequence
           page={"overview"}

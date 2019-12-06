@@ -176,7 +176,7 @@ class CreateAccount extends Component {
 
                 <div style={{display: 'flex', justifyContent: 'center'}}>
 
-                  <Button className='signInButton'> Create Account </Button>
+                  <Button color='primary' size='lg'> Create Account </Button>
 
                 </div>
 

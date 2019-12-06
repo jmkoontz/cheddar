@@ -85,7 +85,7 @@ class SignIn extends Component {
                 </Alert>
 
                 <div style={{display: 'flex', justifyContent: 'center'}}>
-                  <Button type='submit' className='signInButton'> Sign In </Button>
+                  <Button type='submit' color='primary'> Sign In </Button>
                 </div>
 
                 <div style={{height: '1em'}}/>
@@ -93,7 +93,7 @@ class SignIn extends Component {
               </Form>
 
               <div style={{display: 'flex', justifyContent: 'center'}}>
-                <Button className='signInButton' onClick={this.createAccount}> Create New Account </Button>
+                <Button color='primary' onClick={this.createAccount}> Create New Account </Button>
               </div>
 
               <div/>
