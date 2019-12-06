@@ -77,16 +77,17 @@ class RecurringPayments extends Component {
       tipsClosed: false,
       tipIndex: 0,
       tipArray: [true, false, false],
+      event: {},
 
     };
 
-    let payments = this.state.payments;
-    payments.push(this.state.show1);
-    payments.push(this.state.show2);
-    payments.push(this.state.show3);
-    this.setState({
-      payments: payments,
-    })
+    //let payments = this.state.payments;
+    //payments.push(this.state.show1);
+    //payments.push(this.state.show2);
+    //payments.push(this.state.show3);
+    //this.setState({
+    //  payments: payments,
+    //})
   }
 
   disableTips = () => {
@@ -204,6 +205,14 @@ class RecurringPayments extends Component {
       timePeriod: timePeriod,
       date: date
     };
+
+    let event = {
+      title: payment_name,
+      amount: amount,
+      start: new Date(date),
+      end: new Date(date),
+    };
+    this.saveToCalendar(event);
     let payments = this.state.payments;
     payments.push(payment);
     this.setState({
@@ -211,6 +220,12 @@ class RecurringPayments extends Component {
       modal: false,
     });
     this.forceUpdate();
+  };
+
+  saveToCalendar = (event) => {
+    axios.post(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user')), event).then((resp) => {
+      console.log(resp);
+    });
   };
 
   removeItem = (ref, i) => {
