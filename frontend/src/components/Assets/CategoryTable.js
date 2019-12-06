@@ -1,7 +1,22 @@
 import React, { Component } from 'react';
-import { Modal, ModalHeader, ModalBody, Input, Form, Button, Row, Col, Table} from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Input,
+  Form,
+  Button,
+  Row,
+  Col,
+  Table,
+  Popover,
+  PopoverHeader,
+  PopoverBody, ButtonGroup
+} from 'reactstrap';
 import {InputGroup, InputGroupAddon} from 'reactstrap';
 import '../Accounts/SignIn.css'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faAngleRight} from "@fortawesome/free-solid-svg-icons";
 
 class CategoryTable extends Component {
 
@@ -14,8 +29,10 @@ class CategoryTable extends Component {
 
       modal_visible: false,
       totalAssetValue: 0,
-    };
 
+      tipsOn: false,
+      tipsClosed: false,
+    };
     this.checkIfExample();
   }
 
@@ -121,16 +138,23 @@ class CategoryTable extends Component {
     this.setState({ modal_visible: false });
   };
 
+  componentDidMount() {
+    this.setState({
+      tipsOn: true,
+    });
+  }
+
   render (){
+
     return (
       <div>
         <Row>
           <h3>{this.state.category_name}</h3>
         </Row>
         <Row>
-          <Button className='removeCategory' color='danger' onClick={() => this.props.removeCategory(this.state.category_name)}>Remove</Button>
-          <Col md='9'/>
           <Button color='primary' size='md' onClick={this.openModal}>Add New Asset</Button>
+          <Col md='9'/>
+          <Button className='removeCategory' color='danger' onClick={() => this.props.removeCategory(this.state.category_name)}>Remove</Button>
         </Row>
         <div style={{height: '1em'}}/>
 
@@ -180,6 +204,7 @@ class CategoryTable extends Component {
           })}
           </tbody>
         </Table>
+
         <hr/>
       </div>
     );
