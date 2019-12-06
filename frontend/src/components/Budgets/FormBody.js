@@ -110,7 +110,7 @@ function FormBody(props) {
     localCategories[index].name = event.target.value;
     setLocalCategories(JSON.parse(JSON.stringify(localCategories)));
     props.setCategoryArr(localCategories);
-    console.log(localCategories[index].name)
+    // console.log(localCategories[index].name)
   }
 
   // create custom category
@@ -122,7 +122,7 @@ function FormBody(props) {
   // check if category is a custom category
   const isCustomCategory = (name) => {
     const presetNames = ['Entertainment', 'Food and Groceries', 'Savings', 'Debt',
-        'Housing', 'Gas', 'Utilities','Retirement'];
+        'Housing', 'Gas', 'Utilities', 'Retirement'];
 
     return !presetNames.includes(name);
   }

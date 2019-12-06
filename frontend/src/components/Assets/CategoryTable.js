@@ -130,7 +130,7 @@ class CategoryTable extends Component {
         <Row>
           <Button className='removeCategory' color='danger' onClick={() => this.props.removeCategory(this.state.category_name)}>Remove</Button>
           <Col md='9'/>
-          <Button className='assetButton' onClick={this.openModal}>Add New Asset</Button>
+          <Button color='primary' size='md' onClick={this.openModal}>Add New Asset</Button>
         </Row>
         <div style={{height: '1em'}}/>
 
@@ -151,14 +151,14 @@ class CategoryTable extends Component {
               </Row>
               <div style={{height: '1em'}}/>
               <Row>
-                <Col md='3'/>
-                <Button className='signInButton' size='sm'>Add</Button>
+                <Col md='5'/>
+                <Button color='primary' size='md'>Add</Button>
               </Row>
             </Form>
           </ModalBody>
         </Modal>
 
-        <Table dark>
+        <Table striped size='md'>
           <thead>
           <tr>
             <th>#</th>

@@ -8,16 +8,39 @@ import axios from 'axios';
 import Collapsible from 'react-collapsible';
 import '../../css/Collapsible.css';
 import CanvasJSReact from '../../assets/canvasjs.react';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import buildUrl from "../../actions/connect";
+import TipSequence from "../TipSequence/TipSequence";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate, minimumPayment}) => (
+const DebtModel = ({_id, category, nickname, initial, currBalance, interestRate, minimumPayment, favorite}) => (
   <div>
     <Collapsible trigger={category}
     triggerOpenedClassName="Collapsible__trigger--active"
-    triggerWhenOpen={<Button outline color="secondary" onClick={() => History.push({pathname: `/editdebts/${_id}`})} type="button">Edit</Button>}
+    triggerWhenOpen={<div className="triggerTop" id="trigger_title"><Button outline color="secondary" onClick={() => History.push({pathname: `/editdebts/${_id}`})} className="editBtn" id="edit" type="button">Edit</Button>
+                      <Button outline color={(favorite)?"primary":"secondary"} type="button" onClick={() => {
+                          if(favorite){
+                            axios.put(buildUrl('/Cheddar/Debts/Unfavorite/'+sessionStorage.getItem('user')+'/'+_id))
+                              .then(() => {
+                                window.location.reload(false);
+                              })
+                            .catch((error) => {
+                              console.log(error);
+                            })
+                          }else{
+                            axios.put(buildUrl('/Cheddar/Debts/Favorite/'+sessionStorage.getItem('user')+'/'+_id))
+                              .then(() => {
+                                window.location.reload(false);
+                              })
+                            .catch((error) => {
+                              console.log(error);
+                            })
+                          }
+                        }} className="favButton" id="favorite"><FavoriteIcon />
+                      </Button>
+                    </div>}
     lazyRender
     easing={'cubic-bezier(0.175, 0.885, 0.32, 2.275)'}>
       <h2>{nickname}</h2>
@@ -161,14 +184,14 @@ class Debts extends React.Component {
    };
     return (
       <div className="BigDivArea">
-        <h3 className="titleSpace">Debt Repayment Plan</h3><br/>
+        <h3 className="titleSpace" id="page-header">Debt Repayment Plan</h3><br/>
         {(debts.length > 0 && debts[0])
           ? debts.map(plan => <DebtModel {...plan} />)
           : <p>Keep track of all the debts you may have here. Start by adding one below</p>}
          <span className="input-group-btn">
-              <Button outline color="secondary" onClick={this.handleClick} type="button">Add +</Button>
+              <Button outline color="secondary" onClick={this.handleClick} type="button" id="add-button">Add +</Button>
         </span>
-          <Button outline color="info" onClick={() => History.push("/repaymentcalc")} type="button">Calculate Repayment Date</Button>
+          <Button outline color="info" onClick={() => History.push("/repaymentcalc")} type="button" id="repayment">Calculate Repayment Date</Button>
 
         <Modal show={this.state.show} onHide={this.handleClose} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
           <Modal.Header closeButton>
@@ -234,6 +257,32 @@ class Debts extends React.Component {
             </Button>
           </Modal.Footer>
         </Modal>
+        <TipSequence
+                    page={"debts"}
+                    tips={[
+                        {
+                        text: "The debts page is where you can keep track of all your current debts and watch as they disappear",
+                        target: "page-header"
+                        }, {
+                        text: "Click the \"Add\" button to begin add a new debt to track",
+                        target: "add-button",
+                        }, {
+                        text: "Click this bar to show more information about a debt",
+                        target: "trigger_title",
+                        }, {
+                        text: "Click the \"Edit\" button to edit a tracked debt",
+                        target: "edit",
+                        }, {
+                        text: "Click the \"Favorite\" button to have that debt appear on the overview page",
+                        target: "favorite",
+                        }, {
+                        text: "Click the \"Repayment\" button to go to the calculator page and see how long it would take you to pay off a debt",
+                        target: "repayment",
+                        },
+                        
+                        
+                    ]}
+                />
       </div>
     );
   }

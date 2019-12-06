@@ -226,6 +226,8 @@ function BudgetTabs(props) {
 
 		let tmpMoneyRemaining = props.curBudget.income;	// income for fixed amount budgets
 
+		//console.log(transacts);
+
 		for (let x = 0; x < transacts.length; x++) {
 			for (let y = 0; y < arrayOfObjects.length; y++) {
 				if (transacts[x].category === arrayOfObjects[y].name) {
@@ -258,7 +260,7 @@ function BudgetTabs(props) {
 
 	// switch between time periods for the current budget
 	const toggleTimePeriod = (i) => {
-		if (props.curBudget.type !== 'Custom')
+		if (props.curBudget.type !== 'Custom' && props.curBudget.type !== 'Percentage-Based')
 			return;
 
 		let start;
@@ -268,6 +270,7 @@ function BudgetTabs(props) {
 			setStartDate(currentStartDate);
 			setEndDate(currentEndDate);
 			setBudgetPeriodIndex(i);
+			setIsDisabled(false);
 			getTransactions();
 			return;
 		}
@@ -282,6 +285,7 @@ function BudgetTabs(props) {
 		setStartDate(start);
 		setEndDate(end);
 		setBudgetPeriodIndex(i);
+		setIsDisabled(true);
 		getOldTransactions(i);
 	};
 
@@ -349,6 +353,7 @@ function BudgetTabs(props) {
 		() => {
 			setTransactions([]);
 			setSpendingByCategory([]);
+			setIsDisabled(false);
 			checkToolTip();
 
 			if (props.curBudget) {
@@ -470,7 +475,7 @@ function BudgetTabs(props) {
 							<Col sm={1} />
 							<Col sm={5}>
 								<span className="label" id="title">{item.name}
-									<span hidden={!isDisabled}> (Expired)</span>
+									<span hidden={!isDisabled || item.type !== "Fixed Amount"}> (Expired)</span>
 								</span>
 								<div className="padTop">
 									{index === parseInt(props.tab) && props.curBudget && spendingByCategory

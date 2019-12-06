@@ -9,7 +9,8 @@ import {
   Row,
   Col,
   Label,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem
+  Nav,
+  Dropdown, DropdownToggle, DropdownMenu, DropdownItem, NavLink, NavItem
 } from 'reactstrap';
 import CategoryTable from "./CategoryTable";
 import '../Accounts/SignIn.css'
@@ -165,11 +166,30 @@ class Assets extends Component {
     History.push("/recurring-payments");
   };
 
+  goToAssets = () => {
+    History.push("/assets");
+  };
+
   render(){
 
     return (
       <div className='divArea'>
-        <h3 className="titleSpace">Assets</h3>
+        <div style={{height: '2em'}}/>
+        <Nav justified='center' tabs>
+          <NavItem>
+            <NavLink active onClick={this.goToAssets}>
+              <b>Assets</b>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink onClick={this.goToRecurringPayments}>
+              <b>Recurring Payments</b>
+            </NavLink>
+          </NavItem>
+        </Nav>
+
+        <div style={{height: '2em'}}/>
+
         <Row>
           <Label className='asset-label'>Total Asset Value: {this.getAssetValue()}</Label>
         </Row>
@@ -189,9 +209,6 @@ class Assets extends Component {
               <DropdownItem onClick={this.selectCurrency}>NZD</DropdownItem>
             </DropdownMenu>
           </Dropdown>
-        </Row>
-
-        <hr/>
 
         <Modal isOpen={this.state.modal} toggle={this.closeModal}>
           <ModalHeader toggle={this.closeModal}> Add A New Category </ModalHeader>
@@ -204,21 +221,19 @@ class Assets extends Component {
               </Row>
               <div style={{height: '1em'}}/>
               <Row>
-                <Col md='3'/>
-                <Button className='signInButton' size='sm'>Add</Button>
+                <Col md='5'/>
+                <Button color='primary' size='md'>Add</Button>
               </Row>
             </Form>
           </ModalBody>
         </Modal>
 
         <div className='right'>
-          <Row>
-            <Button size='sm' onClick={this.goToRecurringPayments}>Go To Recurring Payments</Button>
             <Col>
-              <Button className='signInButton' size='sm' onClick={this.openModal}>Add New Category</Button>
+              <Button color='primary' size='md' onClick={this.openModal}>Add New Category</Button>
             </Col>
-          </Row>
         </div>
+        </Row>
         <hr/>
 
         {this.state.show1

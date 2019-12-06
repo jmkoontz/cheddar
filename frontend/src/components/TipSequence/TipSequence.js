@@ -80,12 +80,24 @@ class TipSequence extends React.Component {
 
   render () {
     const tip = this.props.tips[this.state.step];
+    const checkUpdate = () => {
+      if (document.getElementById(tip.target)) {
+        this.forceUpdate();
+      } else {
+        setTimeout(checkUpdate, 500);
+      }
+    };
 
     if (!tip || !this.state.isReady)
       return null;
 
+    if (!document.getElementById(tip.target)) {
+      setTimeout(checkUpdate, 500);
+      return null;
+    }
+
     return (
-      <Popover placement={tip.placement ? tip.placement : "bottom"} isOpen={true} target={tip.target} boundariesElement="window">
+      <Popover modifiers={{flip: { behavior: ['auto']}}} placement={tip.placement ? tip.placement : "bottom"} isOpen={true} target={tip.target} boundariesElement="window">
         <PopoverHeader>{tip.title ? tip.title : "Tool Tip " + (this.state.step + 1) + "/" + this.props.tips.length + ":"}</PopoverHeader>
         <PopoverBody>
           {this.state.isClosing ?

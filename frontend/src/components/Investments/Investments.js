@@ -23,6 +23,7 @@ import '../App.css';
 import StocksGraph from "./StocksGraph";
 import GrowthGraph from "./GrowthGraph";
 import buildUrl from "../../actions/connect";
+import TipSequence from "../TipSequence/TipSequence"
 
 //Constant variable that contains investments tips to be used later
 
@@ -87,6 +88,10 @@ class Investments extends React.Component {
             key: process.env.AlphaVantageAPIKey,
             show: false,
             show2: false,
+            disableAddCompanyTip: true,
+            disableDoneButtonTip: true,
+            disableEditInvestmentTip: true,
+            
             companies: {
                 "Amazon": {"id":"AMZN","tracked":false},
                 "Apple": {"id":"AAPL","tracked":false},
@@ -113,6 +118,7 @@ class Investments extends React.Component {
             enteredInvestmentShares: 1,
             newInvestment: {},
             companyOptions: {},
+            isMounted: false,
         }
     }
 
@@ -133,6 +139,16 @@ class Investments extends React.Component {
                         selectedCompanies: res.data.trackedCompanies,
                         investments: res.data.investments,
                     },() => {
+                        if(this.state.selectedCompanies.length > 0){
+                            this.setState({
+                                disableDoneButtonTip: false,
+                            });
+                        }
+                        else{
+                            this.setState({
+                                disableDoneButtonTip: true,
+                            });
+                        }
                         var comps = this.state.selectedCompanies;
                         let i =0;
                         for(i = 0;i < comps.length; i++){
@@ -213,6 +229,7 @@ class Investments extends React.Component {
         var show = this.state.show;
         this.setState({
             show: !this.state.show,
+            disableAddCompanyTip: false,
         });
     }
 
@@ -275,6 +292,16 @@ class Investments extends React.Component {
                     },()=>{this.getData(company)});
             });
         }
+        if(companies.length > 0){
+                this.setState({
+                    disableDoneButtonTip: false,
+                });
+            }
+            else{
+                this.setState({
+                    disableDoneButtonTip: true,
+                });
+            }
         this.getData(company);
         
     }
@@ -314,6 +341,10 @@ class Investments extends React.Component {
 
 //updates the investment on the backend
     updateInvestment = () => {
+        if(this.state.enteredInvestmentShares == 0 || this.state.enteredInvestmentDate === ""){
+            alert("Please fill out all fields");
+            return;
+        }
         let investment = {};
         var dateKeys = Object.keys(this.state.data[this.state.companyName].data["Time Series (Daily)"]);
         investment["type"] = "stock";
@@ -437,6 +468,16 @@ class Investments extends React.Component {
         }
     }
 
+    enableToolTips = () => {
+        axios.put(buildUrl(`/Cheddar/EnableToolTips/${sessionStorage.getItem('user')}/investments`))
+        .then(()=>{
+            window.location.reload();
+        })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+
     render () {
         return (
             <div className="parent">
@@ -445,41 +486,45 @@ class Investments extends React.Component {
                 <Container className="topMargin bottomMargin" fluid="true">
                     <Row>
                         <Col sm={3}>
-                            <Button className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
+                            <Button id="add-button" className="add-company-button" variant="primary" onClick={this.showModal}>Add Company</Button>
                             
                         </Col>
                         <Col sm={1}>
-                            <DropdownButton id="dropdown-basic-button" title={this.state.defaultRate}>
-                                <Dropdown.Item onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
-                                <Dropdown.Item onSelect={() => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
+                            <DropdownButton id="dropdown-frequency-button" title={this.state.defaultRate}>
+                                <Dropdown.Item id="frequency-dropitem-daily" onSelect={() => {this.setFrequency("Daily")}}>Daily</Dropdown.Item>
+                                <Dropdown.Item id="frequency-propitem-weekly" onSelect={() => {this.setFrequency("Weekly")}}>Weekly</Dropdown.Item>
                             </DropdownButton>
                         </Col>
                         <Col sm={4}>
-                            <h3>Track Investments</h3>
+                            <h3 id="page-header">Track Investments</h3>
                         </Col>
                         
-                        <Col sm={4} className="text-right">
-                            <Button variant="link" onClick={this.showModal2}>Tips</Button>
+                        <Col sm={3} className="text-right">
+                            <Button id="stocks-tips" variant="link" onClick={this.showModal2}>Investment<br/>Tips</Button>
+                        </Col>
+                        <Col sm={1} className="text-right">
+                            <Button id="tool-tips" variant="link" onClick={()=>{this.enableToolTips()}}>Tool<br/>Tips</Button>
                         </Col>
                     </Row>
                 </Container>
 
                 {/* Container that contains all stocks and growth graphs */}
-                <div className="cardContainer">
+                <div id="all-graphs-div-container" className="cardContainer">
                     <Container fluid="true">
                         <Row>
-                            <Col className="card">
+                            <Col id="stocks-graphs-col" className="card">
                                 {
                                     /* If all desired stock data is loaded and the number of companies to show is greater than 0
                                     then iterate through each of the selected companies and return a stocks graph and update button.
                                     Otherwise, return the loader. */
                                     (Object.keys(this.state.data).length >= 1) ?
                                         this.state.selectedCompanies.map((name,index)=>{
+                                            console.log(name+"Graph");
                                             if(this.state.data[name]){
                                             return(
                                                 <div>
                                                     <StocksGraph frequency={this.state.defaultRate} data={this.state.data[name]} key={name+"Graph"} companyName={name}/>
-                                                    <Button onClick={() => {this.showInfoModal(name)}}>Add/Edit Investment</Button>
+                                                    <Button key={name+"GraphButton"} onClick={() => {this.showInfoModal(name)}}>Add/Edit Investment</Button>
                                                 </div>
                                             )
                                             }
@@ -494,7 +539,7 @@ class Investments extends React.Component {
                                 }
                             </Col>
 
-                            <Col className="card">
+                            <Col id="growth-graphs-col" className="card">
                                 {
                                     /* If all desried stock data is loaded and investments have been gathered from the backend, then iterate
                                        through each investment, determine if the investment should be displayed and return the growth graph
@@ -552,7 +597,7 @@ class Investments extends React.Component {
                                         )
                                     })
                                 }
-                            <Button variant="primary" onClick={this.showModal}>
+                            <Button id="select-companies-done-button" variant="primary" onClick={this.showModal}>
                                 Done
                             </Button>
                         </Form>
@@ -570,18 +615,47 @@ class Investments extends React.Component {
                         <Form>
                             <Form.Group controlId="formBasic">
                                 <Form.Label>Investment Shares</Form.Label>
-                                <Form.Control as="input" type="number" defaultValue={this.state.updateInvestmentShares} onChange={(event)=>{this.updateInvestmentShares(event)}}/>
+                                <Form.Control id="investment-shares-input" as="input" type="number" defaultValue={this.state.updateInvestmentShares} onChange={(event)=>{this.updateInvestmentShares(event)}}/>
                                 <Form.Label>Date Invested</Form.Label>
-                                <Form.Control as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
+                                <Form.Control id="investment-date-input" as="input" type="date" defaultValue={this.state.updateInvestmentDate} onChange={(event)=>{this.updateInvestmentDate(event)}}/>
                                 <Form.Label>Favorite</Form.Label>
-                                <Form.Control as="input" type="checkbox" onChange={(event)=>{this.updateInvestmentFavorite(event)}}/>
+                                <Form.Control id="investment-favorite-checkbox" as="input" type="checkbox" onChange={(event)=>{this.updateInvestmentFavorite(event)}}/>
                             </Form.Group>
-                            <Button variant="primary" onClick={() => this.updateInvestment()}>
+                            <Button id="edit-investment-submit-button" variant="primary" onClick={() => this.updateInvestment()}>
                                 Submit
                             </Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
+                <TipSequence
+                    page={"investments"}
+                    tips={[
+                        {
+                        text: "The investment page is the place to view how various company stocks are doing and how your investments in those companies are doing!",
+                        target: "page-header"
+                        }, {
+                        text: "Click the \"Add Company\" button to select a company you wish to see stock data on",
+                        target: "add-button",
+                        }, {
+                        text: "Click this button to show a dropdown of graph frequency options",
+                        target: "dropdown-frequency-button",
+                        }, {
+                        text: "The column on the left will display closing stock prices for your selected companies and a button to add a current investment you hold at the company",
+                        target: "all-graphs-div-container",
+                        }, {
+                        text: "The column on the right will display your investment growth in a particular company",
+                        target: "all-graphs-div-container",
+                        },{
+                            text: "Click here to read about some investing tips",
+                        target: "stocks-tips",
+                        }, {
+                            text: "After closing out these tips, click here to show them again",
+                        target: "tool-tips",
+                        }, 
+                        
+                        
+                    ]}
+                    />
             </div>
         );
     }
