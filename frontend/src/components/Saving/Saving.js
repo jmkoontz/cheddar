@@ -13,6 +13,7 @@ import CanvasJSReact from '../../assets/canvasjs.react';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import Notifications from "../Notifications/Notifications";
 import buildUrl from "../../actions/connect";
+import TipSequence from '../TipSequence/TipSequence';
 
 
 var CanvasJS = CanvasJSReact.CanvasJS;
@@ -72,10 +73,17 @@ function AlertFunction() {
           We recommended you create a savings plan of at least six months of net living expenses to cover any financial surprises life throws your way. We can help you save here. Start by adding a Emergency plan above.
         </p>
         <br/>
-        <Button variant="outline-light" size="sm" onClick={() => {axios.put(buildUrl('/Cheddar/DisableToolTips/' + sessionStorage.getItem('user') + '/recommendSavings'))}
-        .catch((error) => {
-          console.error(error);
-        }); setShow(false)}}>
+        <Button
+          variant="outline-light"
+          size="sm"
+          onClick={() => {
+            axios.put(buildUrl('/Cheddar/DisableToolTips/' + sessionStorage.getItem('user') + '/recommendSavings'))
+            .catch((error) => {
+              console.error(error);
+            });
+            setShow(false);
+          }}
+        >
           Don't Notify Me About This Again
         </Button>
       </Alert>
@@ -151,7 +159,7 @@ class Saving extends React.Component {
         console.log(response);
         event.preventDefault();
         if(this.state.category == "Save for Emergency"){
-          axios.put(buildUrl('/Cheddar/DisableToolTips/' +this.state.userID + '/recommendSavings')
+          axios.put(buildUrl('/Cheddar/DisableToolTips/' +this.state.userID + '/recommendSavings'))
           .then(()=>{
             this.getSavings();
             this.getRecommendStatus();
@@ -384,7 +392,7 @@ class Saving extends React.Component {
         </Modal>
 
         <TipSequence
-            page={"savings"}
+            page={"saving"}
             tips={[
                 {
                 text: "The savings page is the place to create and view savings plans for new purchases or to save for life's surprises.",
@@ -392,9 +400,6 @@ class Saving extends React.Component {
                 }, {
                 text: "Click the \"Add\" button to begin creating a new savings plan",
                 target: "add-button",
-                }, {
-                text: "Click this bar to show more information about a savings plan",
-                target: "trigger_title",
                 }, {
                 text: "Click the \"Edit\" button to edit a savings plan",
                 target: "edit",
