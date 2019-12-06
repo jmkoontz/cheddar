@@ -52,3 +52,15 @@
  .rotate90 {
 	 transform: rotateZ(90deg);
 }
+
+.favButton{
+  float: right;
+}
+
+.triggerTop{
+  width: 100%;
+}
+
+.editBtn{
+  float: left;
+}

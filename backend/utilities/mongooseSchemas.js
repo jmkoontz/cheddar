@@ -49,7 +49,8 @@ export const savingsSchema = new mongoose.Schema({
   goalYear: Number,
   goalMonth: String,
   monthlyContribution: Number,
-  currSaved: Number
+  currSaved: Number,
+  favorite: Boolean
 });
 
 export const debtSchema = new mongoose.Schema({
@@ -58,7 +59,8 @@ export const debtSchema = new mongoose.Schema({
   initial: Number,
   currBalance: Number,
   interestRate: Number,
-  minimumPayment: Number
+  minimumPayment: Number,
+  favorite: Boolean
 });
 
 export const investmentSchema = new mongoose.Schema({
@@ -100,6 +102,7 @@ export const toolTipScheduleSchema = new mongoose.Schema({
   overview: Boolean,
   budgets: Boolean,
   saving: Boolean,
+  recommendSavings: Boolean,
   investments: Boolean,
   debts: Boolean,
   transactions: Boolean,

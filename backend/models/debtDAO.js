@@ -101,3 +101,68 @@ export function deleteDebt(uid, debtID) {
       return Promise.reject(err);
     });
 }
+
+export async function favDebt(uid, debtId){
+  var debts;
+  try{
+    debts = await getAllDebts(uid);
+  } catch (err){
+    return Promise.reject(err);
+  }
+
+  for(let i in debts){
+    if(debts[i]._id == debtId){
+      debts[i].favorite = true;
+    }
+    else if(debts[i].favorite === true){
+      debts[i].favorite = false;
+    }
+  }
+
+  return userModel.findOneAndUpdate(
+    {'_id': uid},
+    {'$set': {'debts': debts}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or debt not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export function unfavDebt(uid, debtId){
+  return userModel.findOneAndUpdate(
+    {'_id': uid, 'debts._id': debtId},
+    {'$set': {'debts.$.favorite': false}},
+    {'new': true})
+    .then((updatedUser) => {
+      if (updatedUser == null)
+        return Promise.reject('UserError: User or debt not found');
+
+      return Promise.resolve(updatedUser);
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}
+
+export async function getfavDebt(uid) {
+  var debts;
+  try{
+    debts = await getAllDebts(uid);
+  } catch (err){
+    return Promise.reject(err);
+  }
+
+  for(let i in debts){
+    if(debts[i].favorite === true){
+      return Promise.resolve(debts[i]);
+    }
+  }
+
+  return Promise.resolve(-1);
+}
