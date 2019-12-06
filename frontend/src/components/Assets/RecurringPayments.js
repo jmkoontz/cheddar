@@ -206,12 +206,12 @@ class RecurringPayments extends Component {
         <Nav justified='center' tabs>
           <NavItem>
             <NavLink onClick={this.goToAssets}>
-              Assets
+              <b>Assets</b>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink active onClick={this.goToRecurringPayments}>
-              Recurring Payments
+              <b>Recurring Payments</b>
             </NavLink>
           </NavItem>
         </Nav>
@@ -258,8 +258,8 @@ class RecurringPayments extends Component {
               </Row>
               <div style={{height: '1em'}}/>
               <Row>
-                <Col md='3'/>
-                <Button className='signInButton' size='sm'>Add</Button>
+                <Col md='5'/>
+                <Button color='primary' size='md'>Add</Button>
               </Row>
             </Form>
           </ModalBody>
@@ -305,8 +305,8 @@ class RecurringPayments extends Component {
               </Row>
               <div style={{height: '1em'}}/>
               <Row>
-                <Col md='3'/>
-                <Button className='signInButton' size='sm'>Confirm Edit</Button>
+                <Col md='5'/>
+                <Button color='primary' size='md'>Confirm Edit</Button>
               </Row>
             </Form>
           </ModalBody>
@@ -321,7 +321,7 @@ class RecurringPayments extends Component {
         </div>
         <hr/>
 
-        <Table dark>
+        <Table striped size='md'>
           <thead>
           <tr>
             <th>#</th>

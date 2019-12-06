@@ -268,7 +268,7 @@ class AccountSettings extends Component {
               <Input type='password' id='confirmpassword' bsSize='lg' placeholder='Confirm Password' style={{ border: '1px solid #4682B4' }} />
             </Col>
             <Col md='3'>
-              <Button className='signInButton' size='lg'> Update Password </Button>
+              <Button color='primary' size='lg'> Update Password </Button>
             </Col>
           </Row>
 

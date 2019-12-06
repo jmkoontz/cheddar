@@ -226,6 +226,8 @@ function BudgetTabs(props) {
 
 		let tmpMoneyRemaining = props.curBudget.income;	// income for fixed amount budgets
 
+		//console.log(transacts);
+
 		for (let x = 0; x < transacts.length; x++) {
 			for (let y = 0; y < arrayOfObjects.length; y++) {
 				if (transacts[x].category === arrayOfObjects[y].name) {
