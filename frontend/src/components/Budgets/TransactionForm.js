@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import '../../css/Budgets.css';
+import buildUrl from "../../actions/connect";
 
 function TransactionForm(props) {
 
@@ -14,6 +15,8 @@ function TransactionForm(props) {
   const [transactionName, setTransactionName] = useState(); // The name for a new transaction
   const [transactionAmount, setTransactionAmount] = useState(); // The amount for a new transaction
   const [date, setDate] = useState(new Date());
+  const [retirementHistory, setRetirementHistory] = useState([]);
+  const [totalRetirement, setTotalRetirement] = useState(0);
 
 
   /**
@@ -31,7 +34,27 @@ function TransactionForm(props) {
   }
 
   const createTransaction = () => {
-    axios.post(`http://localhost:8080/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`,
+      if(transactionCate === "Retirement"){
+          let contribution = {};
+            contribution["date"] = date;
+            contribution["amount"] = transactionAmount;
+            
+            var history = retirementHistory;
+            history.push(contribution);
+
+            axios.post(buildUrl(`/Cheddar/Retirement/Contribution`), {
+                "uid": props.userID,
+                "history": history,
+                "previousTotal": totalRetirement,
+                }).then(res => {
+                    var amount = transactionAmount;
+                    setRetirementHistory(history);
+                    setTotalRetirement(parseInt(totalRetirement) + parseInt(amount));
+
+                    //console.log(res);
+                });
+      }
+    axios.post(buildUrl(`/Cheddar/Budgets/Budget/Transaction/${props.userID}/${props.curBudget.name}/${transactionCate}`),
       {
         name: transactionName,
         amount: transactionAmount,
@@ -59,11 +82,22 @@ function TransactionForm(props) {
   }
 
   useEffect(
+    
     () => {
-
+        getHistory();
     },
     [props]
   );
+
+ const getHistory = async () => {
+      var test = {uid: props.userID};
+        var res = await axios.get(buildUrl(`/Cheddar/Retirement`), {
+            params: test,
+        });
+            setRetirementHistory(res.data.history);
+            setTotalRetirement(res.data.total);
+       
+  }
 
   return (
     <div >

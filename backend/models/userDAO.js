@@ -60,7 +60,8 @@ export function createUser(user) {
         return Promise.reject('UserError: Each field must have information');
     }
   }
-
+  console.log("DEBUGGING");
+  console.log(user);
   return userModel.create(user)
     .then((res) => {
       return Promise.resolve(res);
@@ -204,8 +205,12 @@ export async function getNotifications(uid, isEmail) {
       cmp.setMilliseconds(0);
 
       if (cmp >= event.start && event.start >= today) {
-        notifications[event.id] = {
-          id: event.id,
+        let id = "" + event.id;
+        if (event.subId)
+          id += "-" + event.subId;
+
+        notifications[id] = {
+          id: id,
           title: event.title,
           period: period
         };
@@ -231,10 +236,11 @@ export async function pushEmailNotifications() {
     notifications.forEach((notification) => {
       emailString += "\t- " + notification.title + "\n";
       const periods = ["month", "twoWeek", "week", "day", "dayOf"];
+      const id = notification.id.split("-");
 
       //set email sent to true for this period
       for (let i = 0; i < events.length; i++) {
-        if (events[i].id == notification.id) {
+        if (events[i].id == id[0] && (id.length === 1 || id[1] == events[i].subId)) {
           if (!events[i].emailed)
             events[i].emailed = {};
 

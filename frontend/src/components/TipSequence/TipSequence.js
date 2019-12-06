@@ -3,6 +3,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleLeft, faAngleRight} from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import axios from "axios";
+import buildUrl from "../../actions/connect";
 
 class TipSequence extends React.Component {
   constructor (props) {
@@ -20,7 +21,7 @@ class TipSequence extends React.Component {
   };
 
   getTipState = () => {
-    axios.get(`http://localhost:8080/Cheddar/ToolTips/${sessionStorage.getItem('user')}`)
+    axios.get(buildUrl(`/Cheddar/ToolTips/${sessionStorage.getItem('user')}`))
       .then((response) => {
         if (response.data[this.props.page]) {
           this.setState({
@@ -39,7 +40,7 @@ class TipSequence extends React.Component {
   };
 
   exitTips = () => {
-    axios.put(`http://localhost:8080/Cheddar/DisableToolTips/${sessionStorage.getItem('user')}/${this.props.page}`)
+    axios.put(buildUrl(`/Cheddar/DisableToolTips/${sessionStorage.getItem('user')}/${this.props.page}`))
       .then((response) => {
         this.setState({
           step: -1
@@ -84,12 +85,12 @@ class TipSequence extends React.Component {
       return null;
 
     return (
-      <Popover placement={tip.placement ? tip.placement : "bottom"} isOpen={true} target={tip.target} boundariesElement="window">
+      <Popover modifiers={{flip: { behavior: ['auto']}}} placement={tip.placement ? tip.placement : "bottom"} isOpen={true} target={tip.target} boundariesElement="window">
         <PopoverHeader>{tip.title ? tip.title : "Tool Tip " + (this.state.step + 1) + "/" + this.props.tips.length + ":"}</PopoverHeader>
         <PopoverBody>
           {this.state.isClosing ?
             <div>
-              <p>By clicking finish, tool tips will be disabled on this page and must be renabled from the settings.  Are you sure you want to continue?</p>
+              <p>By clicking finish, tool tips will be disabled on this page and must be renabled from the settings. Are you sure you want to continue?</p>
               <Row>
                 <Col>
                   <Button onClick={() => this.toggleClosePrompt()} color="primary">Go Back</Button>

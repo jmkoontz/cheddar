@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 
 import {parseError, buildResponse} from '../utilities/controllerFunctions';
-import {getAllInvestments, addTrackedCompanies, addInvestment, editInvestment, deleteInvestment} from '../models/investmentsDAO';
+import {getAllInvestments, addTrackedCompanies, addInvestment, editInvestment, deleteInvestment, getTotalInvestment} from '../models/investmentsDAO';
 
 export default (app) => {
   app.get('/Cheddar/Investments', async (req, res) => {
@@ -34,7 +34,18 @@ export default (app) => {
       data = {error: parseError(err)};
     }    
     buildResponse(res, data);
-  })
+  });
+
+  app.get('/Cheddar/Investments/TotalInvestment', async (req, res) => {
+    let data = {};
+    //console.log(req.query);
+    try {
+      data = await getTotalInvestment(req.query.uid);
+    } catch (err) {
+      data = {error: parseError(err)};
+    }    
+    buildResponse(res, data);
+  });
   
   app.post('/Cheddar/Investments/TrackedCompanies', async (req,res) => {
     let data = {};
