@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Card, CardTitle, CardBody} from 'reactstrap';
+import {Card, CardTitle, CardBody, Label} from 'reactstrap';
 import axios from "axios";
 import buildUrl from "../../actions/connect";
 import Pie from "../Budgets/Pie";
@@ -62,7 +62,6 @@ class FavoriteBudgetCard extends Component {
         self.setState({
           transactions: response.data,
         });
-        console.log(response.data);
         self.constructPieData();
       })
       .catch((error) => {
@@ -87,8 +86,6 @@ class FavoriteBudgetCard extends Component {
       data = [...data, newCateObj];
     }
 
-    //console.log(categories);
-
     let tmpMoneyRemaining = this.state.favoriteBudget.income;
     let transactions = this.state.transactions;
 
@@ -103,10 +100,6 @@ class FavoriteBudgetCard extends Component {
         }
       }
     }
-
-    //console.log("called 2");
-
-    //console.log(data);
 
     this.setState({
       spendingByCategory: data,
@@ -125,6 +118,7 @@ class FavoriteBudgetCard extends Component {
             Favorite Budget
           </CardTitle>
           <CardBody>
+            <Label>{this.state.favoriteBudget.name}</Label>
             <Pie data={this.state.favoriteBudget.budgetCategories} spendingByCategory={this.state.spendingByCategory}
                  setTableMode={"all"} setTableCategory={''} />
           </CardBody>
