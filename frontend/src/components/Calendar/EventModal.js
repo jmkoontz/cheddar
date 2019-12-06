@@ -6,6 +6,7 @@ import Calendar from 'react-calendar';
 import axios from 'axios';
 
 import './EventModal.css';
+import buildUrl from "../../actions/connect";
 
 class EventModal extends React.Component {
   constructor (props) {
@@ -29,12 +30,12 @@ class EventModal extends React.Component {
   handleSave = () => {
     // Save stuff here
     if (this.props.isNew) {
-      axios.post('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user'), this.state.event).then((resp) => {
+      axios.post(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user')), this.state.event).then((resp) => {
         this.setState({isSaved: true});
         this.handleClose();
       });
     } else {
-      axios.put('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user'), this.state.event).then((resp) => {
+      axios.put(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user')), this.state.event).then((resp) => {
         this.setState({isSaved: true});
         this.handleClose();
       });
@@ -43,7 +44,7 @@ class EventModal extends React.Component {
 
   handleDelete = () => {
     // Delete stuff here
-    axios.delete('http://localhost:8080/Cheddar/Calendar/event/' + sessionStorage.getItem('user') + '/' + this.state.event.id, this.state.event).then((resp) => {
+    axios.delete(buildUrl('/Cheddar/Calendar/event/' + sessionStorage.getItem('user') + '/' + this.state.event.id), this.state.event).then((resp) => {
       this.setState({isSaved: true});
       this.handleClose();
     });
@@ -91,7 +92,7 @@ class EventModal extends React.Component {
 
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formBasicEmail">
+            <Form.Group>
               <Form.Label>Title</Form.Label>
               <Form.Control
                 value={event.title}
@@ -102,7 +103,7 @@ class EventModal extends React.Component {
               />
             </Form.Group>
 
-            <Form.Group controlId="formBasicPassword">
+            <Form.Group>
               <Form.Label>Amount Due</Form.Label>
               <Form.Control
                 type={"number"}
@@ -113,6 +114,26 @@ class EventModal extends React.Component {
                 placeholder="$0"
               />
             </Form.Group>
+
+            {
+              this.props.isNew ?
+                <Form.Group>
+                  <Form.Label>Repeat</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={event.repeat}
+                    onChange={(e) => {
+                      this.setProperty("repeat", e.target.value);
+                    }}
+                  >
+                    <option>Never</option>
+                    <option>Weekly</option>
+                    <option>Biweekly</option>
+                    <option>Monthly</option>
+                  </Form.Control>
+                </Form.Group>
+                : null
+            }
 
             <Form.Check
               label={"Notify me of this"}

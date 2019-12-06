@@ -5,6 +5,7 @@ import axios from "axios";
 import './NotificationModal.css';
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import buildUrl from "../../actions/connect";
 
 class NotificationModal extends React.Component {
   constructor (props) {
@@ -40,7 +41,7 @@ class NotificationModal extends React.Component {
   };
 
   displaySchedule = () => {
-    axios.get('http://localhost:8080/Cheddar/Calendar/notificationSchedule/' + sessionStorage.getItem('user')).then((resp) => {
+    axios.get(buildUrl('/Cheddar/Calendar/notificationSchedule/' + sessionStorage.getItem('user'))).then((resp) => {
       this.setState({
         schedule: resp.data
       });
@@ -48,7 +49,7 @@ class NotificationModal extends React.Component {
   };
 
   onSave = () => {
-    axios.put('http://localhost:8080/Cheddar/Calendar/notificationSchedule/' + sessionStorage.getItem('user'), this.state.schedule).then((resp) => {
+    axios.put(buildUrl('/Cheddar/Calendar/notificationSchedule/' + sessionStorage.getItem('user')), this.state.schedule).then((resp) => {
       this.handleClose();
     });
   };

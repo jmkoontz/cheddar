@@ -12,6 +12,7 @@ import '../../css/SavingsModal.css'
 import CanvasJSReact from '../../assets/canvasjs.react';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import Notifications from "../Notifications/Notifications";
+import buildUrl from "../../actions/connect";
 
 
 var CanvasJS = CanvasJSReact.CanvasJS;
@@ -135,7 +136,7 @@ class Saving extends React.Component {
     //alert('A new goal \'' + this.state.title + '\' of $' + this.state.goalAmount + ' was submitted in ' + this.state.category + '\nYou plan to save $' + this.state.monthlyContribution + ' a month until ' + this.state.month + ' ' + this.state.year);
     // TODO: check user inputs
 
-    axios.post(`http://localhost:8080/Cheddar/Savings/${this.state.userID}`,
+    axios.post(buildUrl(`/Cheddar/Savings/${this.state.userID}`),
       {
         title: this.state.title,
         category: this.state.category,
@@ -169,7 +170,7 @@ class Saving extends React.Component {
   }
 
   getSavings = () => {
-    axios.get(`http://localhost:8080/Cheddar/Savings/${this.state.userID}/`)
+    axios.get(buildUrl(`/Cheddar/Savings/${this.state.userID}/`))
       .then((response) => {
         this.setState({savingsList: response.data})
         this.getNotifications();

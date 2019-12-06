@@ -13,6 +13,7 @@ import axios from 'axios';
 import Loader from '../Loader/Loader';
 import {Card, CardTitle, CardBody} from 'reactstrap';
 import TipSequence from '../TipSequence/TipSequence';
+import buildUrl from '../../actions/connect';
 
 import './Overview.css';
 import NotificationModal from "../Calendar/NotificationModal";
@@ -56,26 +57,30 @@ class Overview extends React.Component {
   componentDidMount() {
     const test = {uid: this.state.uid};
     console.log(this.state.uid);
-    axios.get("http://localhost:8080/Cheddar/Investments", {
+    axios.get(buildUrl("/Cheddar/Investments"), {
       params: test,
     }).then(res => {
       var companies = this.state.companies;
       var i;
+      
       var trackedCompanies = res.data.trackedCompanies;
+      if(typeof(trackedCompanies) == typeof(undefined)){
+          trackedCompanies = [];
+      }
       for(i=0;i<trackedCompanies.length;i++){
         companies[trackedCompanies[i]]["tracked"]=true;
       }
       this.setState({
         companies: companies,
-        selectedCompanies: res.data.trackedCompanies,
+        selectedCompanies: trackedCompanies,
         investments: res.data.investments,
       },() => {
         var comps = this.state.selectedCompanies;
         console.log(comps);
         let i =0;
         for(i = 0;i < comps.length; i++){
-          console.log(comps[i]);
           this.getData(comps[i]);
+          console.log(comps[i]);
         }
       });
       this.getFavSavings();
@@ -206,10 +211,22 @@ class Overview extends React.Component {
             </Col>
 
             <Col xs={3} id={"info-column"}>
+
+              <Row>
+                <Card body>
+                  <CardTitle className='card-title'>
+                    Total Asset Value
+                  </CardTitle>
+                  <CardBody>
+                    $237,000
+                  </CardBody>
+                </Card>
+              </Row>
+
               <Row>
                 <Card body>
                   <CardTitle>
-                    Your Top Asset
+                    Top Asset
                   </CardTitle>
                   <CardBody>
                     House: $140000
@@ -220,13 +237,14 @@ class Overview extends React.Component {
               <Row>
                 <Card body>
                   <CardTitle className='card-title'>
-                    Your Top Recurring Payment
+                    Top Recurring Payment
                   </CardTitle>
                   <CardBody>
                     Rent: $1500 due on 2019-11-25
                   </CardBody>
                 </Card>
               </Row>
+
             </Col>
             <Col xs={3} id={"info-column"}>
               <Row>

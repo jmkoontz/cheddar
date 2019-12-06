@@ -62,7 +62,11 @@ export function getBudget(uid, budgetName) {
   return userModel.findOne(findClause, returnClause)
     .then((user) => {
       if (user && user.budgets) {
-        return Promise.resolve(user.budgets[0]);
+        for (let i in user.budgets) {
+          if (user.budgets[i].name == budgetName) {
+            return Promise.resolve(user.budgets[i]);
+          };
+        }
       } else {
         return Promise.reject('UserError: User or budget not found');
       }
@@ -628,6 +632,25 @@ export function getTransactionsInBudget(uid, budgetName) {
     });
 }
 
+export async function getTransactionsFromAllBudgetsInDateRange(uid, dateRange) {
+  let budgetNames = [];
+  let allTransactions = [];
+  try {
+    budgetNames = await getBudgetNames(uid);
+
+
+    for (let i in budgetNames) {
+      let transactions = await getTransactionsInBudgetAndDateRange(uid, budgetNames[i], dateRange);
+      //allTransactions = [...allTransactions, transactions];
+      allTransactions = allTransactions.concat(transactions);
+    }
+  } catch (error) {
+    return Promise.reject(error);
+  }
+
+  return Promise.resolve(allTransactions);
+}
+
 export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateRange) {
   if (!dateRange.startYear || !dateRange.startMonth || !dateRange.startDay)
     return Promise.reject('UserError: No start date specified');
@@ -657,8 +680,10 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
   for (let i in budget.budgetCategories) {
     if (budget.budgetCategories[i].oldTransactions) {
       for (let j in budget.budgetCategories[i].oldTransactions) {
-        if (new Date(budget.budgetCategories[i].oldTransactions[j].startDate) < startDate) {
-          maxIndex = j;
+        if (new Date(budget.budgetCategories[i].oldTransactions[j].startDate) <= startDate || j == budget.budgetCategories[i].oldTransactions.length-1) {
+          if (maxIndex < j) {
+            maxIndex = j;
+          }
           break;
         }
       }
@@ -671,7 +696,6 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
     let tmp = [];
     try {
       tmp = await getOldTransactions(uid, budgetName, i);
-      console.log(tmp);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -680,7 +704,6 @@ export async function getTransactionsInBudgetAndDateRange(uid, budgetName, dateR
     for (let i in tmp) {
       transactions.push(tmp[i])
     }
-    //transactions = [...transactions, tmp];
   }
 
   //console.log(transactions);
